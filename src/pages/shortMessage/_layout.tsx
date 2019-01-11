@@ -24,7 +24,9 @@ function Component(props) {
   ];
 
   function onMenuClick(url: string) {
-    router.push(url + '?clear=1');
+    if(url.indexOf('?clear=1') == -1){
+      router.push(url + '?clear=1');
+    }
   }
 
   const isSHowMenu = menuList.find(item => item.url === location.pathname);

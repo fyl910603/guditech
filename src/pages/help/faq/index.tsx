@@ -30,7 +30,7 @@ class Component extends React.PureComponent<Props, State> {
     this.state = {
       keywords: '',
       typeid:0,
-      iscommon:true,
+      iscommon:false,
       pageindex:1,
       pagecount:15
     };
@@ -96,16 +96,8 @@ class Component extends React.PureComponent<Props, State> {
     const { keywords } = this.state;
     const {questionList} = this.props.data
     const suffix = keywords ? <Icon type="close-circle" onClick={this.emitEmpty} /> : null;
-    // list.map(item => {
-    //   item.PreBasicMoneyStr = toFixed2(item.PreBasicMoney / 100);
-    //   item.CurBasicMoneyStr = toFixed2(item.CurBasicMoney / 100);
-    //   item.ChangeBasicMoneyStr = toFixed2(item.ChangeBasicMoney / 100);
-
-    //   if (item.ChangeBasicMoney > 0) {
-    //     item.ChangeBasicMoneyStr = '+' + item.ChangeBasicMoneyStr;
-    //   }
-    // });
-
+    console.log(questionList)
+    
     
     return (
       <div className={styles.page} >
@@ -123,9 +115,6 @@ class Component extends React.PureComponent<Props, State> {
         </div>
         <div className={styles.questionBox}>
           <div className={styles.questionList}>
-            list.map(item => {
-
-            })
           </div>
           <div className={styles.qPagination}>
             <Pagination showSizeChanger onShowSizeChange={this.onShowSizeChange} defaultCurrent={3} total={500} />

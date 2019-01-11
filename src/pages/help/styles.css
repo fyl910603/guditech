@@ -101,9 +101,10 @@
   align-items: center;
   justify-content: center;
 }
-.classifyBox .classifyContentBox .classifyItem .IconBox .itemIcon {
-  padding-top: 22px;
-  font-size: 51px;
+.classifyBox .classifyContentBox .classifyItem .IconBox .IconImg {
+  display: inline-block;
+  width: 51px;
+  height: 51px;
   text-align: center;
   color: #6bd5ea;
 }
@@ -117,9 +118,10 @@
   align-items: center;
   justify-content: center;
 }
-.classifyBox .classifyContentBox .classifyItem .IconBox1 .itemIcon {
-  padding-top: 22px;
-  font-size: 51px;
+.classifyBox .classifyContentBox .classifyItem .IconBox1 .IconImg {
+  display: inline-block;
+  width: 51px;
+  height: 51px;
   text-align: center;
   color: #6bd5ea;
 }

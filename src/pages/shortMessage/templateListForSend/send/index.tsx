@@ -110,7 +110,7 @@ class Component extends React.PureComponent<Props> {
         MessageBox.show('请选择年龄', this.divForm);
         return false;
       }
-      if (form.search_age1 > form.search_age2) {
+      if (parseInt(form.search_age1) > parseInt(form.search_age2)) {
         MessageBox.show('最大年龄应大于等于最小年龄', this.divForm);
         return false;
       }

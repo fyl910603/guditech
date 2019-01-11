@@ -33,7 +33,6 @@ class Component extends React.PureComponent<Props, State> {
         container: this.divForm,
       },
     });
-
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
