@@ -1,0 +1,71 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+.ant-btn {
+  width: 192px;
+  height: 45px !important;
+}
+.flex {
+  display: -moz-box;
+  /* Firefox */
+  display: -ms-flexbox;
+  /* IE10 */
+  display: -webkit-box;
+  /* Safari */
+  display: -webkit-flex;
+  /* Chrome, WebKit */
+  display: box;
+  display: flexbox;
+  display: flex;
+}
+.ant-modal .ant-btn {
+  width: 140px !important;
+  height: 40px !important;
+}
+.ant-input {
+  height: 45px !important;
+}
+.ant-form-item-label {
+  height: 45px !important;
+  line-height: 45px !important;
+}
+.ant-select-selection {
+  height: 45px !important;
+}
+.ant-select-selection__rendered {
+  line-height: 45px !important;
+}
+.ant-table-header::-webkit-scrollbar-button {
+  display: none !important;
+}
+.ant-table-row td {
+  word-break: break-all !important;
+}
+.ant-table-thead > tr > th {
+  background: #f6f7f8 !important;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  background: #fafafa;
+}
+::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 10px;
+  background: #ccc;
+}
+.ant-modal-footer {
+  padding: 10px 16px;
+}
+.ant-modal-footer .divBtn {
+  text-align: right;
+  padding: 0;
+}

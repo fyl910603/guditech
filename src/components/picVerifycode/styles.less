@@ -1,0 +1,84 @@
+.cover {
+  width: 440px;
+  height: 480px;
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+
+  &.center {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    top: 0;
+    transform: none;
+  }
+}
+
+.close {
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.form {
+  position: absolute;
+  border-radius: 4px;
+  width: 440px;
+  height: 320px;
+
+  top: 50%;
+  transform: translateY(-50%);
+
+  :global(.ant-card-head-title) {
+    text-align: center;
+    font-size: 30px;
+  }
+}
+
+.center {
+  .form {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.divPic {
+  @width: 95px;
+  @height: 42px;
+  width: @width;
+  height: @height;
+  // background-size: 95px 42px;
+  // background-repeat: no-repeat;
+  border-radius: 4px;
+  overflow: hidden;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+
+  .pic {
+    width: @width;
+    height: @height;
+  }
+}
+
+.divBtn {
+  .btn {
+    width: 100%;
+  }
+}
+
+.divChange {
+  display: flex;
+  justify-content: space-between;
+  color: #c3c3c3;
+}
+
+.btnLink {
+  border: none;
+  width: 50px;
+  height: 20px !important;
+  padding: 0;
+}

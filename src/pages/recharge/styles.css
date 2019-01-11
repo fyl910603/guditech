@@ -1,0 +1,121 @@
+.page {
+  display: flex;
+  justify-content: center;
+  padding-top: 116px;
+  min-height: 450px;
+  position: relative;
+  height: auto;
+  margin-bottom: 60px;
+  border: solid 1px #ccc;
+}
+.form {
+  width: 660px;
+  position: relative;
+}
+.rList {
+  width: 550px;
+  height: auto;
+}
+.rItem {
+  width: 166px;
+  margin-bottom: 10px;
+  margin-right: 15px;
+  float: left;
+}
+.rItem .border {
+  height: 97px;
+  border: solid 1px #ccc;
+  width: 166px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.rItem .border.selected {
+  background: url('img/p1.png') right top no-repeat;
+  background-size: 20px 20px;
+  border: solid 1px #55c1de;
+}
+.rItem .money {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 97px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+.rItem .goodsName {
+  width: auto;
+  height: 18px;
+  margin-top: 5px;
+  line-height: 18px;
+  display: flex;
+  display: -webkit-flex;
+  justify-content: center;
+  margin-bottom: 0;
+}
+.rItem .none {
+  display: none;
+}
+.rItem .integral {
+  text-align: center;
+  width: auto;
+  height: 18px;
+  line-height: 18px;
+  margin-bottom: 0;
+  margin-top: 5px;
+  color: #c3baba;
+  font-size: 14px;
+  display: flex;
+  display: -webkit-flex;
+  justify-content: center;
+}
+.rItem .price {
+  color: #55c1de;
+  text-align: center;
+  padding-top: 5px;
+  font-weight: 700;
+}
+.paytypelist {
+  display: flex;
+  width: 540px;
+  justify-content: space-between;
+}
+.paytypelist .btnPaytype {
+  width: 164px;
+  height: 46px;
+  border: solid 1px #ccc;
+  line-height: 46px;
+  text-align: center;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.paytypelist .btnPaytype.selected {
+  background: url('img/p1.png') right top no-repeat;
+  background-size: 20px 20px;
+  border: solid 1px #55c1de;
+}
+.paytypelist .Alipay {
+  background: url(img/zfb.png) 20% center no-repeat;
+  background-size: 25px 25px;
+}
+.paytypelist .WeChat {
+  background: url(img/wx.png) 20% center no-repeat;
+  background-size: 25px 25px;
+}
+.paytypelist .Union {
+  background: url(img/yl.png) 20% center no-repeat;
+  background-size: 32px 25px;
+}
+.btnLog {
+  position: absolute;
+  z-index: 2;
+  top: -55px;
+  right: 0px;
+  width: 84px;
+  height: 40px !important;
+}

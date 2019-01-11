@@ -1,0 +1,50 @@
+@import '../../../variable.less';
+.page {
+  display: flex;
+  justify-content: center;
+  padding-top: @page-form-padding-top;
+  min-height: @page-form-min-height;
+  height: 100%;
+  border: @border;
+}
+.form {
+  width: 640px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.line1 {
+  text-align: center;
+
+  background: url(./img/success.png) center center no-repeat;
+  background-size: 142px 84px;
+  width: 142px;
+  height: 84px;
+}
+
+.line2 {
+  text-align: center;
+  color: @primary-color;
+  font-size: 22px;
+  margin-top: 38px;
+}
+
+.line3 {
+  text-align: left;
+  margin-top: 14px;
+  width: 190px;
+}
+
+.line4 {
+  text-align: left;
+  margin-top: 8px;
+  width: 190px;
+}
+
+.line5 {
+  display: flex;
+  margin-top: 36px;
+  justify-content: space-between;
+  width: 450px;
+}

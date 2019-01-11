@@ -1,0 +1,197 @@
+@import '../../variable.less';
+.page {
+  padding-top: 37px;
+  min-height: 800px;
+  position: relative;
+  height: auto;
+  margin-bottom: 60px;
+  border: @border;
+  padding: 33px 85px;
+}
+
+.searchBox {
+  display: flex;
+  display: -webkit-flex;
+  width: 100%;
+  height: 33px;
+  justify-content: center;
+  .searchIcon {
+    width: 29px;
+    height: 30px;
+    font-size: 30px;
+    color: #6bd5ea;
+  }
+  .inputBox {
+    margin-left: 29px;
+    display: inline-block;
+    width: 893px;
+    height: 33px !important;
+    border-radius: 17px;
+    border: solid 1px #aae7f3;
+    padding: 0 40px;
+  }
+  input::-webkit-input-placeholder {
+    /* placeholder颜色  */
+    color: #868686;;
+    /* placeholder字体大小  */
+    font-size: 12px;
+  }
+  .searchButton{
+    margin-left:23px;
+    width: 67px;
+    padding: 0;
+    height: 33px !important;
+    color: #ffffff;
+    background-image: linear-gradient(
+      #6bd5ea, 
+      #6bd5ea), 
+    linear-gradient(
+      #018ad8, 
+      #018ad8);
+    background-blend-mode: normal, 
+      normal;
+    border-radius: 4px;
+  }
+}
+.classifyBox{
+  display: flex;
+  display: -webkit-flex;
+  flex-direction: column;
+  clear: both;
+  width: 100%;
+  height: 205px;
+  padding-top: 64px;
+  .title{
+    width: 100%;
+    height: 20px;
+    font-family: MicrosoftYaHei;
+    font-size:14px;
+    padding-bottom: 5px;
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    margin-bottom: 0;
+    color: @font-color;
+    span{
+      height: 20px;
+      display: flex;
+      display: -webkit-flex;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      padding-bottom: 5px;
+    }
+    span:first-child{
+      border-bottom: 2px solid #6bd5ea;
+    }
+  }
+  .classifyContentBox{
+    width: 100%;
+    clear: both;
+    margin-left: -47px;
+    .classifyItem{
+      width: 143px;
+      height: 123px;
+      float: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .IconBox{
+        width: 142px;
+        height: 89px !important;
+        margin-top: 15px;
+        border-right: 1px solid #cccccc;
+        display: flex;
+        display: -webkit-flex;
+        align-items: center;
+        justify-content: center;
+        .itemIcon{
+          padding-top: 22px;
+          font-size: 51px;
+          text-align: center;
+          color: #6bd5ea;
+        }
+      }
+      .IconBox1{
+        width: 142px;
+        height: 89px !important;
+        margin-top: 15px;
+        border-right: none;
+        display: flex;
+        display: -webkit-flex;
+        align-items: center;
+        justify-content: center;
+        .itemIcon{
+          padding-top: 22px;
+          font-size: 51px;
+          text-align: center;
+          color: #6bd5ea;
+        }
+      }
+      .nameBox{
+        width: 100%;
+        text-align: center;
+        margin-top: 9px;
+        height: 13px;
+        font-family: MicrosoftYaHei;
+        font-size: 13px;
+        line-height: 13px;
+        letter-spacing: 1px;
+        color:@font-color;
+        margin-bottom: 0;
+      }
+    }
+  }
+  .questionBox{
+    width: 100%;
+    padding-bottom: 78px;
+    .questionItem{
+      width: 100%;
+      height: 15px;
+      margin-top: 35px;
+      margin-bottom: 33px;
+      display: flex;
+      display: -webkit-flex;
+      align-items: center;
+      justify-content: space-between;
+      .Item{
+        height: 15px;
+        line-height: 15px;
+        align-items: center;
+        width: 230px;
+        display: flex;
+        display: -webkit-flex;
+        justify-content: center;
+        .point{
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          background-color: #00c4e2;
+          margin-right: 11px;
+        }
+        .questionName{
+          display: inline-block;
+          width: 213px;
+          height: 15px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          font-size: 14px;
+          color: #868686;
+        }
+      }
+    }
+  }
+  .contactBox{
+    margin-top: 33px;
+    p{
+      width: auto;
+      height: 11px;
+      font-family: MicrosoftYaHei;
+      font-size: 14px;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      color: #868686;
+    }
+  }
+}

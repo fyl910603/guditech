@@ -1,0 +1,28 @@
+@import '../variable.less';
+
+.page {
+  // display: flex;
+  // justify-content: center;
+  padding-bottom: @page-padding-bottom;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+}
+
+.body {
+  width: @content-width;
+}
+
+.content {
+  width: @content-width;
+  height: @page-content-height;
+  border-radius: 2px;
+  min-height: @page-form-min-height;
+}
+
+// 表单 title
+:global(.ant-form-item-label label) {
+  color: @form-title-color !important;
+}

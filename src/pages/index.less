@@ -1,0 +1,103 @@
+@import '../variable.less';
+
+@banner-height: 650px;
+
+.main {
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: @page-padding-bottom;
+}
+
+.carousel {
+  height: @banner-height;
+  :global(.ant-carousel) {
+    :global(.slick-slide) {
+      height: @banner-height;
+      text-align: center;
+      line-height: 160px;
+      background: #364d79;
+      overflow: hidden;
+    }
+  }
+}
+
+.page {
+  position: relative;
+  height: @banner-height;
+}
+
+.p1 {
+  .page;
+  background-image: url(../assets/index/p1.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+  overflow: hidden;
+}
+.banner {
+  .page;
+  border: none;
+  overflow: hidden;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+.btn {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.listContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // height: calc(40vh - 50px);
+  // min-height: 250px;
+  margin-top: 74px;
+}
+
+.list {
+  display: flex;
+  justify-content: space-around;
+  width: @content-width;
+}
+
+.item {
+  width: 266px;
+  height: 230px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 2px 5px #ccc;
+  position: relative;
+}
+
+.item1 {
+  .item;
+  background-image: url(../assets/index/s1.jpg);
+}
+
+.item2 {
+  .item;
+  background-image: url(../assets/index/s2.jpg);
+}
+
+.item3 {
+  .item;
+  background-image: url(../assets/index/s3.jpg);
+}
+
+.item4 {
+  .item;
+  background-image: url(../assets/index/s4.jpg);
+}
+
+.btns {
+  bottom: 20px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

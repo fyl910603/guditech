@@ -1,0 +1,73 @@
+.header {
+  height: 62px;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+}
+.headerNormal {
+  height: 62px;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  background-color: #333;
+}
+.content {
+  width: 1200px;
+  height: 100%;
+}
+.companyName {
+  background: url(../../assets/logob.png) no-repeat center left;
+  background-size: 32px 32px;
+  height: 100%;
+  line-height: 62px;
+  margin-left: 72px;
+  padding-left: 42px;
+  float: left;
+  cursor: pointer;
+}
+.balance {
+  float: left;
+  height: 62px;
+  line-height: 62px;
+  margin-left: 36px;
+  cursor: pointer;
+}
+.setting {
+  cursor: pointer;
+  height: 62px;
+  line-height: 62px;
+  float: right;
+  margin-right: 72px;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.down {
+  font-size: 20px !important;
+  position: relative;
+  top: 2px;
+  margin-right: 5px;
+}
+.help {
+  margin-right: 10px;
+}
+.helpIcon {
+  margin-right: 5PX;
+  position: relative;
+  top: 2px;
+  font-size: 20px !important;
+}
+.dropdownMenu :global(.ant-dropdown-menu-item) {
+  padding: 10px 15px !important;
+  width: 192px;
+}
+.headerSpace {
+  height: 62px;
+}

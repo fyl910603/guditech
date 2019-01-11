@@ -1,0 +1,80 @@
+@import '../../variable.less';
+
+.main {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+
+  .back {
+    background: url(./img/back.jpg) no-repeat center center;
+    background-size: 100% 100%;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .title {
+    position: relative;
+    font-size: 30px;
+    text-align: center;
+    font-family: '微软雅黑';
+  }
+
+  .titleLogo {
+    width: 32px;
+    height: 32px;
+    background: url(../../assets/logo.png) no-repeat center left;
+    background-size: 32px 32px;
+    position: absolute;
+    top: 8px;
+    left: 40px;
+  }
+
+  .form {
+    position: absolute;
+    border-radius: 4px;
+    width: 442px;
+    height: 350px;
+
+    top: 40%;
+    right: 15%;
+    transform: translateY(-50%);
+
+    :global(.ant-card-body) {
+      padding: 20px 40px;
+    }
+
+    .btnVerifycode {
+      position: absolute;
+      right: 0;
+      width: 95px !important;
+    }
+  }
+}
+
+.btn {
+  width: 100%;
+}
+
+.divBtnOption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 22px;
+
+  .btnForget {
+    width: 70px !important;
+    height: 22px !important;
+    position: absolute;
+    left: 56%;
+    cursor: pointer;
+    color: #c3c3c3;
+  }
+
+  .btnLink {
+    width: 70px !important;
+    height: 22px !important;
+    right: 0;
+    position: absolute;
+  }
+}

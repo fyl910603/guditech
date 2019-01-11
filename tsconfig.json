@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "target": "es6",
+    "jsx": "react",
+    "module": "esnext",
+    "declaration": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "components/*": ["src/components/*"],
+      "utils/*": ["src/utils/*"]
+    }
+  }
+}

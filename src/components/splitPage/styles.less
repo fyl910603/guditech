@@ -1,0 +1,28 @@
+@height: 32px;
+.pag {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  position: relative;
+  :global(.ant-pagination) {
+    float: right;
+    margin-right: 10px;
+  }
+
+  .total {
+    float: right;
+    height: @height;
+    line-height: @height;
+    margin-right: 10px;
+  }
+}
+
+.btn {
+  float: right;
+  height: @height;
+  line-height: @height;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.clear {
+  clear: both;
+}
