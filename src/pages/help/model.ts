@@ -9,6 +9,9 @@ export default {
   namespace,
   state: {
     typeData: [],
+    details : {},
+    questionList: [],
+    questionTotal: ''
   },
 
   subscriptions: {
@@ -43,6 +46,47 @@ export default {
         });
       }
     },
+    *fetchQuestionDetail({ payload }, { put, call, select }) {
+      const pars: Props = {
+        url: '/api/helpcenter/question/details',
+        body: {
+          id: payload.id,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchQuestionDetailSuccess',
+          payload: {
+            details: res.data,
+          },
+        });
+      }
+    },
+    *fetchQuestion({ payload }, { put, call, select }) {
+      const pars: Props = {
+        url: '/api/helpcenter/question/list',
+        body: {
+          typeid: payload.typeid,
+          key: payload.key,
+          iscommon: payload.iscommon,
+          pageindex: payload.pageindex,
+          pagecount: payload.pagecount,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchQuestionSuccess',
+          payload: {
+            QuestionList: res.data.List,
+            QuestionTotal: res.data.totalCount
+          },
+        });
+      }
+    },
   },
 
   reducers: {
@@ -50,6 +94,19 @@ export default {
       return {
         ...state,
         typeData: payload.typeData,
+      };
+    },
+    fetchQuestionSuccess(state, { payload }) {
+      return {
+        ...state,
+        questionList: payload.QuestionList || [],
+        questionTotal: payload.QuestionTotal
+      };
+    },
+    fetchQuestionDetailSuccess(state, { payload }) {
+      return {
+        ...state,
+        details: payload.details,
       };
     },
   },

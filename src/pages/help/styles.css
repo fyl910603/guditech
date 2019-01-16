@@ -84,6 +84,7 @@
   margin-left: -47px;
 }
 .classifyBox .classifyContentBox .classifyItem {
+  cursor: pointer;
   width: 143px;
   height: 123px;
   float: left;
@@ -139,35 +140,29 @@
 }
 .classifyBox .questionBox {
   width: 100%;
-  padding-bottom: 78px;
+  padding: 30px 0;
 }
-.classifyBox .questionBox .questionItem {
-  width: 100%;
-  height: 15px;
-  margin-top: 35px;
-  margin-bottom: 33px;
-  display: flex;
-  display: -webkit-flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.classifyBox .questionBox .questionItem .Item {
-  height: 15px;
+.classifyBox .questionBox .Item {
+  cursor: pointer;
+  float: left;
+  height: 45px;
+  padding: 15px 0;
+  box-sizing: border-box;
   line-height: 15px;
   align-items: center;
-  width: 230px;
+  width: 30%;
   display: flex;
   display: -webkit-flex;
-  justify-content: center;
+  justify-content: left;
 }
-.classifyBox .questionBox .questionItem .Item .point {
+.classifyBox .questionBox .Item .point {
   display: inline-block;
   width: 6px;
   height: 6px;
   background-color: #00c4e2;
   margin-right: 11px;
 }
-.classifyBox .questionBox .questionItem .Item .questionName {
+.classifyBox .questionBox .Item .questionName {
   display: inline-block;
   width: 213px;
   height: 15px;
@@ -188,4 +183,49 @@
   letter-spacing: 1px;
   margin-bottom: 12px;
   color: #868686;
+}
+.pageInfo {
+  padding-top: 37px;
+  min-height: 800px;
+  position: relative;
+  height: auto;
+  margin-bottom: 60px;
+  border: solid 1px #ccc;
+  padding: 44px 0 33px 85px;
+}
+.pageInfo .title_box {
+  width: 100%;
+  height: 42px;
+  border-bottom: 1px solid #eeeeee;
+}
+.pageInfo .title_box > span {
+  max-width: 500px;
+  height: 14px;
+  font-family: MicrosoftYaHei-Bold;
+  font-size: 14px;
+  line-height: 14px;
+  color: #2c2c2c;
+}
+.pageInfo .title_box span:last-child {
+  float: right;
+  margin-right: 110px;
+}
+.pageInfo .contentInfo {
+  width: 100%;
+  padding: 27px 98px 0 0;
+  font-family: MicrosoftYaHei;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: justify;
+  color: #868686;
+  display: flex;
+  display: -webkit-flex;
+}
+.pageInfo .contentInfo .da {
+  width: 20px;
+  float: left;
+  margin-right: 15px;
+}
+.more {
+  cursor: pointer;
 }

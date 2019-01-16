@@ -10,30 +10,64 @@ import { PictureShow } from 'components/pictureShow';
 import { PictureUpload } from 'components/pictureUpload';
 import { AddressPick } from 'components/addressPick';
 import { MessageBox } from 'components/messageBox';
+import router from 'umi/router';
 
 let divForm: HTMLDivElement;
 interface State {
-
+  keywords: any;
+  typeid: any;
+  iscommon: boolean;
+  pageindex: number;
+  pagecount: number;
 }
 interface Props {
   dispatch: (props: any) => void;
   data: any
 }
-class Component extends React.PureComponent<Props> {
+class Component extends React.PureComponent<Props,State> {
   private divForm: HTMLDivElement;
   constructor(props: Props) {
     super(props);
     this.state = {
+      keywords: '',
+      typeid:0 ,
+      iscommon:true,
+      pageindex:1,
+      pagecount:10
     };
   }
 
   componentDidMount() {
     this.getQuestionTypeList()
+    this.getQuestionList()
   }
 
   componentWillUnmount() {
   }
-
+  jumpMore(){
+    router.push('/help/faq')
+  }
+  handleItem(typeid){
+    router.push({
+      pathname: '/help/faq',
+      query:typeid
+    })
+  }
+  jumpToDetail(Id){
+    router.push(`/help/${Id}`)
+  }
+  getQuestionList = () =>{
+    this.props.dispatch({
+      type: `${namespace}/fetchQuestion`,
+      payload: {
+        typeid: this.state.typeid,
+        key: this.state.keywords,
+        iscommon: this.state.iscommon,
+        pageindex: this.state.pageindex,
+        pagecount: this.state.pagecount,
+      },
+    });
+  }
   getQuestionTypeList() {
     this.props.dispatch({
       type: `${namespace}/fetchQuestionType`,
@@ -43,9 +77,9 @@ class Component extends React.PureComponent<Props> {
     });
   }
   render() {
-    const { typeData } = this.props.data
+    const { typeData,questionList} = this.props.data
     let typeList = typeData.map((item,index) =>(
-      <div key={item.TypeId} className={styles.classifyItem}>
+      <div key={item.TypeId} className={styles.classifyItem} onClick={()=>this.handleItem(item.TypeId)}>
       <div className={(index+1) == typeData.length?styles.IconBox1:styles.IconBox}>
         <img src={item.TypeIconUrl} alt={item.TypeName} className={styles.IconImg}/>
       </div>
@@ -53,12 +87,18 @@ class Component extends React.PureComponent<Props> {
         {item.TypeName}
       </p>
       </div>
-  ))
+    ))
+    let commonList = questionList.slice(0,9).map((item,index) =>(
+      <div className={styles.Item} key={item.QuestionId} onClick={()=>this.jumpToDetail(item.QuestionId)}>
+        <i className={styles.point}></i>
+        <span className={styles.questionName}>{item.QuestName}</span>
+      </div>
+    ))
     return (
       <div className={styles.page} >
         <div className={styles.searchBox}>
           <Icon type="search" className={styles.searchIcon} />
-          <Input type="text" placeholder="请在这里输入您要查找的问题 例：忘记密码" className={styles.inputBox}></Input>
+          <Input type="text" placeholder="请在这里输入您要查找的问题 例：忘记密码" onFocus={()=>this.jumpMore()} className={styles.inputBox}></Input>
           <Button type="primary" className={styles.searchButton}>搜索</Button>
         </div>
         <div className={styles.classifyBox}>
@@ -68,23 +108,9 @@ class Component extends React.PureComponent<Props> {
           </div>
         </div>
         <div className={styles.classifyBox}>
-          <p className={styles.title}><span>常见问题</span><span>更多></span></p>
+          <p className={styles.title}><span>常见问题</span><span className={styles.more} onClick={()=>this.jumpMore()}>更多></span></p>
           <div className={styles.questionBox}>
-            <div className={styles.questionItem}>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>如何查询/修改我的个人信息?</span></div>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>商户审核不通过怎么办?</span></div>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>如何编辑短信模板?</span></div>
-            </div>
-            <div className={styles.questionItem}>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>如何查询/修改我的个人信息?</span></div>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>商户审核不通过怎么办?</span></div>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>如何编辑短信模板?</span></div>
-            </div>
-            <div className={styles.questionItem}>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>如何查询/修改我的个人信息?</span></div>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>商户审核不通过怎么办?</span></div>
-              <div className={styles.Item}><i className={styles.point}></i><span className={styles.questionName}>如何编辑短信模板?</span></div>
-            </div>
+              {commonList}
           </div>
         </div>
         <div className={styles.classifyBox}>

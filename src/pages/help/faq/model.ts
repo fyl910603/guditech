@@ -8,7 +8,8 @@ export const namespace = 'faq';
 export default {
   namespace,
   state: {
-    questionList: {},
+    questionList: [],
+    questionTotal: 0
   },
 
   subscriptions: {
@@ -45,7 +46,8 @@ export default {
         yield put({
           type: 'fetchQuestionSuccess',
           payload: {
-            data: res
+            QuestionList: res.data.List,
+            QuestionTotal: res.data.TotalCount
           },
         });
       }
@@ -56,7 +58,8 @@ export default {
     fetchQuestionSuccess(state, { payload }) {
       return {
         ...state,
-        questionList: payload.data || {},
+        questionList: payload.QuestionList || [],
+        questionTotal: payload.QuestionTotal
       };
     },
   },

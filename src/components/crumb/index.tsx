@@ -20,6 +20,9 @@ const routes = [
   { path: '/shortMessage/templateListForSend/orderList', breadcrumb: '订单记录' },
   { path: '/shortMessage/templateListForSend/orderList/sendList', breadcrumb: '发送记录' },
   { path: '/shortMessage/templateListForSend/orderList/visitList', breadcrumb: '访问详情' },
+  { path: '/help', breadcrumb: '帮助中心' },
+  { path: '/help/faq', breadcrumb: '常见问题' },
+  { path: '/help/:id', breadcrumb: '问题详情' },
   { path: '/balanceChangeList', breadcrumb: '余额变更记录' },
 
 
