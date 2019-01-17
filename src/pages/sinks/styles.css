@@ -2,10 +2,22 @@
   display: flex;
   position: relative;
   justify-content: center;
-  padding-top: 116px;
+  padding-top: 20px;
   min-height: 450px;
   border: solid 1px #ccc;
   height: 100%;
+}
+.hintBox {
+  width: 96%;
+}
+.hint {
+  color: #A0A0A0;
+}
+.textBtn {
+  color: #6FD4E7;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 15px;
 }
 .form {
   width: 560px;

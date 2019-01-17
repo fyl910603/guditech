@@ -159,13 +159,15 @@
   display: inline-block;
   width: 6px;
   height: 6px;
+  border-radius: 100%;
   background-color: #00c4e2;
   margin-right: 11px;
 }
 .classifyBox .questionBox .Item .questionName {
   display: inline-block;
   width: 213px;
-  height: 15px;
+  height: 20px;
+  line-height: 20px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -217,7 +219,7 @@
   font-size: 14px;
   line-height: 24px;
   text-align: justify;
-  color: #868686;
+  color: #D9D5D5;
   display: flex;
   display: -webkit-flex;
 }

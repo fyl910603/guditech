@@ -2,6 +2,7 @@ import * as React from 'react';
 import styles from './styles.less';
 import withBreadcrumbs from 'react-router-breadcrumbs-hoc';
 import NavLink from 'umi/navlink';
+import router from 'umi/router';
 
 const routes = [
   { path: '/', breadcrumb: '首页' },
@@ -21,8 +22,9 @@ const routes = [
   { path: '/shortMessage/templateListForSend/orderList/sendList', breadcrumb: '发送记录' },
   { path: '/shortMessage/templateListForSend/orderList/visitList', breadcrumb: '访问详情' },
   { path: '/help', breadcrumb: '帮助中心' },
-  { path: '/help/faq', breadcrumb: '常见问题' },
-  { path: '/help/:id', breadcrumb: '问题详情' },
+  { path: '/help/faq', breadcrumb: ()=> getName()},
+  { path: '/help/faq/:id', breadcrumb: ()=> getQuery('Qname')},
+  { path: '/help/:id', breadcrumb: ()=> getQuery('Cname') },
   { path: '/balanceChangeList', breadcrumb: '余额变更记录' },
 
 
@@ -32,8 +34,30 @@ const routes = [
   { path: '/customer', breadcrumb: '客户管理' },
   { path: '/sinks', breadcrumb: '短信业务' },
 ];
-
+function getName(){
+  return getQuery('name') != undefined ? getQuery('name'):'常见问题'
+}
+function getQuery(name){
+  let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    let reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+    let r = decodeURI(window.location.search).substr(1).match(reg);
+    let q = decodeURI(window.location.pathname).substr(1).match(reg_rewrite);
+    if(r != null) {
+        return unescape(r[2]);
+    } else if(q != null) {
+        return unescape(q[2]);
+    } else {
+        return null;
+    }
+}
 export const Crumb = withBreadcrumbs(routes)(({ breadcrumbs }) => {
+  if(breadcrumbs.length >= 3){
+    if(breadcrumbs[2].key == '/help/faq'){
+      if(breadcrumbs[2].props.location.query.id != undefined){
+        // breadcrumbs[2].props.children = breadcrumbs[2].props.location.query.name
+      }
+    }
+  }
   return (
     <div className={styles.crumb}>
       <div>您当前位置：</div>

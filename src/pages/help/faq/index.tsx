@@ -30,7 +30,7 @@ class Component extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       keywords: '',
-      typeid:0 | this.props.location.query,
+      typeid:0 | this.props.location.query.id,
       iscommon:false,
       pageindex:1,
       pagecount:15
@@ -55,32 +55,6 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   }
-  onSelect = e => {
-    // this.props.dispatch({
-    //   type: `${namespace}/fetch`,
-    //   payload: {
-    //     container: this.divForm,
-    //     pageindex: 1,
-    //   },
-    // });
-  };
-
-  onPageChanged = (pageindex, pagecount) => {
-    // this.props.dispatch({
-    //   type: `${namespace}/fetch`,
-    //   payload: {
-    //     pageindex,
-    //     container: this.divForm,
-    //   },
-    // });
-  };
-
-  onDateChanged = e => {
-    // this.props.dispatch({
-    //   type: `${namespace}/onDateChanged`,
-    //   payload: e,
-    // });
-  };
   onChangeUserName = (e) => {
     if(e.target.value != this.state.keywords  ){
       this.setState({ keywords: e.target.value });
@@ -103,8 +77,22 @@ class Component extends React.PureComponent<Props, State> {
       this.getQuestionList()
     },50)
   }
-  jumpToDetail(Id){
-    router.push(`/help/${Id}`)
+  jumpToDetail(Id,name){
+    if(this.props.location.query.id == undefined){
+      router.push({
+        pathname: `/help/faq/${Id}`,
+        query:{
+          Qname:name
+        }
+      })
+    }else{
+      router.push({
+        pathname:`/help/${Id}`,
+        query:{
+          Cname:name
+        }
+      })
+    }
   }
   render() {
     const { keywords } = this.state;
@@ -116,11 +104,11 @@ class Component extends React.PureComponent<Props, State> {
       >
         <p className={styles.item_left}>
           <span>{index+1}、</span>
-          <span className={styles.item_title} onClick={()=>this.jumpToDetail(item.QuestionId)}>{item.QuestName}</span>
+          <span className={styles.item_title} onClick={()=>this.jumpToDetail(item.QuestionId,item.QuestName)}>{item.QuestName}</span>
           <span className={item.IsTop?styles.item_top:styles.none}>置顶</span>
         </p>
         <p className={styles.item_right}>
-          <span>{item.UpdateTime}</span>
+          <span className={styles.UpdateTime}>{item.UpdateTime}</span>
           <span>></span>
         </p>
       </div>

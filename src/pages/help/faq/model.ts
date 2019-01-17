@@ -52,6 +52,24 @@ export default {
         });
       }
     },
+    *fetchQuestionDetail({ payload }, { put, call, select }) {
+      const pars: Props = {
+        url: '/api/helpcenter/question/details',
+        body: {
+          id: payload.id,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchQuestionDetailSuccess',
+          payload: {
+            details: res.data,
+          },
+        });
+      }
+    },
   },
 
   reducers: {
@@ -60,6 +78,12 @@ export default {
         ...state,
         questionList: payload.QuestionList || [],
         questionTotal: payload.QuestionTotal
+      };
+    },
+    fetchQuestionDetailSuccess(state, { payload }) {
+      return {
+        ...state,
+        details: payload.details,
       };
     },
   },

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Button, Modal } from 'antd';
+import { Button, Modal,Divider, Table} from 'antd';
 import { Input2 } from 'components/input';
 import { Form } from 'components/form';
 import { FormItem } from 'components/formItem';
@@ -13,29 +13,99 @@ import { SmsTemplateEdit } from 'components/SmsTemplateEdit';
 import { LinkButton } from 'components/linkButton';
 import { MessageBox } from 'components/messageBox';
 
+interface State {
+}
+interface Props {
+  dispatch: (props: any) => void;
+  data: any
+}
 let divForm: HTMLDivElement;
 class Component extends React.PureComponent<Props,State> {
   private divForm: HTMLDivElement;
   constructor(props: Props) {
     super(props);
     this.state = {
-      keywords: '',
-      typeid:0 ,
-      iscommon:true,
-      pageindex:1,
-      pagecount:10
     };
   }
-
   componentDidMount() {
   }
 
   componentWillUnmount() {
   }
   render() {
+    const columns: any = [
+      {
+        title: '签名',
+        dataIndex: 'ChildsName',
+        width: 150,
+        align:'center'
+      },
+      {
+        title: '营业执照',
+        dataIndex: 'Mobile',
+        width: 150,
+        align:'center'
+      },
+      {
+        title: '审核状态',
+        dataIndex: 'DetailAddress',
+        align:'center'
+      },
+      {
+        title: '申请时间',
+        dataIndex: 'Time',
+        width: 280,
+        align:'center'
+      },
+      {
+        title: '更新时间',
+        dataIndex: 'Time',
+        width: 280,
+        align:'center'
+      },
+      {
+        title: '操作',
+        key: 'action',
+        width: 110,
+        align:'center',
+        render: (text, record) => (
+          <span>
+            {/* <a href="javascript:;" onClick={() => this.onOpenEdit(record)}>
+              编辑
+            </a>
+            <Divider type="vertical" />
+            <a href="javascript:;" onClick={() => this.onDelete(record)} style={{ color: 'red' }}>
+              删除
+            </a> */}
+          </span>
+        ),
+      },
+    ];
     return (
       <div className={styles.page} >
-       </div>
+        <div className={styles.hintBox}>
+          <span className={styles.hint}>您可以通过短信方式与目标客户建立更精准、快捷的连接，大大降低拓客成本.点击此处</span><span className={styles.textBtn}>申请短信业务</span>
+        </div>
+        <div className={styles.divTable}>
+          <Table
+            columns={columns}
+            dataSource={list}
+            pagination={false}
+            // scroll={{ y: height }}
+            bordered={true}
+            rowKey="Id"
+            locale={{
+              emptyText: '暂无客户数据',
+            }}
+          />
+        </div>
+        {/* <SplitPage
+          pageIndex={pageindex}
+          total={totalCount}
+          pageSize={pagecount}
+          onPageChanged={this.onPageChanged}
+        /> */}
+      </div>
     );
   }
 }

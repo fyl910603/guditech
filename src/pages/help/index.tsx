@@ -47,14 +47,22 @@ class Component extends React.PureComponent<Props,State> {
   jumpMore(){
     router.push('/help/faq')
   }
-  handleItem(typeid){
+  handleItem(typeid,name){
     router.push({
       pathname: '/help/faq',
-      query:typeid
+      query:{
+        id:typeid,
+        name:name
+      }
     })
   }
-  jumpToDetail(Id){
-    router.push(`/help/${Id}`)
+  jumpToDetail(Id,name){
+    router.push({
+      pathname: `/help/${Id}`,
+      query:{
+        Cname:name
+      }
+    })
   }
   getQuestionList = () =>{
     this.props.dispatch({
@@ -79,7 +87,7 @@ class Component extends React.PureComponent<Props,State> {
   render() {
     const { typeData,questionList} = this.props.data
     let typeList = typeData.map((item,index) =>(
-      <div key={item.TypeId} className={styles.classifyItem} onClick={()=>this.handleItem(item.TypeId)}>
+      <div key={item.TypeId} className={styles.classifyItem} onClick={()=>this.handleItem(item.TypeId,item.TypeName)}>
       <div className={(index+1) == typeData.length?styles.IconBox1:styles.IconBox}>
         <img src={item.TypeIconUrl} alt={item.TypeName} className={styles.IconImg}/>
       </div>
@@ -89,7 +97,7 @@ class Component extends React.PureComponent<Props,State> {
       </div>
     ))
     let commonList = questionList.slice(0,9).map((item,index) =>(
-      <div className={styles.Item} key={item.QuestionId} onClick={()=>this.jumpToDetail(item.QuestionId)}>
+      <div className={styles.Item} key={item.QuestionId} onClick={()=>this.jumpToDetail(item.QuestionId,item.QuestName)}>
         <i className={styles.point}></i>
         <span className={styles.questionName}>{item.QuestName}</span>
       </div>
