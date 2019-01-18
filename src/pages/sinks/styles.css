@@ -1,8 +1,7 @@
 .page {
-  display: flex;
   position: relative;
-  justify-content: center;
   padding-top: 20px;
+  padding-left: 30px;
   min-height: 450px;
   border: solid 1px #ccc;
   height: 100%;
@@ -13,6 +12,10 @@
 .hint {
   color: #A0A0A0;
 }
+.divTable {
+  margin-top: 20px;
+  clear: both;
+}
 .textBtn {
   color: #6FD4E7;
   cursor: pointer;
@@ -22,6 +25,9 @@
 .form {
   width: 560px;
   position: relative;
+}
+.ant-modal {
+  width: 630px !important;
 }
 .status {
   z-index: -1;
