@@ -95,11 +95,73 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
+    *add({ payload }, { put, call, select }) {
+      const { data, container } = payload;
+      const pars: Props = {
+        url : '/api/smssend/sign/add',
+        body: {
+          Channelcode: '',
+          SignName: payload.addSignName,
+          LicenceUrl: payload.addImgUrl,
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'showAdd',
+          payload: {
+            isShow: false,
+          },
+        });
+        modalSuccess({
+          title: '信息创建成功',
+          pic: successPic,
+          onOk: () => {
+            router.push('/');
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *onDelete({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container, data } = payload;
+      const pars: Props = {
+        url: '/api/smssend/sign/delete',
+        body: {
+          Id: payload,
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        modalSuccess({
+          message: '您已删除短信业务!',
+        });
+        yield put({
+          type: 'fetchSign',
+          payload: {
+            status: payload.status,
+            channelcode: payload.channelcode,
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
   },
 
   reducers: {
     showEdit(state, { payload }) {
       const currData = payload.currData;
+      return {
+        ...state,
+        isShowEdit: payload.isShow,
+      };
+    },
+    showAdd(state, { payload }) {
       return {
         ...state,
         isShowEdit: payload.isShow,

@@ -10,6 +10,9 @@ body {
   width: 192px;
   height: 45px !important;
 }
+.ant-modal-mask {
+  background: none !important;
+}
 .flex {
   display: -moz-box;
   /* Firefox */
@@ -68,4 +71,8 @@ body {
 .ant-modal-footer .divBtn {
   text-align: right;
   padding: 0;
+}
+.ant-form-item-control-wrapper {
+  display: inline-block !important;
+  width: 300px;
 }

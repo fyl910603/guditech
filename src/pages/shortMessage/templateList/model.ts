@@ -9,6 +9,7 @@ export default {
   namespace,
   state: {
     list: [],
+    typelist:[],
     pageindex: 1,
     pagecount: pageSize,
   },
@@ -20,15 +21,20 @@ export default {
           dispatch({
             type: 'init',
           });
+          dispatch({
+            type: 'fetchType',
+            // payload: {},
+          });
         }
       });
-    },
+    }
   },
 
   effects: {
     // 查询
     *fetch({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
+
       const { container } = payload;
       const pars: Props = {
         url: '/api/template/content/list',
@@ -52,7 +58,90 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
-
+    // 获取签名类型
+    *fetchType({ payload }, { put, call, select }) {
+      const {container } = payload;
+      const state = yield select(state => state[namespace]);
+      const pars: Props = {
+        url: '/api/smssend/sign/list',
+        body: {
+          status: payload.status,
+          channelcode: state.list[0].ChannelCode,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({ type: 'fetchTypeSuccess', payload:{typeList:res.data}});
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    // 修改模板名称
+    *onEditTem({ payload }, { put, call, select }) {
+      const {container } = payload;
+      const state = yield select(state => state[namespace]);
+      const pars: Props = {
+        url: '/api/template/content/name/modify',
+        body: {
+          templateid: payload.templateid,
+          templatename: payload.templatename,
+        },
+        method: 'PUT',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetch',
+          payload: {},
+        });
+        yield put({
+          type: 'showSignEdit',
+          payload: {
+            isShowSign: false,
+          },
+        });
+        modalSuccess({
+          message: '模板名称修改成功!',
+        });
+        
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    // 修改签名类型
+    *onEdit({ payload }, { put, call, select }) {
+      const {container } = payload;
+      const state = yield select(state => state[namespace]);
+      const pars: Props = {
+        url: '/api/template/content/sign/modify',
+        body: {
+          templateid: payload.templateid,
+          signid: payload.signid,
+        },
+        method: 'PUT',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetch',
+          payload: {},
+        });
+        yield put({
+          type: 'showSignEdit',
+          payload: {
+            isShowSign: false,
+          },
+        });
+        modalSuccess({
+          message: '签名修改成功!',
+        });
+        
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    // 保存
     *onSave({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
@@ -71,6 +160,10 @@ export default {
       const res: Res = yield call(ask, pars);
       if (res.success) {
         yield put({
+          type: 'fetch',
+          payload: {},
+        });
+        yield put({
           type: 'showEdit',
           payload: {
             isShowEdit: false,
@@ -79,10 +172,7 @@ export default {
         modalSuccess({
           message: '短信模板提交审核成功，我们将在1~3个工作日完成审核!',
         });
-        yield put({
-          type: 'fetch',
-          payload: {},
-        });
+        
       } else {
         MessageBox.show(res.message, container);
       }
@@ -121,6 +211,12 @@ export default {
         list: [],
       };
     },
+    fetchTypeSuccess(state, { payload }) {
+      return {
+        ...state,
+        typelist: payload.typeList || [],
+      };
+    },
     fetchSuccess(state, { payload }) {
       return {
         ...state,
@@ -130,7 +226,12 @@ export default {
         pagecount: payload.pagecount,
       };
     },
-
+    showSignEdit(state, { payload }){
+      return {
+        ...state,
+        isShowSign: payload.isShowSign,
+      };
+    },
     showEdit(state, { payload }) {
       const currData = payload.currData;
       return {

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Table, Divider, Icon, Tooltip } from 'antd';
+import { Table, Divider, Icon, Tooltip,Modal,Select, Form, Input} from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
 import { ShortMessageTemplateEdit } from 'components/shortMessageTemplateEdit';
 import { confirm } from 'components/confirm';
+import { FormItem } from 'components/formItem';
 
 interface Props {
   dispatch: (props: any) => void;
@@ -15,6 +16,12 @@ interface Props {
 
 interface State {
   height: number;
+  editvisible:boolean;
+  temvisible:boolean;
+  defaultSignName:string;
+  editSignId:string;
+  edittemplateid:string;
+  templateName:string;
 }
 
 class Component extends React.PureComponent<Props, State> {
@@ -22,8 +29,21 @@ class Component extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      templateName:'',
       height: 0,
+      editvisible:false,
+      temvisible:false,
+      defaultSignName:'',
+      editSignId:'',
+      edittemplateid:''
     };
+    this.props.dispatch({
+      type: `${namespace}/fetchType`,
+      payload: {
+        container: this.divForm,
+        status: 1,
+      },
+    });
   }
 
   componentDidMount() {
@@ -33,11 +53,31 @@ class Component extends React.PureComponent<Props, State> {
         container: this.divForm,
       },
     });
+      this.props.dispatch({
+        type: `${namespace}/fetchType`,
+        payload: {
+          container: this.divForm,
+          status: 1,
+        },
+      });
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
 
   componentWillUnmount() {
+    this.props.dispatch({
+      type: `${namespace}/fetch`,
+      payload: {
+        container: this.divForm,
+      },
+    });
+      this.props.dispatch({
+        type: `${namespace}/fetchType`,
+        payload: {
+          container: this.divForm,
+          status: 1,
+        },
+      });
     window.removeEventListener('resize', this.onResize);
   }
 
@@ -56,7 +96,41 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-
+  handleCancel = (e) => {
+    this.setState({
+      editvisible: false,
+      temvisible:false,
+      defaultSignName:''
+    });
+  }
+  onChangeTName = (e)=>{
+    this.setState({
+      templateName: e.target.value,
+    });
+  }
+  onOpenMEdit = record => {
+      this.setState({
+        defaultSignName:record.SignId,
+        edittemplateid:record.TemplateSysId,
+        editSignId:record.SignId
+      })
+      setTimeout(()=>{
+        this.setState({
+          editvisible:true,
+        })
+      },50)
+  };
+  onOpenTEdit = record => {
+    this.setState({
+      templateName:record.TemplateName,
+      edittemplateid:record.TemplateSysId,
+    })
+    setTimeout(()=>{
+      this.setState({
+        temvisible:true,
+      })
+    },50)
+};
   onPageChanged = (pageindex, pagecount) => {
     this.props.dispatch({
       type: `${namespace}/fetch`,
@@ -95,10 +169,41 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-
+  handleChange = value =>{
+    this.setState({
+      editSignId:value,
+    })
+  }
+  // 修改模板名称
+  saveTemplate = (container) =>{
+    this.props.dispatch({
+      type: `${namespace}/onEditTem`,
+      payload: {
+        container,
+        templateid:this.state.edittemplateid,
+        templatename:this.state.templateName
+      },
+    });
+    this.setState({
+      temvisible : false
+    })
+  }
+  saveSign = (container) =>{
+    this.props.dispatch({
+      type: `${namespace}/onEdit`,
+      payload: {
+        container,
+        templateid:this.state.edittemplateid,
+        signid:this.state.editSignId
+      },
+    });
+    this.setState({
+      editvisible : false
+    })
+  }
   onDelete = record => {
     confirm({
-      title: '确定要删除该模板吗？',
+      title: '确定要删除短信模板吗？',
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/onDelete`,
@@ -109,7 +214,7 @@ class Component extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { list, totalCount, pageindex, pagecount, isShowEdit, currData } = this.props.data;
+    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
@@ -121,7 +226,7 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '短信内容',
         dataIndex: 'SmsContent',
-        width: '40%',
+        width: '30%',
         align: 'center',
       },
       {
@@ -160,16 +265,26 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '短信编辑',
         key: 'action',
-        width: '12%',
+        width: '22%',
         align: 'center',
         render: (text, h) => (
           <span>
-            {(h.ExamineState === 1 || h.ExamineState === 2 || h.ExamineState === 3) && (
+            {(h.ExamineState === 1 || h.ExamineState === 3) && (
               <React.Fragment>
                 <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
-                  编辑
+                  编辑短信内容
                 </a>
                 <Divider type="vertical" />
+              </React.Fragment>
+            )}
+            {(h.ExamineState !== 5) && (
+              <React.Fragment>
+                <a href="javascript:;" className={styles.spaceSpan} onClick={() => this.onOpenMEdit(h)}>
+              修改签名
+              </a>
+              <a href="javascript:;" className={styles.spaceSpan} onClick={() => this.onOpenTEdit(h)}>
+                修改模板名称
+              </a>
               </React.Fragment>
             )}
             <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
@@ -192,7 +307,9 @@ class Component extends React.PureComponent<Props, State> {
       ...h,
       ExamineStateName: statusMap[h.ExamineState],
     }));
-
+    // const signType = typelist.map((item,index) =>(
+    //   <option value={typelist.SignId}>{typelist.SignName}</option>
+    // ))
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
         <Button
@@ -224,11 +341,54 @@ class Component extends React.PureComponent<Props, State> {
         {isShowEdit && (
           <ShortMessageTemplateEdit
             isEdit={true}
+            typelist={typelist}
             data={currData}
             onSave={this.onSave}
             onClose={this.onCloseEdit}
           />
         )}
+        <Modal title="修改签名" visible={this.state.editvisible}
+          style={{ top: 200}}
+          width='630px'
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
+              提交
+            </Button>,
+            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+          ]}
+        >
+          <div className={styles.form}>
+           <Form>
+            <span>签名：</span>
+              <Select value={this.state.defaultSignName} style={{ width: 300 }} onChange={this.handleChange} >
+                {typelist.map((item,index) =>(
+                  <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
+                ))}
+              </Select>
+          </Form>
+        </div>
+        </Modal>
+        {/* 修改模板名称 */}
+        <Modal title="修改模板名称" visible={this.state.temvisible}
+          style={{ top: 200}}
+          width='630px'
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="submit" type="primary" size="large" onClick={this.saveTemplate}>
+              提交
+            </Button>,
+            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+          ]}
+        >
+          <div className={styles.form}>
+           <Form>
+            <Form.Item label="模板名称：">
+              <Input className={styles.lineInput} value={this.state.templateName} onChange={this.onChangeTName} placeholder="请输入模板名称"  />
+            </Form.Item>
+          </Form>
+        </div>
+        </Modal>
       </div>
     );
   }

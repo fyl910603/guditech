@@ -1,0 +1,28 @@
+.picBorderHeader {
+  border: solid 1px #ccc;
+  padding: 6px;
+}
+.picBorderHeader .pic {
+  width: 100%;
+  height: 600px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.picBorderBusinessLicense {
+  border: none;
+  background: url(img/bl.png) no-repeat center center;
+  background-size: 286px 164px;
+  width: 286px;
+  height: 164px;
+}
+.picBorderBusinessLicense .pic {
+  width: 278px;
+  height: 156px;
+  position: relative;
+  left: 4px;
+  top: 4px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}

@@ -17,8 +17,13 @@ interface State {
   status :number,
   channelcode : string,
   editvisible : boolean,
+  addvisible :boolean,
+  imgvisible :boolean,
   currData : object,
   editImgUrl: string,
+  addSignName: any,
+  addImgUrl:string,
+  lookImg:string,
   Path:string
 }
 interface Props {
@@ -34,14 +39,19 @@ class Component extends React.PureComponent<Props,State> {
       status : 0,
       channelcode:'',
       editvisible:false,
+      addvisible:false,
+      imgvisible:false,
       currData:{},
       editImgUrl : '',
-      Path:''
+      addImgUrl : '',
+      lookImg:'',
+      Path:'',
+      addSignName : ''
     };
     this.getSignList()
   }
   componentDidMount() {
-    console.log(this.props)
+    // console.log(this.props)
   }
 
   componentWillUnmount() {
@@ -74,7 +84,19 @@ class Component extends React.PureComponent<Props,State> {
         editImgUrl:this.state.Path
       },
     });
-      console.log(this.props)
+      e.preventDefault();
+      // this.setState({
+      //   editvisible: false,
+      // });
+    }
+    addSave = (e)=>{
+      this.props.dispatch({
+      type: `${namespace}/add`,
+      payload: {
+        addSignName: this.state.addSignName,
+        addImgUrl:this.state.Path
+      },
+    });
       e.preventDefault();
       // this.setState({
       //   editvisible: false,
@@ -83,6 +105,8 @@ class Component extends React.PureComponent<Props,State> {
   handleCancel = (e) => {
     this.setState({
       editvisible: false,
+      addvisible: false,
+      imgvisible:false,
     });
   }
   onCloseEdit = () => {
@@ -100,10 +124,20 @@ class Component extends React.PureComponent<Props,State> {
     setTimeout(()=>{
       this.setState({
         editvisible:true,
+        editImgUrl:record.LicenceUrl
       })
-      console.log(this.state.currData)
     },50)
-    
+  };
+  onOpenAdd = ()=> {
+      this.setState({
+        addvisible:true,
+      })
+  };
+  onOpenImg = (img)=> {
+    this.setState({
+      imgvisible:true,
+      lookImg:img
+    })
   };
   onDelete = record => {
     confirm({
@@ -111,7 +145,7 @@ class Component extends React.PureComponent<Props,State> {
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/onDelete`,
-          payload: record.TemplateSysId,
+          payload: record.SignId,
         });
       },
     });
@@ -121,14 +155,21 @@ class Component extends React.PureComponent<Props,State> {
         currData:Object.assign(this.state.currData,{SignName:e.target.value})
       })
     }
+    onaddSignnameChanged =(e)=>{
+      this.setState({
+        addSignName:e.target.value
+      })
+    }
     picUpload = (data)=>{
+      console.log(data)
         this.setState({
           currData:Object.assign(this.state.currData,{LicenceUrl:data.ImgUrl}),
           Path:data.ImgPath
         })
         setTimeout(()=>{
           this.setState({
-            editImgUrl:data.ImgUrl
+            editImgUrl:data.ImgUrl,
+            addImgUrl:data.ImgUrl
           })
         },50)
         // dispatch({
@@ -168,7 +209,22 @@ class Component extends React.PureComponent<Props,State> {
         title: '营业执照',
         dataIndex: 'LicenceUrl',
         width: 150,
-        align:'center'
+        align:'center',
+        render: (text, record) => {
+          return (
+            <span>
+              <span className={styles.textBtn1} onClick={()=>this.onOpenImg(record.LicenceUrl)}>查 看</span>
+              <Modal title="查看营业执照" visible={this.state.imgvisible}
+              style={{ top: 200}}
+              width='630px'
+              onCancel={this.handleCancel}
+              footer={null}
+              >
+              <PictureShow type={1} url={this.state.lookImg} />
+              </Modal>
+            </span>
+          )
+        }
       },
       {
         title: '审核状态',
@@ -251,7 +307,7 @@ class Component extends React.PureComponent<Props,State> {
     return (
       <div className={styles.page} >
         <div className={styles.hintBox}>
-          <span className={styles.hint}>您可以通过短信方式与目标客户建立更精准、快捷的连接，大大降低拓客成本.点击此处</span><span className={styles.textBtn}>申请短信业务</span>
+          <span className={styles.hint}>您可以通过短信方式与目标客户建立更精准、快捷的连接，大大降低拓客成本.点击此处</span><span className={styles.textBtn} onClick={()=>{this.onOpenAdd()}}>申请短信业务</span>
         </div>
         <div className={styles.divTable}>
           {signList.length > 0 ?table : ''}
@@ -262,6 +318,7 @@ class Component extends React.PureComponent<Props,State> {
           pageSize={pagecount}
           onPageChanged={this.onPageChanged}
         /> */}
+        {/* 编辑短信业务 */}
         <Modal title="编辑短信业务" visible={this.state.editvisible}
           style={{ top: 200}}
           width='630px'
@@ -286,6 +343,44 @@ class Component extends React.PureComponent<Props,State> {
             <FormItem title="营业执照：">
               <div className={styles.picItem}>
                 <PictureShow type={2} url={this.state.editImgUrl} />
+                <PictureUpload
+                  onSuccess={this.picUpload}
+                  onError={this.onPicUploadError}
+                  type={2}
+                  title="上传营业执照"
+                />
+              </div>
+            </FormItem>
+            <FormItem>
+            </FormItem>
+          </Form>
+        </div>
+        </Modal>
+        {/* 新增短信业务 */}
+        <Modal title="创建短信业务" visible={this.state.addvisible}
+          style={{ top: 200}}
+          width='630px'
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="submit" type="primary" size="large" onClick={this.addSave}>
+              提交
+            </Button>,
+            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+          ]}
+        >
+          <div className={styles.form}>
+           <Form>
+             <FormItem title="签名：" thWidth={120}>
+              <Input
+                onChange={this.onaddSignnameChanged}
+                defaultValue={this.state.addSignName}
+                maxLength={12}
+                placeholder="请输入签名信息"
+              />
+            </FormItem>
+            <FormItem title="营业执照：">
+              <div className={styles.picItem}>
+                <PictureShow type={2} url={this.state.addImgUrl} />
                 <PictureUpload
                   onSuccess={this.picUpload}
                   onError={this.onPicUploadError}

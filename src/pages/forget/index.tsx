@@ -153,7 +153,7 @@ const Component = ({ dispatch, data }) => {
           <Form>
             <FormItem title="手机号">
               <Input2
-                placeholder="请输入未注册手机号"
+                placeholder="请输入注册手机号"
                 value={data.username}
                 onChange={onUsernameChanged}
               />

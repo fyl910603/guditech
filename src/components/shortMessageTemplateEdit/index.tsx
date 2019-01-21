@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './styles.less';
-import { Modal } from 'antd';
+import { Modal,Select} from 'antd';
 import { Button } from 'antd';
 import { Input2 } from 'components/input';
 import { Form } from 'components/form';
@@ -11,12 +11,14 @@ export interface Props {
   onSave?: (data: any, div: HTMLDivElement) => void;
   onClose: () => void;
   isEdit: boolean;
+  typelist:any;
   data: any;
 }
 
 interface State {
   templatename: string;
   templatcontent: string;
+  channelId: any;
   templatlink: string;
   createTime: string;
   examinedTime: string;
@@ -32,6 +34,7 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
       templatlink: '',
       createTime: '',
       examinedTime: '',
+      channelId: ''
     };
   }
 
@@ -66,7 +69,11 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
       templatlink: e.target.value,
     });
   };
-
+  handleChange = value =>{
+    this.setState({
+      channelId: value,
+    });
+  }
   onSubmit = e => {
     const { onSave } = this.props;
     if (onSave) {
@@ -75,8 +82,8 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
   };
 
   render() {
-    const { templatename, templatcontent, templatlink, createTime, examinedTime } = this.state;
-    const { isEdit } = this.props;
+    const { templatename, templatcontent, templatlink, createTime, examinedTime, channelId } = this.state;
+    const { isEdit,typelist} = this.props;
 
     let title = '添加短信模板';
     if (this.props.data) {
@@ -84,6 +91,30 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
     }
     if (!isEdit) {
       title = '模版详情';
+    }
+    let typeSelect,temName;
+    typeSelect = 
+      <FormItem title="短信签名:" splitHeight={isEdit ? 40 : 12}>
+      <Select style={{ width: 300 }} value={channelId} onChange={this.handleChange} placeholder="请选择签名" >
+      {typelist.map((item,index) =>(
+        <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
+      ))}
+      </Select>
+      </FormItem>
+    temName = 
+    <FormItem title="模板名称:" splitHeight={isEdit ? 40 : 12}>
+      <Input2
+        placeholder="请输入模板名称，不超过16个字符"
+        value={templatename}
+        onChange={isEdit ? this.onTemplatenameChanged : undefined}
+        maxLength={16}
+        showFontCount={isEdit}
+        disabled={!isEdit}
+      />
+    </FormItem>
+    if(this.props.data){
+      typeSelect = ''
+      temName = ''
     }
     return (
       <div className={styles.main}>
@@ -109,16 +140,8 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
         >
           <div ref={obj => (this.divForm = obj)}>
             <Form>
-              <FormItem title="模板名称:" splitHeight={isEdit ? 40 : 12}>
-                <Input2
-                  placeholder="请输入模板名称，不超过16个字符"
-                  value={templatename}
-                  onChange={isEdit ? this.onTemplatenameChanged : undefined}
-                  maxLength={16}
-                  showFontCount={isEdit}
-                  disabled={!isEdit}
-                />
-              </FormItem>
+              {temName}
+              {typeSelect}
               <FormItem title="短信内容:" splitHeight={isEdit ? 40 : 12}>
                 <TextArea2
                   placeholder="请输入短信内容文字，不超过128个字符"
