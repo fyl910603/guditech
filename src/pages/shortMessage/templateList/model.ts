@@ -23,7 +23,9 @@ export default {
           });
           dispatch({
             type: 'fetchType',
-            // payload: {},
+            payload: {
+              status: 1
+            },
           });
         }
       });

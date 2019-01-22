@@ -1,5 +1,3 @@
-@import '../../../../variable.less';
-
 .page {
   background-color: #fafafa;
   height: 100%;
@@ -21,14 +19,11 @@
   padding: 30px 0 17px 30px;
   margin-top: 14px;
 }
-
 .cardTitle {
   font-size: 18px;
   display: flex;
-  // padding: 30px 0 5px 30px;
   padding-bottom: 5px;
 }
-
 .line {
   border-bottom: solid 1px #ccc;
   flex-grow: 1;
@@ -39,12 +34,11 @@
   padding-left: 76px;
   width: 550px;
 }
-
 .contentOther {
-  .content;
+  padding-left: 76px;
+  width: 550px;
   width: 580px;
 }
-
 .ageline {
   display: flex;
   justify-content: space-between;
@@ -59,7 +53,7 @@
 .address {
   padding-top: 13px;
 }
-.selectBox{
+.selectBox {
   padding-left: 170px;
 }
 .provinceItem {
@@ -94,7 +88,6 @@
   display: flex;
   align-items: center;
 }
-
 .divButton {
   display: flex;
   justify-content: center;
@@ -105,19 +98,17 @@
 .spanz {
   margin-left: 10px;
 }
-
 .dynamicInfo {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: @footer-height;
+  bottom: 50px;
   height: 120px;
   background-color: #000000aa;
 }
 .dynamicInfoH {
   height: 120px;
 }
-
 .l1,
 .l2,
 .l3 {
@@ -133,31 +124,28 @@
   top: 10px;
   height: 32px;
 }
-
 .l1 {
-  background-image: url(./img/tj.png);
+  background-image: url(img/tj.png);
   background-size: 20px 20px;
 }
 .l2 {
-  background-image: url(./img/fk.png);
+  background-image: url(img/fk.png);
   background-size: 22px 20px;
 }
 .l3 {
-  background-image: url(./img/ft.png);
+  background-image: url(img/ft.png);
   background-size: 20px 21px;
   font-weight: 700;
 }
-
 .lr {
   position: absolute;
   right: 100px;
   bottom: 20px;
   color: #fff;
-
-  .price {
-    font-size: 22px;
-  }
-  .willSendNum {
-    font-size: 18px;
-  }
+}
+.lr .price {
+  font-size: 22px;
+}
+.lr .willSendNum {
+  font-size: 18px;
 }

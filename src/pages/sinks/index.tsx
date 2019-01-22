@@ -6,6 +6,7 @@ import { Input2 } from 'components/input';
 import { Form } from 'components/form';
 import { FormItem } from 'components/formItem';
 import { PictureShow } from 'components/pictureShow';
+import { LicenseShow } from 'components/licenseShow';
 import { PictureUpload } from 'components/pictureUpload';
 import { namespace } from './model';
 import { SmsTemplateEdit } from 'components/SmsTemplateEdit';
@@ -161,7 +162,6 @@ class Component extends React.PureComponent<Props,State> {
       })
     }
     picUpload = (data)=>{
-      console.log(data)
         this.setState({
           currData:Object.assign(this.state.currData,{LicenceUrl:data.ImgUrl}),
           Path:data.ImgPath
@@ -220,7 +220,7 @@ class Component extends React.PureComponent<Props,State> {
               onCancel={this.handleCancel}
               footer={null}
               >
-              <PictureShow type={1} url={this.state.lookImg} />
+              <LicenseShow type={1} url={this.state.lookImg} />
               </Modal>
             </span>
           )

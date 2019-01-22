@@ -63,7 +63,6 @@ const Component = ({ dispatch, data }) => {
       },
     });
   }
-
   function onToForget() {
     router.push('/forget');
   }
@@ -78,7 +77,6 @@ const Component = ({ dispatch, data }) => {
       古迪营销推广平台
     </div>
   );
-
   return (
     <div className={styles.main}>
       <div className={styles.back} />
@@ -102,7 +100,7 @@ const Component = ({ dispatch, data }) => {
               />
             </FormItem>
             <FormItem colspan={true}>
-              <Button type="primary" className={styles.btn} onClick={onLogin}>
+              <Button type="primary" className={styles.btn} onClick={onLogin} >
                 登录
               </Button>
             </FormItem>

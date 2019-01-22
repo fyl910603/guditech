@@ -10,12 +10,16 @@ import { ShortMessageSendConfirm } from 'components/shortMessageSendConfirm';
 import { isNullOrUndefined, toFixed2 } from 'utils/util';
 import { getAreaData } from 'utils/getAreaData';
 import { debounce } from 'lodash';
+import templateList from '../../templateList';
 
 interface Props {
   data: any;
   dispatch: (props: any) => void;
 }
-
+interface State {
+  templateid: string,
+  typeValue:number;
+}
 function computePrice(state) {
   let price = 0;
   const {
@@ -67,7 +71,7 @@ function computePrice(state) {
     price += reply_area.ContentPrice;
   }
 
-  return price / 100;
+  return price / 100
 }
 
 const sexMap = {
@@ -76,12 +80,21 @@ const sexMap = {
   '2': '女',
 };
 
-class Component extends React.PureComponent<Props> {
+class Component extends React.PureComponent<Props, State> {
   private divForm: HTMLDivElement;
   private onGetExpectDebounce: any;
   constructor(props) {
     super(props);
-
+    console.log(props)
+    this.state = {
+      templateid: '',
+      typeValue:1
+    };
+    if(props.data.TypeList.length>0){
+      this.setState({
+        typeValue: props.data.TypeList[0].PtId
+      })
+    }
     this.onGetExpectDebounce = debounce(this.onGetExpect, 300);
   }
 
@@ -101,9 +114,9 @@ class Component extends React.PureComponent<Props> {
       reply_sex,
       reply_area,
       form,
-      basePrice,
+      // basePrice,
       isShowConfirm,
-      minSendCount,
+      // minSendCount,
     } = data;
     if (search_age) {
       if (isNullOrUndefined(form.search_age1) || isNullOrUndefined(form.search_age2)) {
@@ -121,8 +134,8 @@ class Component extends React.PureComponent<Props> {
         return false;
       }
     }
-    if (isNullOrUndefined(form.count) || form.count < minSendCount) {
-      MessageBox.show(`发送数量最少${minSendCount}条`, this.divForm);
+    if (isNullOrUndefined(form.count) || form.count < this.props.data.TypeList[this.state.typeValue].MinSendCount) {
+      MessageBox.show(`发送数量最少${this.props.data.TypeList[this.state.typeValue].MinSendCount}条`, this.divForm);
       return false;
     }
     if (form.sendtype === '2' && !form.sendtime) {
@@ -212,7 +225,14 @@ class Component extends React.PureComponent<Props> {
     });
     this.onGetExpectDebounce();
   };
-
+  onFetchPriceList = () => {
+    this.props.dispatch({
+      type: `${namespace}/fetchPriceList`,
+      payload: {
+      },
+    });
+  };
+  
   onCountChanged = value => {
     this.props.dispatch({
       type: `${namespace}/onCountChanged`,
@@ -290,7 +310,37 @@ class Component extends React.PureComponent<Props> {
     }
     return '';
   };
-
+  onChangeTemplate = (value) => {
+    this.getfetchPrice(value)
+    this.setState({
+      typeValue:this.searchType(this.props.data.TypeList,value)
+    })
+  }
+  searchType = (arr, dst)=>{
+    for (let j = 0; j < arr.length; j++) {
+      if (arr[j].PtId == dst) {
+        return j;
+      }
+    }
+  }
+  getfetchPrice = (ptid) => {
+    this.props.dispatch({
+      type: `${namespace}/fetchPrice`,
+      payload: {
+        PtId: ptid,
+      },
+    });
+  }
+  componentDidMount() {
+    console.log(this.props.data)
+    if(this.props.data.TypeList.length > 0){
+      this.getfetchPrice(this.props.data.TypeList[0].PtId)
+      this.setState({
+        typeValue:this.props.data.TypeList[0].PtId
+      })
+      console.log(this.props.data.TypeList[0].PtId)
+    }
+  }
   render() {
     const { data } = this.props;
     const {
@@ -307,15 +357,24 @@ class Component extends React.PureComponent<Props> {
       reply_sex,
       reply_area,
       form,
-      basePrice,
-      isShowConfirm,
+      // basePrice,
+      // isShowConfirm,
       search_isReadonly,
       search_address,
-      minSendCount,
+      // minSendCount,
       expectCount,
+      TypeList
     } = data;
-
-    const price = computePrice(data) + basePrice; // 单价
+    let price = 0;
+    let isShowConfirm,minSendCount,basePrice;
+    console.log(TypeList)
+    if(TypeList.length > 0){
+      basePrice = TypeList[0].BasePrice
+      price = computePrice(data)+basePrice
+      isShowConfirm = TypeList[0].IsShowConfirm
+      minSendCount = TypeList[0].MinSendCount
+    }
+    // price = computePrice(data) + templateList[this.state.typeValue].BasePrice    ; // 单价
     const td2Style = { width: '60px', textAlign: 'right' };
     const thWidth = 120;
 
@@ -335,7 +394,7 @@ class Component extends React.PureComponent<Props> {
 
       dynamicInfoLine1 += `发送至${
         notSelectedCount === 0 || selectedKeys.length === 0 ? '全部，' : '部分地址，'
-      }`;
+        }`;
     }
     if (search_radius && form.search_checked_address) {
       dynamicInfoLine1 += `商户半径范围${form.search_radius || ''}公里，`;
@@ -370,6 +429,27 @@ class Component extends React.PureComponent<Props> {
 
     return (
       <div className={styles.page} ref={obj => (this.divForm = obj)}>
+        <div className={styles.form}>
+          <div className={styles.card}>
+            <div className={styles.cardTitle}>
+              <div>选择价格模板</div>
+              <div className={styles.line} />
+            </div>
+            <div className={styles.selectBox}>
+              <Select
+                placeholder="请选择模板"
+                value={this.state.typeValue}
+                className={styles.age}
+                onSelect={this.onChangeTemplate}
+                style={{ width: 300 }}
+              >
+                {TypeList.map(h => (
+                  <Select.Option key={h.PtId}>{h.PtName}</Select.Option>
+                ))}
+              </Select>
+            </div>
+          </div>
+        </div>
         <div className={styles.form}>
           {/* <div className={styles.card}>
             <div className={styles.cardTitle}>

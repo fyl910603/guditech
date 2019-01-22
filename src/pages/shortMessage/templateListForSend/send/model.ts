@@ -2,6 +2,7 @@ import { ask, Res, Props } from 'utils/ask';
 import { MessageBox } from 'components/messageBox';
 import router from 'umi/router';
 import { getUser } from 'utils/localStore';
+import templateList from '../../templateList';
 export const namespace = 'send';
 
 let ctid: string;
@@ -12,6 +13,7 @@ let isSubmitting: boolean;
 export default {
   namespace,
   state: {
+    TypeList:[],
     form: {
       search_sex: '不限',
       sendtype: '1',
@@ -30,16 +32,13 @@ export default {
         if (location.pathname === `/shortMessage/templateListForSend/${namespace}`) {
           const query = location.query;
           ctid = query.id;
-
           isSubmitting = false;
-
-          dispatch({
-            type: 'clear',
-            payload: {},
-          });
-
           dispatch({
             type: 'fetchPriceList',
+            payload: {},
+          });
+          dispatch({
+            type: 'clear',
             payload: {},
           });
         }
@@ -57,8 +56,10 @@ export default {
       const res: Res = yield call(ask, pars);
       if (res.success) {
         yield put({
-          type: 'fetchPrice',
-          payload: res.data[0],
+          type: 'fetchPriceListSuccess',
+          payload: {
+            typelist: res.data
+          }
         });
       }
     },
@@ -67,7 +68,7 @@ export default {
       const pars: Props = {
         url: '/api/template/price/content/list',
         body: {
-          ptid,
+          ptid:payload.PtId,
         },
         method: 'GET',
       };
@@ -76,13 +77,12 @@ export default {
         yield put({
           type: 'fetchPriceSuccess',
           payload: {
-            BasePrice: payload.BasePrice / 100,
-            IsReadonly: payload.IsReadonly,
-            MinSendCount: payload.MinSendCount, // 最少发送数量
+            // BasePrice: payload.BasePrice / 100,
+            // IsReadonly: payload.IsReadonly,
+            // MinSendCount: payload.MinSendCount, // 最少发送数量
             list: res.data,
           },
         });
-
         const region = (res.data || []).filter(
           item => item.ContentType === 'MSG_PRICE_TYPE_SEARCH_REGION'
         )[0];
@@ -217,6 +217,12 @@ export default {
         },
       };
     },
+    fetchPriceListSuccess(state, { payload }) {
+      return {
+        ...state,
+        TypeList: payload.typelist,
+      };
+    },
     fetchPriceSuccess(state, { payload }) {
       const { list } = payload;
 
@@ -336,7 +342,6 @@ export default {
 
       return result;
     },
-
     fetchTemplateSuccess(state, { payload }) {
       return {
         ...state,
