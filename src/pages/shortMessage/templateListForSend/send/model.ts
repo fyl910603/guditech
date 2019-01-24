@@ -18,6 +18,7 @@ export default {
       search_sex: '不限',
       sendtype: '1',
     },
+    PtId:0,
     search_age: null,
     search_sex: null,
     search_region: null,
@@ -48,6 +49,7 @@ export default {
 
   effects: {
     *fetchPriceList({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
       const pars: Props = {
         url: '/api/template/price/list',
         body: {},
@@ -58,17 +60,23 @@ export default {
         yield put({
           type: 'fetchPriceListSuccess',
           payload: {
+            ...state,
             typelist: res.data
           }
+        });
+        yield put({
+          type: 'fetchPrice',
+          payload: res.data[0].PtId
         });
       }
     },
     *fetchPrice({ payload }, { put, call, select }) {
-      ptid = payload.PtId;
+      const state = yield select(state => state[namespace]);
+      // ptid = payload.PtId;
       const pars: Props = {
         url: '/api/template/price/content/list',
         body: {
-          ptid:payload.PtId,
+          ptid:payload.PtId | 1,
         },
         method: 'GET',
       };

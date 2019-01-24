@@ -115,7 +115,7 @@ const Component = ({ dispatch, data }) => {
   }
 
   const { addressList } = data;
-
+  console.log(data)
   return (
     <div className={styles.page} ref={obj => (divForm = obj)}>
       <div className={styles.form}>
@@ -144,43 +144,46 @@ const Component = ({ dispatch, data }) => {
           </FormItem>
           <FormItem title="地址：">
             <div className={styles.divAddress}>
-              <Select
-                showSearch
-                value={data.addressInfo.addressDetails}
-                placeholder="详细地址"
-                style={{ width: '400px' }}
-                defaultActiveFirstOption={false}
-                showArrow={false}
-                filterOption={false}
-                onSearch={onSearchAddress}
-                onChange={onAddressChanged}
-                notFoundContent={null}
-              >
-                {addressList.map((d, i) => {
-                  const text = d.Province + d.City + d.Area + d.Address;
-                  const json = {
-                    address: d.Address,
-                    province: d.Province,
-                    city: d.City,
-                    area: d.Area,
-                    longitude: d.Longitude,
-                    latitude: d.Latitude,
-                    addressDetails: text,
-                  };
-                  return (
-                    <Select.Option key={i} value={JSON.stringify(json)}>
-                      {text}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
+              { data.addressInfo != undefined ?
+                <Select
+                  showSearch
+                  value={data.addressInfo.addressDetails}
+                  placeholder="详细地址"
+                  style={{ width: '400px' }}
+                  defaultActiveFirstOption={false}
+                  showArrow={false}
+                  filterOption={false}
+                  onSearch={onSearchAddress}
+                  onChange={onAddressChanged}
+                  notFoundContent={null}
+                >
+                  {addressList.map((d, i) => {
+                    const text = d.Province + d.City + d.Area + d.Address;
+                    const json = {
+                      address: d.Address,
+                      province: d.Province,
+                      city: d.City,
+                      area: d.Area,
+                      longitude: d.Longitude,
+                      latitude: d.Latitude,
+                      addressDetails: text,
+                    };
+                    return (
+                      <Select.Option key={i} value={JSON.stringify(json)}>
+                        {text}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+                : <div></div>
+              }
               <Button type="primary" ghost className={styles.btnOpenMap} onClick={onOpenMap}>
                 选择地址
               </Button>
             </div>
           </FormItem>
           <FormItem title="门牌号：">
-            <Input2 onChange={onHouseNumberChanged} value={data.addressInfo.houseNumber} />
+            {data.addressInfo != undefined ? <Input2 onChange={onHouseNumberChanged} value={data.addressInfo.houseNumber} /> :<div></div>}
           </FormItem>
           <FormItem title="">
             <Button type="primary" onClick={onSubmit}>

@@ -85,16 +85,10 @@ class Component extends React.PureComponent<Props, State> {
   private onGetExpectDebounce: any;
   constructor(props) {
     super(props);
-    console.log(props)
     this.state = {
       templateid: '',
       typeValue:1
     };
-    if(props.data.TypeList.length>0){
-      this.setState({
-        typeValue: props.data.TypeList[0].PtId
-      })
-    }
     this.onGetExpectDebounce = debounce(this.onGetExpect, 300);
   }
 
@@ -331,16 +325,26 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   }
-  componentDidMount() {
-    console.log(this.props.data)
+  componentWillMount(){
     if(this.props.data.TypeList.length > 0){
-      this.getfetchPrice(this.props.data.TypeList[0].PtId)
-      this.setState({
-        typeValue:this.props.data.TypeList[0].PtId
-      })
-      console.log(this.props.data.TypeList[0].PtId)
+      setTimeout(()=>{
+        this.setState({
+          typeValue:0
+        })
+      },200)
     }
   }
+  componentDidMount() {
+  }
+  // componentDidUpdate(){
+  //   if(this.props.data.TypeList.length > 0){
+  //     this.getfetchPrice(this.props.data.TypeList[0].PtId)
+  //     this.setState({
+  //       typeValue:this.props.data.TypeList[0].PtId
+  //     })
+  //     console.log(this.props.data.TypeList[0].PtId)
+  //   }
+  // }
   render() {
     const { data } = this.props;
     const {
@@ -367,7 +371,7 @@ class Component extends React.PureComponent<Props, State> {
     } = data;
     let price = 0;
     let isShowConfirm,minSendCount,basePrice;
-    console.log(TypeList)
+    // console.log(TypeList)
     if(TypeList.length > 0){
       basePrice = TypeList[0].BasePrice
       price = computePrice(data)+basePrice
@@ -444,7 +448,7 @@ class Component extends React.PureComponent<Props, State> {
                 style={{ width: 300 }}
               >
                 {TypeList.map(h => (
-                  <Select.Option key={h.PtId}>{h.PtName}</Select.Option>
+                  <Select.Option key={h.PtId} value={h.PtId}>{h.PtName}</Select.Option>
                 ))}
               </Select>
             </div>

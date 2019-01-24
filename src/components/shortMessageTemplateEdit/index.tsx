@@ -93,7 +93,8 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
       title = '模版详情';
     }
     let typeSelect,temName;
-    typeSelect = 
+    if(typelist && typelist.length>0){
+      typeSelect = 
       <FormItem title="短信签名:" splitHeight={isEdit ? 40 : 12}>
       <Select style={{ width: 300 }} value={channelId} onChange={this.handleChange} placeholder="请选择签名" >
       {typelist.map((item,index) =>(
@@ -101,6 +102,7 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
       ))}
       </Select>
       </FormItem>
+    }
     temName = 
     <FormItem title="模板名称:" splitHeight={isEdit ? 40 : 12}>
       <Input2
@@ -113,8 +115,8 @@ export class ShortMessageTemplateEdit extends React.PureComponent<Props, State> 
       />
     </FormItem>
     if(this.props.data){
-      typeSelect = ''
-      temName = ''
+      typeSelect = <div></div>
+      temName = <div></div>
     }
     return (
       <div className={styles.main}>
