@@ -16,7 +16,7 @@ let divForm: HTMLDivElement;
 const Component = ({ dispatch, data }) => {
   function check() {
     const { imgUrl, nickname, summary, addressInfo } = data;
-
+    console.log(data)
     if (!imgUrl) {
       MessageBox.show('请上传商户logo', divForm);
       return false;
@@ -115,7 +115,6 @@ const Component = ({ dispatch, data }) => {
   }
 
   const { addressList } = data;
-  console.log(data)
   return (
     <div className={styles.page} ref={obj => (divForm = obj)}>
       <div className={styles.form}>
@@ -144,7 +143,6 @@ const Component = ({ dispatch, data }) => {
           </FormItem>
           <FormItem title="地址：">
             <div className={styles.divAddress}>
-              { data.addressInfo != undefined ?
                 <Select
                   showSearch
                   value={data.addressInfo.addressDetails}
@@ -175,15 +173,13 @@ const Component = ({ dispatch, data }) => {
                     );
                   })}
                 </Select>
-                : <div></div>
-              }
               <Button type="primary" ghost className={styles.btnOpenMap} onClick={onOpenMap}>
                 选择地址
               </Button>
             </div>
           </FormItem>
           <FormItem title="门牌号：">
-            {data.addressInfo != undefined ? <Input2 onChange={onHouseNumberChanged} value={data.addressInfo.houseNumber} /> :<div></div>}
+            <Input2 onChange={onHouseNumberChanged} value={data.addressInfo.houseNumber} />
           </FormItem>
           <FormItem title="">
             <Button type="primary" onClick={onSubmit}>

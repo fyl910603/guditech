@@ -66,17 +66,17 @@ export default {
         });
         yield put({
           type: 'fetchPrice',
-          payload: res.data[0].PtId
+          payload: res.data[0]
         });
       }
     },
     *fetchPrice({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
-      // ptid = payload.PtId;
+      ptid = payload.PtId;
       const pars: Props = {
         url: '/api/template/price/content/list',
         body: {
-          ptid:payload.PtId | 1,
+          ptid:payload.PtId,
         },
         method: 'GET',
       };
@@ -140,6 +140,7 @@ export default {
         method: 'POST',
       };
       const res: Res = yield call(ask, pars);
+      console.log(res)
       if (res.success) {
         yield put({
           type: 'onHideConfirm',
@@ -149,6 +150,7 @@ export default {
         router.push('/shortMessage/templateListForSend/orderList');
       } else {
         isSubmitting = false;
+        console.log(res.message, payload.container)
         MessageBox.show(res.message, payload.container);
       }
     },
@@ -482,7 +484,7 @@ export default {
         ...state,
         form: {
           ...state.form,
-          priceOne: payload.price,
+          priceOne: payload.price/100,
         },
         isShowConfirm: payload,
       };

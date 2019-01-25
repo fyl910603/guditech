@@ -3,7 +3,7 @@ import { MessageBox } from 'components/messageBox';
 import { getUserIfNullLogout, getUser, setUser } from 'utils/localStore';
 import { modalSuccess } from 'components/modal';
 import router from 'umi/router';
-export const namespace = 'business';
+export const namespace = 'help';
 
 export default {
   namespace,
@@ -23,6 +23,10 @@ export default {
             dispatch({
               type: 'fetchAddress',
               payload: user,
+            });
+            dispatch({
+              type: 'fetchQuestionType',
+              payload: {},
             });
           }
         }

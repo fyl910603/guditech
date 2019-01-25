@@ -18,7 +18,7 @@ interface Props {
 }
 interface State {
   templateid: string,
-  typeValue:number;
+  typeValue:any;
 }
 function computePrice(state) {
   let price = 0;
@@ -37,38 +37,38 @@ function computePrice(state) {
     reply_area,
   } = state;
   if (search_age) {
-    price += search_age.ContentPrice;
+    price += (search_age.ContentPrice*100);
   }
   if (search_sex) {
-    price += search_sex.ContentPrice;
+    price += (search_sex.ContentPrice*100);
   }
   if (search_region) {
-    price += search_region.ContentPrice;
+    price += (search_region.ContentPrice*100);
   }
   if (form.search_checked_address) {
-    price += search_radius.ContentPrice;
+    price += (search_radius.ContentPrice*100);
   }
   if (search_userOrder) {
-    price += search_userOrder.ContentPrice;
+    price += (search_userOrder.ContentPrice*100);
   }
 
   if (form.MSG_PRICE_TYPE_REPLY_AGE) {
-    price += reply_specificAge.ContentPrice;
+    price += (reply_specificAge.ContentPrice*100);
   }
   if (form.MSG_PRICE_TYPE_REPLY_BIRTHDAY) {
-    price += reply_birthday.ContentPrice;
+    price += (reply_birthday.ContentPrice*100);
   }
   if (form.MSG_PRICE_TYPE_REPLY_FAMILY_LEVEL) {
-    price += reply_familyEconomic.ContentPrice;
+    price += (reply_familyEconomic.ContentPrice*100);
   }
   if (form.MSG_PRICE_TYPE_REPLY_FULL_NAME) {
-    price += reply_fullName.ContentPrice;
+    price += (reply_fullName.ContentPrice*100);
   }
   if (form.MSG_PRICE_TYPE_REPLY_SEX) {
-    price += reply_sex.ContentPrice;
+    price += (reply_sex.ContentPrice*100);
   }
   if (form.MSG_PRICE_TYPE_REPLY_REGION) {
-    price += reply_area.ContentPrice;
+    price += (reply_area.ContentPrice*100);
   }
 
   return price / 100
@@ -87,7 +87,7 @@ class Component extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       templateid: '',
-      typeValue:1
+      typeValue:''
     };
     this.onGetExpectDebounce = debounce(this.onGetExpect, 300);
   }
@@ -128,9 +128,11 @@ class Component extends React.PureComponent<Props, State> {
         return false;
       }
     }
-    if (isNullOrUndefined(form.count) || form.count < this.props.data.TypeList[this.state.typeValue].MinSendCount) {
-      MessageBox.show(`发送数量最少${this.props.data.TypeList[this.state.typeValue].MinSendCount}条`, this.divForm);
-      return false;
+    if(this.props.data.TypeList.length > 0){
+      if (isNullOrUndefined(form.count) || form.count < this.props.data.TypeList[0].MinSendCount) {
+        MessageBox.show(`发送数量最少${this.props.data.TypeList[0].MinSendCount}条`, this.divForm);
+        return false;
+      }
     }
     if (form.sendtype === '2' && !form.sendtime) {
       MessageBox.show('请选择发送时间', this.divForm);
@@ -307,7 +309,7 @@ class Component extends React.PureComponent<Props, State> {
   onChangeTemplate = (value) => {
     this.getfetchPrice(value)
     this.setState({
-      typeValue:this.searchType(this.props.data.TypeList,value)
+      typeValue:value
     })
   }
   searchType = (arr, dst)=>{
@@ -329,7 +331,7 @@ class Component extends React.PureComponent<Props, State> {
     if(this.props.data.TypeList.length > 0){
       setTimeout(()=>{
         this.setState({
-          typeValue:0
+          typeValue:this.props.data.TypeList[0].PtId
         })
       },200)
     }
@@ -362,7 +364,7 @@ class Component extends React.PureComponent<Props, State> {
       reply_area,
       form,
       // basePrice,
-      // isShowConfirm,
+      isShowConfirm,
       search_isReadonly,
       search_address,
       // minSendCount,
@@ -370,12 +372,12 @@ class Component extends React.PureComponent<Props, State> {
       TypeList
     } = data;
     let price = 0;
-    let isShowConfirm,minSendCount,basePrice;
+    let minSendCount,basePrice;
     // console.log(TypeList)
     if(TypeList.length > 0){
       basePrice = TypeList[0].BasePrice
       price = computePrice(data)+basePrice
-      isShowConfirm = TypeList[0].IsShowConfirm
+      // isShowConfirm = TypeList[0].IsShowConfirm
       minSendCount = TypeList[0].MinSendCount
     }
     // price = computePrice(data) + templateList[this.state.typeValue].BasePrice    ; // 单价
@@ -759,7 +761,7 @@ class Component extends React.PureComponent<Props, State> {
             <div className={styles.l3}>
               <div>
                 满足条件用户{expectCount || 0}人，发送数量{form.count || 0}条，当前价格
-                {toFixed2(price)}元/条
+                {toFixed2(price/100)}元/条
               </div>
             </div>
           </div>
