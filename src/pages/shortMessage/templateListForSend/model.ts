@@ -9,6 +9,7 @@ export default {
   namespace,
   state: {
     list: [],
+    priceList:[],
     pageindex: 1,
     pagecount: pageSize,
   },
@@ -16,17 +17,28 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === `/shortMessage/${namespace}`) {
+        // if (location.pathname === `/shortMessage/${namespace}`) {
           dispatch({
             type: 'init',
           });
-
+          dispatch({
+            type: 'fetch',
+            payload: {
+              pageindex: 1,
+              pagecount: pageSize,
+              send: true,
+            },
+          });
+          dispatch({
+            type: 'fetchPriceList',
+            payload:{}
+          })
           if (location.query.clear !== '1') {
             dispatch({
               type: 'restore',
             });
           }
-        }
+        // }
       });
     },
   },
@@ -59,7 +71,27 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
-
+    *fetchPriceList({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container} = payload;
+      const pars: Props = {
+        url: '/api/template/price/list',
+        body: {},
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchPriceListSuccess',
+          payload: {
+            ...state,
+            priceList: res.data
+          }
+        });
+      }else {
+        MessageBox.show(res.message, container);
+      }
+    },
     *onSave({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
@@ -140,6 +172,12 @@ export default {
           ...state,
         };
       }
+    },
+    fetchPriceListSuccess(state, { payload }) {
+      return {
+        ...state,
+        priceList: payload.priceList || [],
+      };
     },
     fetchSuccess(state, { payload }) {
       return {

@@ -19,6 +19,7 @@ interface Props {
 interface State {
   templateid: string,
   typeValue:any;
+  typeIndex:number;
 }
 function computePrice(state) {
   let price = 0;
@@ -87,7 +88,8 @@ class Component extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       templateid: '',
-      typeValue:''
+      typeValue:'',
+      typeIndex:0
     };
     this.onGetExpectDebounce = debounce(this.onGetExpect, 300);
   }
@@ -311,6 +313,11 @@ class Component extends React.PureComponent<Props, State> {
     this.setState({
       typeValue:value
     })
+    if(this.props.data.TypeList.length>0){
+      this.setState({
+        typeIndex:this.searchType(this.props.data.TypeList,value)
+      })
+    }
   }
   searchType = (arr, dst)=>{
     for (let j = 0; j < arr.length; j++) {
@@ -337,6 +344,15 @@ class Component extends React.PureComponent<Props, State> {
     }
   }
   componentDidMount() {
+  }
+  componentWillReceiveProps(nextProps){
+    if(this.props.data.TypeList.length > 0){
+      this.setState(
+        {
+          typeValue:this.props.data.TypeList[this.state.typeIndex].PtId
+        }
+      )
+      }
   }
   // componentDidUpdate(){
   //   if(this.props.data.TypeList.length > 0){
@@ -373,12 +389,10 @@ class Component extends React.PureComponent<Props, State> {
     } = data;
     let price = 0;
     let minSendCount,basePrice;
-    // console.log(TypeList)
     if(TypeList.length > 0){
-      basePrice = TypeList[0].BasePrice
+      basePrice = TypeList[this.state.typeIndex].BasePrice
       price = computePrice(data)+basePrice
-      // isShowConfirm = TypeList[0].IsShowConfirm
-      minSendCount = TypeList[0].MinSendCount
+      minSendCount = TypeList[this.state.typeIndex].MinSendCount
     }
     // price = computePrice(data) + templateList[this.state.typeValue].BasePrice    ; // 单价
     const td2Style = { width: '60px', textAlign: 'right' };
@@ -549,6 +563,7 @@ class Component extends React.PureComponent<Props, State> {
                   >
                     <div className={styles.scroll}>
                       <Tree
+                        defaultExpandAll
                         checkable
                         onCheck={this.onSearchAreaChanged}
                         checkedKeys={form.search_area}

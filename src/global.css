@@ -26,6 +26,9 @@ body {
   display: flexbox;
   display: flex;
 }
+.ant-modal {
+  padding: 0 !important;
+}
 .ant-modal .ant-btn {
   width: 140px !important;
   height: 40px !important;

@@ -136,9 +136,18 @@ class Component extends React.PureComponent<Props,State> {
   };
   onOpenImg = (img)=> {
     this.setState({
-      imgvisible:true,
-      lookImg:img
+      editvisible: false,
+      addvisible: false,
     })
+    setTimeout(()=>{
+      this.setState(
+        {
+          imgvisible:true,
+          lookImg:img
+         
+        }
+      )
+    },20)
   };
   onDelete = record => {
     confirm({
@@ -214,14 +223,6 @@ class Component extends React.PureComponent<Props,State> {
           return (
             <span>
               <span className={styles.textBtn1} onClick={()=>this.onOpenImg(record.LicenceUrl)}>查 看</span>
-              <Modal title="查看营业执照" visible={this.state.imgvisible}
-              style={{ top: 200}}
-              width='630px'
-              onCancel={this.handleCancel}
-              footer={null}
-              >
-              <LicenseShow type={1} url={this.state.lookImg} />
-              </Modal>
             </span>
           )
         }
@@ -393,6 +394,14 @@ class Component extends React.PureComponent<Props,State> {
             </FormItem>
           </Form>
         </div>
+        </Modal>
+        <Modal title="查看营业执照" visible={this.state.imgvisible}
+          style={{ top: 100}}
+          width='630px'
+          onCancel={this.handleCancel}
+          footer={null}
+          >
+          <LicenseShow type={1} url={this.state.lookImg} />
         </Modal>
       </div>
     );

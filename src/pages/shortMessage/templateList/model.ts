@@ -17,17 +17,22 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === `/shortMessage/${namespace}`) {
+        // if (location.pathname === `/shortMessage/${namespace}`) {
           dispatch({
             type: 'init',
           });
           dispatch({
-            type: 'fetchType',
+            type: 'fetch',
             payload: {
               status: 1
             },
           });
-        }
+          dispatch({
+            type: 'fetchType',
+            payload: {
+            },
+          });
+        // }
       });
     }
   },
@@ -36,7 +41,6 @@ export default {
     // 查询
     *fetch({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
-
       const { container } = payload;
       const pars: Props = {
         url: '/api/template/content/list',
@@ -64,11 +68,12 @@ export default {
     *fetchType({ payload }, { put, call, select }) {
       const {container } = payload;
       const state = yield select(state => state[namespace]);
+      const channelcode = state.list.length>0 ? state.list[0].ChannelCode : ''
       const pars: Props = {
         url: '/api/smssend/sign/list',
         body: {
           status: payload.status,
-          channelcode: state.list[0].ChannelCode,
+          channelcode:channelcode
         },
         method: 'GET',
       };

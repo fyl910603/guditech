@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Table, Icon } from 'antd';
+import { Table, Icon, message } from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
 import { ShortMessageTemplateEdit } from 'components/shortMessageTemplateEdit';
 import router from 'umi/router';
+import { MessageBox } from 'components/messageBox';
 
 interface Props {
   dispatch: (props: any) => void;
@@ -87,7 +88,11 @@ class Component extends React.PureComponent<Props, State> {
   };
 
   onSend = d => {
-    router.push(`/shortMessage/templateListForSend/send?id=${d.TemplateSysId}`);
+    if(this.props.data.priceList.length > 0){
+        router.push(`/shortMessage/templateListForSend/send?id=${d.TemplateSysId}`);
+    }else{
+      MessageBox.show('价格模板不存在', this.divForm);
+    }
   };
 
   onOpenOrderList = record => {

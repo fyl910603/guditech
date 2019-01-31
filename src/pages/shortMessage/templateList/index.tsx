@@ -37,47 +37,40 @@ class Component extends React.PureComponent<Props, State> {
       editSignId:'',
       edittemplateid:''
     };
-    this.props.dispatch({
-      type: `${namespace}/fetchType`,
-      payload: {
-        container: this.divForm,
-        status: 1,
-      },
-    });
   }
 
   componentDidMount() {
-    this.props.dispatch({
-      type: `${namespace}/fetch`,
-      payload: {
-        container: this.divForm,
-      },
-    });
-      this.props.dispatch({
-        type: `${namespace}/fetchType`,
-        payload: {
-          container: this.divForm,
-          status: 1,
-        },
-      });
+    // this.props.dispatch({
+    //   type: `${namespace}/fetch`,
+    //   payload: {
+    //     container: this.divForm,
+    //   },
+    // });
+    //   this.props.dispatch({
+    //     type: `${namespace}/fetchType`,
+    //     payload: {
+    //       container: this.divForm,
+    //       status: 1,
+    //     },
+    //   });
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
 
   componentWillUnmount() {
-    this.props.dispatch({
-      type: `${namespace}/fetch`,
-      payload: {
-        container: this.divForm,
-      },
-    });
-      this.props.dispatch({
-        type: `${namespace}/fetchType`,
-        payload: {
-          container: this.divForm,
-          status: 1,
-        },
-      });
+    // this.props.dispatch({
+    //   type: `${namespace}/fetch`,
+    //   payload: {
+    //     container: this.divForm,
+    //   },
+    // });
+    //   this.props.dispatch({
+    //     type: `${namespace}/fetchType`,
+    //     payload: {
+    //       container: this.divForm,
+    //       status: 1,
+    //     },
+    //   });
     window.removeEventListener('resize', this.onResize);
   }
 
@@ -279,12 +272,14 @@ class Component extends React.PureComponent<Props, State> {
             )}
             {(h.ExamineState !== 5) && (
               <React.Fragment>
-                <a href="javascript:;" className={styles.spaceSpan} onClick={() => this.onOpenMEdit(h)}>
+                <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
               修改签名
               </a>
-              <a href="javascript:;" className={styles.spaceSpan} onClick={() => this.onOpenTEdit(h)}>
+              <Divider type="vertical" />
+              <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
                 修改模板名称
               </a>
+              <Divider type="vertical" />
               </React.Fragment>
             )}
             <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
@@ -307,9 +302,6 @@ class Component extends React.PureComponent<Props, State> {
       ...h,
       ExamineStateName: statusMap[h.ExamineState],
     }));
-    // const signType = typelist.map((item,index) =>(
-    //   <option value={typelist.SignId}>{typelist.SignName}</option>
-    // ))
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
         <Button

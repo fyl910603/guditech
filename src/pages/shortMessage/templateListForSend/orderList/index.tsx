@@ -141,12 +141,6 @@ class Component extends React.PureComponent<Props, State> {
       orderDetail,
     } = this.props.data;
     const { height } = this.state;
-
-    list.map(h => {
-      h.StatusName = stateMap[h.Status];
-      h.SmsSendFailCount = h.SmsSendTotalCount - h.SmsSendSuccessCount;
-    });
-
     const columns: any = [
       {
         title: '订单号码',
@@ -173,9 +167,12 @@ class Component extends React.PureComponent<Props, State> {
       },
       {
         title: '状态',
-        dataIndex: 'StatusName',
+        dataIndex: 'Status',
         width: 110,
         align: 'center',
+        render: (text, h) => {
+          return stateMap[h.Status]
+        },
       },
       {
         title: '发送时间',

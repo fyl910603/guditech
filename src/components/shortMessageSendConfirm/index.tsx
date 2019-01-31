@@ -165,7 +165,7 @@ export class ShortMessageSendConfirm extends React.PureComponent<Props> {
                         <th>{search_region.ContentTypeDes}:</th>
                         <td>
                           <div className={styles.scroll}>
-                            <Tree checkable checkedKeys={form.search_area} disabled={true}>
+                            <Tree checkable defaultExpandAll checkedKeys={form.search_area} disabled={true}>
                               {this.renderTreeNodes(search_region.tree)}
                             </Tree>
                           </div>
