@@ -22,6 +22,7 @@ interface State {
   imgvisible :boolean,
   currData : object,
   editImgUrl: string,
+  addData : object,
   addSignName: any,
   addImgUrl:string,
   lookImg:string,
@@ -43,6 +44,11 @@ class Component extends React.PureComponent<Props,State> {
       addvisible:false,
       imgvisible:false,
       currData:{},
+      addData:{
+        MobileCount:'',
+        PhoneCount:'',
+        SeatCount:''
+      },
       editImgUrl : '',
       addImgUrl : '',
       lookImg:'',
@@ -52,7 +58,6 @@ class Component extends React.PureComponent<Props,State> {
     this.getSignList()
   }
   componentDidMount() {
-    // console.log(this.props)
   }
 
   componentWillUnmount() {
@@ -77,14 +82,15 @@ class Component extends React.PureComponent<Props,State> {
     });
   };
    onSubmit = (e)=>{
-      this.props.dispatch({
-      type: `${namespace}/save`,
-      payload: {
-        SignId: this.state.currData.SignId,
-        editSignName: this.state.currData.SignName,
-        editImgUrl:this.state.Path
-      },
-    });
+     console.log()
+    //   this.props.dispatch({
+    //   type: `${namespace}/save`,
+    //   payload: {
+    //     SignId: this.state.addData.SignId,
+    //     editSignName: this.state.currData.SignName,
+    //     editImgUrl:this.state.Path
+    //   },
+    // });
       e.preventDefault();
       // this.setState({
       //   editvisible: false,
@@ -94,14 +100,16 @@ class Component extends React.PureComponent<Props,State> {
       this.props.dispatch({
       type: `${namespace}/add`,
       payload: {
-        addSignName: this.state.addSignName,
-        addImgUrl:this.state.Path
+        TelephoneCount: this.state.addData.PhoneCount,
+        MobileCount: this.state.addData.MobileCount,
+        SeatCount: this.state.addData.SeatCount,
+        Licencel:this.state.Path
       },
     });
       e.preventDefault();
-      // this.setState({
-      //   editvisible: false,
-      // });
+      this.setState({
+        editvisible: false,
+      });
     }
   handleCancel = (e) => {
     this.setState({
@@ -155,14 +163,24 @@ class Component extends React.PureComponent<Props,State> {
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/onDelete`,
-          payload: record.SignId,
+          payload: record.Id,
         });
       },
     });
   };
-   onSignnameChanged =(e)=>{
+   onMobileCountChanged =(e)=>{
       this.setState({
-        currData:Object.assign(this.state.currData,{SignName:e.target.value})
+        addData:Object.assign(this.state.addData,{MobileCount:e.target.value})
+      })
+    }
+    onPhoneCountChanged =(e)=>{
+      this.setState({
+        addData:Object.assign(this.state.addData,{PhoneCount:e.target.value})
+      })
+    }
+    onSeatCountChanged =(e)=>{
+      this.setState({
+        addData:Object.assign(this.state.addData,{SeatCount:e.target.value})
       })
     }
     onaddSignnameChanged =(e)=>{
@@ -209,8 +227,20 @@ class Component extends React.PureComponent<Props,State> {
   render() {
     const columns: any = [
       {
-        title: '签名',
-        dataIndex: 'SignName',
+        title: '网络电话号码数量',
+        dataIndex: 'MobileCount',
+        width: 150,
+        align:'center'
+      },
+      {
+        title: '网络电话席位数量',
+        dataIndex: 'SeatCount',
+        width: 150,
+        align:'center'
+      },
+      {
+        title: '座机电话数量',
+        dataIndex: 'TelephoneCount',
         width: 150,
         align:'center'
       },
@@ -233,10 +263,10 @@ class Component extends React.PureComponent<Props,State> {
         dataIndex: 'ExamineStateName',
         align:'center',
         render: (text, h) => {
-          const red = h.Status === 4 || h.Status === 5;
-          if (h.Status === 4 || h.Status === 5) {
+          const red = h.Status === 4 || h.Status === 3;
+          if (h.Status === 4 || h.Status === 3) {
             return (
-              <Tooltip placement="topLeft" title={h.ErrorReason} arrowPointAtCenter>
+              <Tooltip placement="topLeft" title={h.StatusDes} arrowPointAtCenter>
                 <span style={{ color: red ? 'red' : '' }}>
                   {h.ExamineStateName}
                   <Icon type="question-circle" />
@@ -250,7 +280,7 @@ class Component extends React.PureComponent<Props,State> {
       },
       {
         title: '申请时间',
-        dataIndex: 'ApplyTime',
+        dataIndex: 'CreateTime',
         width: 280,
         align:'center'
       },
@@ -279,39 +309,42 @@ class Component extends React.PureComponent<Props,State> {
       },
     ];
     const statusMap = {
-      1: '等待审核',
-      2: '审核中',
-      3: '认证成功',
-      4: '认证失败',
-      5: '无效',
+      0: '待审核',
+      1: '审核中',
+      2: '审核通过',
+      3: '审核失败',
+      4: '管理员作废',
     };
-    const {signList, isShowEdit, currData} = this.props.data
+    const {phoneData,signList, isShowEdit, currData} = this.props.data
     const canSave = currData.Status === undefined || currData.Status === 1 || currData.Status === 4;
-    const listData = signList.map(h => ({
-      ...h,
-      ExamineStateName: statusMap[h.Status],
-    }));
-    let table
-    if(signList.length>0){
+    
+    if(phoneData.List && phoneData.List.length>0){
+      var table;
+      const listData = phoneData.List.map(h => ({
+        ...h,
+        ExamineStateName: statusMap[h.Status],
+      }));
       table = <Table
-      columns={columns}
-      dataSource={listData}
-      pagination={false}
-      // scroll={{ y: height }}
-      bordered={true}
-      rowKey="SignId"
-      locale={{
-        emptyText: '暂无客户数据',
-      }}
-    />
+        columns={columns}
+        dataSource={listData}
+        pagination={false}
+        // scroll={{ y: height }}
+        bordered={true}
+        rowKey="Id"
+        locale={{
+          emptyText: '暂无客户数据',
+        }}
+      />
     }
+    
+
     return (
       <div className={styles.page} >
         <div className={styles.hintBox}>
-          <span className={styles.hint}>您可以通过短信方式与目标客户建立更精准、快捷的连接，大大降低拓客成本.点击此处</span><span className={styles.textBtn} onClick={()=>{this.onOpenAdd()}}>申请短信业务</span>
+          <span className={styles.hint}>您可以与客户建立更直接、精准的语音沟通，大大降低拓客成本.点击此处</span><span className={styles.textBtn} onClick={()=>{this.onOpenAdd()}}>申请电话业务</span>
         </div>
         <div className={styles.divTable}>
-          {signList.length > 0 ?table : ''}
+          {table}
         </div>
         {/* <SplitPage
           pageIndex={pageindex}
@@ -358,7 +391,7 @@ class Component extends React.PureComponent<Props,State> {
         </div>
         </Modal>
         {/* 新增短信业务 */}
-        <Modal title="创建短信业务" visible={this.state.addvisible}
+        <Modal title="申请电话业务" visible={this.state.addvisible}
           style={{ top: 200}}
           width='630px'
           onCancel={this.handleCancel}
@@ -371,12 +404,28 @@ class Component extends React.PureComponent<Props,State> {
         >
           <div className={styles.form}>
            <Form>
-             <FormItem title="签名：" thWidth={120}>
+             <FormItem title="网络电话号码数量：" isRequire thWidth={120}>
               <Input
-                onChange={this.onaddSignnameChanged}
-                defaultValue={this.state.addSignName}
+                onChange={this.onMobileCountChanged}
+                defaultValue={this.state.addData.MobileCount}
                 maxLength={12}
-                placeholder="请输入签名信息"
+                placeholder="请输入网络电话号码数量"
+              />
+            </FormItem>
+            <FormItem title="座机电话数量：" isRequire thWidth={120}>
+              <Input
+                onChange={this.onPhoneCountChanged}
+                defaultValue={this.state.addData.PhoneCount}
+                maxLength={12}
+                placeholder="请输入座机电话数量"
+              />
+            </FormItem>
+            <FormItem title="坐席数量：" isRequire thWidth={120}>
+              <Input
+                onChange={this.onSeatCountChanged}
+                defaultValue={this.state.addData.SeatCount}
+                maxLength={12}
+                placeholder="请输入坐席数量"
               />
             </FormItem>
             <FormItem title="营业执照：">

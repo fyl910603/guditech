@@ -26,10 +26,7 @@ const routes = [
   { path: '/help/faq/:id', breadcrumb: ()=> getQuery('Qname')},
   { path: '/help/:id', breadcrumb: ()=> getQuery('Cname') },
   { path: '/balanceChangeList', breadcrumb: '余额变更记录' },
-
-
-
-
+  { path: '/phone', breadcrumb: '电话业务' },
   { path: '/business', breadcrumb: '商户中心' },
   { path: '/customer', breadcrumb: '客户管理' },
   { path: '/sinks', breadcrumb: '短信业务' },

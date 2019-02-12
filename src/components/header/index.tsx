@@ -25,6 +25,9 @@ export function Header(props: Props) {
       case '4':
         router.push('/sinks');
         break;
+      case '6':
+        router.push('/phone');
+        break;
       case '5': {
         props.onLogout();
         break;
@@ -59,6 +62,10 @@ export function Header(props: Props) {
       <Menu.Item key="4">
         <Icon type="line-chart" />
         短信业务
+      </Menu.Item>
+      <Menu.Item key="6">
+        <Icon type="phone" />
+        电话业务
       </Menu.Item>
       <Menu.Item key="5">
         <Icon type="poweroff" />
