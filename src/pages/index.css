@@ -1,34 +1,26 @@
-@import '../variable.less';
-
-@banner-height: 650px;
-
 .main {
   width: 100vw;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-bottom: @page-padding-bottom;
+  padding-bottom: 20px;
 }
-
 .carousel {
-  height: @banner-height;
-  :global(.ant-carousel) {
-    :global(.slick-slide) {
-      height: @banner-height;
-      text-align: center;
-      line-height: 160px;
-      background: #364d79;
-      overflow: hidden;
-    }
-  }
+  height: 650px;
 }
-
+.carousel :global(.ant-carousel) :global(.slick-slide) {
+  height: 650px;
+  text-align: center;
+  line-height: 160px;
+  background: #364d79;
+  overflow: hidden;
+}
 .page {
   position: relative;
-  height: @banner-height;
+  height: 650px;
 }
-
 .p1 {
-  .page;
+  position: relative;
+  height: 650px;
   background-image: url(../assets/index/p1.jpg);
   background-repeat: no-repeat;
   background-position: center;
@@ -36,7 +28,8 @@
   overflow: hidden;
 }
 .banner {
-  .page;
+  position: relative;
+  height: 650px;
   border: none;
   overflow: hidden;
   background-size: contain;
@@ -44,30 +37,24 @@
   background-position: center;
   cursor: pointer;
 }
-
 .btn {
   position: absolute;
   bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
 }
-
 .listContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  // height: calc(40vh - 50px);
-  // min-height: 250px;
   margin-top: 74px;
   margin-bottom: 50px;
 }
-
 .list {
   display: flex;
   justify-content: space-around;
-  width: @content-width;
+  width: 1200px;
 }
-
 .item {
   width: 129px;
   height: 151px;
@@ -77,28 +64,55 @@
   cursor: pointer;
 }
 .item1 {
-  .item;
+  width: 129px;
+  height: 151px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 2px 5px #ccc;
+  position: relative;
+  cursor: pointer;
   background-image: url(../assets/index/S1.png);
 }
-.item1:hover,.item2:hover,.item3:hover,.item4:hover,.item5:hover{
-    box-shadow: 2px 4px 7px #ccc;
+.item1:hover,
+.item2:hover,
+.item3:hover,
+.item4:hover,
+.item5:hover {
+  box-shadow: 2px 4px 7px #ccc;
 }
 .item2 {
-  .item;
+  width: 129px;
+  height: 151px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 2px 5px #ccc;
+  position: relative;
+  cursor: pointer;
   background-image: url(../assets/index/S2.png);
 }
-
 .item3 {
-  .item;
+  width: 129px;
+  height: 151px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 2px 5px #ccc;
+  position: relative;
+  cursor: pointer;
   background-image: url(../assets/index/S3.png);
 }
-
 .item4 {
-  .item;
+  width: 129px;
+  height: 151px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 2px 5px #ccc;
+  position: relative;
+  cursor: pointer;
   background-image: url(../assets/index/S4.png);
 }
 .item5 {
-  .item;
+  width: 129px;
+  height: 151px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 2px 5px #ccc;
+  position: relative;
+  cursor: pointer;
   background-image: url(../assets/index/S5.png);
 }
 .btns {

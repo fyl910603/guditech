@@ -1,0 +1,150 @@
+.page {
+  background-color: #fafafa;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 50px 0;
+  overflow: auto;
+}
+.form {
+  width: 750px;
+  margin: 0 auto;
+}
+.card {
+  border-radius: 4px;
+  background-color: #fff;
+  padding: 30px 0 17px 30px;
+  margin-top: 14px;
+}
+.cardTitle {
+  font-size: 18px;
+  display: flex;
+  padding-bottom: 5px;
+}
+.line {
+  border-bottom: solid 1px #ccc;
+  flex-grow: 1;
+  height: 15px;
+  margin-left: 10px;
+}
+.content {
+  padding-left: 76px;
+  width: 550px;
+}
+.contentOther {
+  padding-left: 76px;
+  width: 550px;
+  width: 580px;
+}
+.ageline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.age {
+  width: 180px;
+}
+.sex {
+  width: 160px;
+}
+.address {
+  padding-top: 13px;
+}
+.selectBox {
+  padding-left: 170px;
+}
+.provinceItem {
+  display: flex;
+  padding: 5px 0 5px 20px;
+  width: 100%;
+}
+.scroll {
+  overflow-y: auto;
+  height: 300px;
+  border: solid 1px #ccc;
+}
+.dqmt {
+  margin-bottom: 10px;
+  padding-left: 90px;
+}
+.fk {
+  width: 50%;
+  float: left;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.clear {
+  clear: both;
+}
+.time {
+  display: flex;
+  align-items: center;
+}
+.tdOrder {
+  height: 45px;
+  display: flex;
+  align-items: center;
+}
+.divButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.spanz {
+  margin-left: 10px;
+}
+.dynamicInfo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 50px;
+  height: 75px;
+  background-color: #000000aa;
+}
+.dynamicInfoH {
+  height: 75px;
+}
+.l1,
+.l2,
+.l3 {
+  background-repeat: no-repeat;
+  background-position: 20px center;
+  display: flex;
+  width: 100%;
+  padding-left: 50px;
+  color: #ffffff;
+  font-size: 12px;
+  position: relative;
+  top: 5px;
+  height: 23px;
+}
+.l1 {
+  background-image: url(img/tj.png);
+  background-size: 20px 20px;
+}
+.l2 {
+  background-image: url(img/fk.png);
+  background-size: 22px 20px;
+}
+.l3 {
+  background-image: url(img/ft.png);
+  background-size: 20px 21px;
+  font-weight: 700;
+}
+.lr {
+  position: absolute;
+  right: 100px;
+  bottom: 20px;
+  color: #fff;
+}
+.lr .price {
+  font-size: 22px;
+}
+.lr .willSendNum {
+  font-size: 18px;
+}

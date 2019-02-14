@@ -11,8 +11,8 @@ let divForm: HTMLDivElement;
 const Component = ({ dispatch, data }) => {
   const { bannerList } = data;
 
-  function toRecharge() {
-    router.push('/recharge');
+  function toCommission() {
+    router.push('/commission');
   }
 
   function toShortMessage() {
@@ -22,7 +22,12 @@ const Component = ({ dispatch, data }) => {
   function toCustomer() {
     router.push('/customer?clear=1');
   }
-
+  function toTelemarketing(){
+    router.push('/telemarketing/teleListForCall?clear=1')
+  }
+  function toDataAnalysis(){
+    router.push('/dataanalysis')
+  }
   function onBannerClick(h) {
     if (h.url) {
       document.location.href = h.url;
@@ -61,20 +66,15 @@ const Component = ({ dispatch, data }) => {
 
       <div className={styles.listContainer}>
         <div className={styles.list}>
-          <div className={styles.item1}>
-            <Button ghost type="primary" className={styles.btns} onClick={toShortMessage}>
-              立即进入
-            </Button>
+          <div className={styles.item1} onClick={toCommission}>
           </div>
-          <div className={styles.item3}>
-            <Button ghost type="primary" className={styles.btns} onClick={toRecharge}>
-              立即进入
-            </Button>
+          <div className={styles.item2} onClick={toTelemarketing}>
           </div>
-          <div className={styles.item4}>
-            <Button ghost type="primary" className={styles.btns} onClick={toCustomer}>
-              立即进入
-            </Button>
+          <div className={styles.item3} onClick={toShortMessage}>
+          </div>
+          <div className={styles.item4} onClick={toDataAnalysis}>
+          </div>
+          <div className={styles.item5} onClick={toCustomer}>
           </div>
         </div>
       </div>

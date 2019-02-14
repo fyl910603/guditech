@@ -1,0 +1,71 @@
+@import '../../../../../variable.less';
+
+.title {
+  padding: 0 20px 0 40px;
+}
+.btn {
+  width: 74px !important;
+  height: 45px !important;
+  margin-left: 40px;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  .left {
+    display: flex;
+    color: #666;
+    justify-content: space-between;
+    width: 200px;
+  }
+  .right {
+    display: flex;
+    color: #333;
+    justify-content: space-between;
+    width: 400px;
+  }
+  width: 100%;
+  padding: 20px 0 10px;
+}
+
+.main {
+  :global(.ant-table-placeholder) {
+    height: calc(@page-content-height - 220px);
+    min-height: calc(@page-form-min-height - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: none;
+  }
+  height: 100%;
+  position: relative;
+
+  :global(.ant-table-tbody), :global(.ant-table-thead) {
+    td, th {
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+  }
+}
+
+.btnOrder {
+  position: absolute;
+  z-index: 2;
+  top: -55px;
+  right: 0px;
+  width: 84px;
+  height: 40px !important;
+}
+.btnAddTemplate {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.condition {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}

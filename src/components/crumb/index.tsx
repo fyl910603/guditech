@@ -30,6 +30,9 @@ const routes = [
   { path: '/business', breadcrumb: '商户中心' },
   { path: '/customer', breadcrumb: '客户管理' },
   { path: '/sinks', breadcrumb: '短信业务' },
+  { path: '/telemarketing', breadcrumb: 'NULL' },
+  { path: '/telemarketing/teleListForCall', breadcrumb: '电话营销' },
+  { path: '/telemarketing/callRecordList', breadcrumb: '拨打记录' }
 ];
 function getName(){
   return getQuery('name') != undefined ? getQuery('name'):'常见问题'

@@ -38,6 +38,15 @@
   margin-left: 36px;
   cursor: pointer;
 }
+.recharge {
+  margin-top: 21px;
+  float: left;
+  margin-left: 36px;
+  cursor: pointer;
+  padding: 0px 10px;
+  border: 1px solid #ffffff;
+  font-size: 12px;
+}
 .setting {
   cursor: pointer;
   height: 62px;

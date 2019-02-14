@@ -1,0 +1,45 @@
+@import '../../../../variable.less';
+
+.title {
+  padding: 0 3px 0 5px;
+}
+.btn {
+  width: 74px !important;
+  height: 45px !important;
+  margin-left: 20px;
+}
+
+.main {
+  :global(.ant-table-placeholder) {
+    height: calc(@page-content-height - 220px);
+    min-height: calc(@page-form-min-height - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: none;
+  }
+  height: 100%;
+  position: relative;
+}
+
+.btnOrder {
+  position: absolute;
+  z-index: 2;
+  top: -55px;
+  right: 0px;
+  width: 84px;
+  height: 40px !important;
+}
+.btnAddTemplate {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.condition {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+}

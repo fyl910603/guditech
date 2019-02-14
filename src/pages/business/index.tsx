@@ -12,11 +12,9 @@ import { AddressPick } from 'components/addressPick';
 import { MessageBox } from 'components/messageBox';
 
 let divForm: HTMLDivElement;
-
 const Component = ({ dispatch, data }) => {
   function check() {
     const { imgUrl, nickname, summary, addressInfo } = data;
-    console.log(data)
     if (!imgUrl) {
       MessageBox.show('请上传商户logo', divForm);
       return false;

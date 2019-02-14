@@ -68,14 +68,16 @@ export default {
       }
     },
 
-    *save({ payload }, { put, call, select }) {
+    *editApply({ payload }, { put, call, select }) {
       const { data, container } = payload;
       const pars: Props = {
-        url : '/api/smssend/sign/modify',
+        url : '/api/callmarketing/apply/modify',
         body: {
-          SignId:payload.SignId ,
-          SignName: payload.editSignName,
-          LicenceUrl: payload.editImgUrl,
+          Id:payload.Id,
+          TelephoneCount: payload.TelephoneCount,
+          MobileCount: payload.MobileCount,
+          SeatCount: payload.SeatCount,
+          LicenceUrl: payload.Licencel
         },
         method: 'POST',
       };
@@ -91,22 +93,26 @@ export default {
           title: '信息保存成功',
           pic: successPic,
           onOk: () => {
-            router.push('/');
+            // router.push('/');
           },
+        });
+        yield put({
+          type: 'fetchList',
+          payload: {},
         });
       } else {
         MessageBox.show(res.message, container);
       }
     },
-    *add({ payload }, { put, call, select }) {
+    *addApply({ payload }, { put, call, select }) {
       const { data, container } = payload;
       const pars: Props = {
         url : '/api/callmarketing/apply/add',
         body: {
-          TelephoneCount: payload.PhoneCount,
+          TelephoneCount: payload.TelephoneCount,
           MobileCount: payload.MobileCount,
           SeatCount: payload.SeatCount,
-          Licencel: payload.LicenceUrl
+          LicenceUrl: payload.Licencel
         },
         method: 'POST',
       };

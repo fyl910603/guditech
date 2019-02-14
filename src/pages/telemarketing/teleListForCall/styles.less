@@ -1,0 +1,73 @@
+@import '../../../variable.less';
+
+.btn {
+  width: 74px !important;
+  height: 45px !important;
+  margin-left: 40px;
+}
+.searchInput{
+  width: 80%;
+  margin-left:25px !important;
+}
+.delete{
+  color: red;
+}
+.condition {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+}
+.main {
+  :global(.ant-table-placeholder) {
+    height: calc(@page-content-height - 220px);
+    min-height: calc(@page-form-min-height - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: none;
+  }
+  height: 100%;
+  position: relative;
+  border: @border;
+}
+
+.btnOrder {
+  position: absolute;
+  z-index: 2;
+  top: -55px;
+  right: 0px;
+  width: 84px;
+  height: 40px !important;
+}
+.btnAddTemplate {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.option {
+  display: flex;
+  line-height: 40px;
+  justify-content: space-between;
+}
+.createBtnBox{
+  width: 100%;
+  height: 30px;
+}
+.createBtn{
+  display: block;
+  float: right;
+  margin-right: 30px;
+  text-decoration: underline;
+  color: #55c1de;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+.send {
+  border: solid 1px #55c1de;
+  border-radius: 4px;
+  height: 40px;
+  width: 90px;
+}
