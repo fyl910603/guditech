@@ -1,40 +1,38 @@
 import { ask, Res, Props } from 'utils/ask';
 import { MessageBox } from 'components/messageBox';
-import { modalSuccess } from 'components/modal';
-import { pageSize } from "utils/pageSize";
+import { pageSize } from 'utils/pageSize';
+// import { toRegionTree } from '../send/model';
+import { getUser } from 'utils/localStore';
 
-export const namespace = 'templateList';
+export const namespace = 'orderList';
 
 export default {
   namespace,
   state: {
     list: [],
-    typelist:[],
     pageindex: 1,
     pagecount: pageSize,
+    timeRange: [],
   },
 
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        // if (location.pathname === `/shortMessage/${namespace}`) {
+        if (location.pathname === '/telemarketing/callRecordList?clear=1') {
           dispatch({
             type: 'init',
           });
           dispatch({
-            type: 'fetch',
-            payload: {
-              status: 1
-            },
-          });
-          dispatch({
-            type: 'fetchType',
-            payload: {
-            },
-          });
-        // }
+            type: 'fetch'
+          })
+          if (location.query.clear !== '1') {
+            dispatch({
+              type: 'restore',
+            });
+          }
+        }
       });
-    }
+    },
   },
 
   effects: {
@@ -43,14 +41,15 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container } = payload;
       const pars: Props = {
-        url: '/api/callmarketing/order/list',
+        url: '/api/callmarketing/order/call/record',
         body: {
-          ordersn:payload.ordersn,
-          ordername:payload.ordername,
-          starttime:payload.starttime,
-          endtime:payload.endtime,
           pageindex: payload.pageindex || state.pageindex,
           pagecount: state.pagecount,
+          starttime: state.timeRange[0] ? state.timeRange[0].format('YYYY-MM-DD 00:00:00') : '',
+          endtime: state.timeRange[1] ? state.timeRange[1].format('YYYY-MM-DD 23:59:59') : '',
+          parent: state.parent,
+          orderid: 0,
+          mobile:state.mobile
         },
         method: 'GET',
       };
@@ -68,145 +67,45 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
-    // 获取签名类型
-    *fetchType({ payload }, { put, call, select }) {
-      const {container } = payload;
-      const state = yield select(state => state[namespace]);
-      const channelcode = state.list.length>0 ? state.list[0].ChannelCode : ''
+    *onCancelSend({ payload }, { put, call, select }) {
+      const { container } = payload;
       const pars: Props = {
-        url: '/api/smssend/sign/list',
+        url: '/api/smssend/cancel/order',
         body: {
-          status: payload.status,
-          channelcode:channelcode
+          orderId: payload,
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetch',
+          payload: {},
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *onOpenDetail({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/smssend/order/details',
+        body: {
+          orderId: payload,
         },
         method: 'GET',
       };
       const res: Res = yield call(ask, pars);
-      if (res.success) {
-        yield put({ type: 'fetchTypeSuccess', payload:{typeList:res.data}});
-      } else {
-        MessageBox.show(res.message, container);
-      }
-    },
-    // 修改模板名称
-    *onEditTem({ payload }, { put, call, select }) {
-      const {container } = payload;
-      const state = yield select(state => state[namespace]);
-      const pars: Props = {
-        url: '/api/template/content/name/modify',
-        body: {
-          templateid: payload.templateid,
-          templatename: payload.templatename,
-        },
-        method: 'PUT',
-      };
-      const res: Res = yield call(ask, pars);
-      if (res.success) {
-        yield put({
-          type: 'fetch',
-          payload: {},
-        });
-        yield put({
-          type: 'showSignEdit',
-          payload: {
-            isShowSign: false,
-          },
-        });
-        modalSuccess({
-          message: '模板名称修改成功!',
-        });
-        
-      } else {
-        MessageBox.show(res.message, container);
-      }
-    },
-    // 修改签名类型
-    *onEdit({ payload }, { put, call, select }) {
-      const {container } = payload;
-      const state = yield select(state => state[namespace]);
-      const pars: Props = {
-        url: '/api/template/content/sign/modify',
-        body: {
-          templateid: payload.templateid,
-          signid: payload.signid,
-        },
-        method: 'PUT',
-      };
-      const res: Res = yield call(ask, pars);
-      if (res.success) {
-        yield put({
-          type: 'fetch',
-          payload: {},
-        });
-        yield put({
-          type: 'showSignEdit',
-          payload: {
-            isShowSign: false,
-          },
-        });
-        modalSuccess({
-          message: '签名修改成功!',
-        });
-        
-      } else {
-        MessageBox.show(res.message, container);
-      }
-    },
-    // 保存
-    *onSave({ payload }, { put, call, select }) {
-      const state = yield select(state => state[namespace]);
-      const { container, data } = payload;
-      let url = '/api/template/content/add';
 
-      if (state.currData) {
-        url = '/api/template/content/modify';
-        data.templateid = state.currData.templateid;
-      }
-
-      const pars: Props = {
-        url,
-        body: data,
-        method: state.currData ? 'PUT' : 'POST',
-      };
-      const res: Res = yield call(ask, pars);
+      const user = getUser();
       if (res.success) {
         yield put({
-          type: 'fetch',
-          payload: {},
-        });
-        yield put({
-          type: 'showEdit',
+          type: 'onShowDetail',
           payload: {
-            isShowEdit: false,
+            ...res.data,
+            search_address: user.Address,
           },
-        });
-        modalSuccess({
-          message: '短信模板提交审核成功，我们将在1~3个工作日完成审核!',
-        });
-        
-      } else {
-        MessageBox.show(res.message, container);
-      }
-    },
-
-    *onDelete({ payload }, { put, call, select }) {
-      const state = yield select(state => state[namespace]);
-      const { container, data } = payload;
-      const pars: Props = {
-        url: '/api/template/content/delete',
-        body: {
-          templateid: payload,
-        },
-        method: 'DELETE',
-      };
-      const res: Res = yield call(ask, pars);
-      if (res.success) {
-        modalSuccess({
-          message: '该短信模板删除成功!',
-        });
-        yield put({
-          type: 'fetch',
-          payload: {},
         });
       } else {
         MessageBox.show(res.message, container);
@@ -218,15 +117,29 @@ export default {
     init(state, { payload }) {
       return {
         ...state,
+        timeRange: [],
+        parent: '',
         pageindex: 1,
+        orderid: '',
+        mobile:'',
         list: [],
       };
     },
-    fetchTypeSuccess(state, { payload }) {
-      return {
-        ...state,
-        typelist: payload.typeList || [],
-      };
+    restore(state, { payload }) {
+      const { storeData } = state;
+      if (storeData) {
+        return {
+          ...state,
+          timeRange: storeData.timeRange,
+          templateName: storeData.templateName,
+          pageindex: storeData.pageindex,
+          orderSn: storeData.orderSn,
+        };
+      } else {
+        return {
+          ...state,
+        };
+      }
     },
     fetchSuccess(state, { payload }) {
       return {
@@ -235,28 +148,155 @@ export default {
         totalCount: payload.TotalCount || 0,
         pageindex: payload.pageindex,
         pagecount: payload.pagecount,
+
+        // 存下条件与页码，从子页回来时恢复
+        storeData: {
+          pageindex: payload.pageindex,
+          timeRange: state.timeRange,
+          templateName: state.templateName,
+          orderSn: state.orderSn,
+        },
       };
     },
-    showSignEdit(state, { payload }){
+    onDateChanged(state, { payload }) {
       return {
         ...state,
-        isShowSign: payload.isShowSign,
+        timeRange: payload,
       };
     },
-    showEdit(state, { payload }) {
-      const currData = payload.currData;
+    onParentChanged(state, { payload }) {
       return {
         ...state,
-        currData: currData
-          ? {
-              templateid: currData.TemplateSysId,
-              templatcontent: currData.SmsContent,
-              templatlink: currData.SmsLink,
-              templatename: currData.TemplateName,
-            }
-          : null,
-        isShowEdit: payload.isShowEdit,
+        parent: payload,
+      };
+    },
+    onMobileChanged(state, { payload }) {
+      return {
+        ...state,
+        mobile: payload,
+      };
+    },
+    // onOrderIdChanged(state, { payload }) {
+    //   return {
+    //     ...state,
+    //     orderid: payload,
+    //   };
+    // },
+
+    onShowDetail(state, { payload }) {
+      const { SmsOrderBaseInfo, PriceTemlateContentList, ContentTemplateInfo } = payload;
+      const list = PriceTemlateContentList;
+
+      const reply_specificAge = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_REPLY_AGE')[0]; // 具体年龄
+      const reply_birthday = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_REPLY_BIRTHDAY')[0]; // 生日
+      const reply_familyEconomic = list.filter(
+        h => h.ContentType === 'MSG_PRICE_TYPE_REPLY_FAMILY_LEVEL'
+      )[0]; // 家庭经济情况
+      const reply_fullName = list.filter(
+        h => h.ContentType === 'MSG_PRICE_TYPE_REPLY_FULL_NAME'
+      )[0]; // 全名
+      const reply_sex = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_REPLY_SEX')[0]; // 性别
+      const reply_area = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_REPLY_REGION')[0]; //  地区
+
+      const search_age = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_SEARCH_AGE')[0]; // 年龄
+      const search_userOrder = list.filter(
+        h => h.ContentType === 'MSG_PRICE_TYPE_SEARCH_PRIORITY'
+      )[0]; // 用户优先
+      const search_region = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_SEARCH_REGION')[0]; // 区域
+      const search_sex = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_SEARCH_SEX')[0]; // 性别
+      let search_radius = list.filter(h => h.ContentType === 'MSG_PRICE_TYPE_SEARCH_RANGE')[0]; // 半径范围
+
+      const result = { ...state.orderDetail };
+      // 年龄
+      result.search_age = search_age;
+      // 性别
+      result.search_sex = search_sex;
+      // 区域
+      if (search_region) {
+        const json = JSON.parse(search_region.ContentValue);
+
+        result.search_region = {
+          ...search_region,
+          // tree: toRegionTree(json),
+        };
+      } else {
+        result.search_region = null;
+      }
+      // 半径
+      result.search_radius = search_radius;
+
+      // 发送顺序
+      result.search_userOrder = search_userOrder;
+
+      // ---------------------反馈信息
+      result.reply_specificAge = reply_specificAge;
+      result.reply_birthday = reply_birthday;
+      result.reply_familyEconomic = reply_familyEconomic;
+      result.reply_fullName = reply_fullName;
+      result.reply_sex = reply_sex;
+      result.reply_area = reply_area;
+      result.basePrice = payload.BasePrice;
+      result.search_address = payload.search_address;
+
+      result.form = {
+        search_age1: search_age ? search_age.ContentValue.split('-')[0] : null,
+        search_age2: search_age ? search_age.ContentValue.split('-')[1] : null,
+        search_sex: search_sex ? search_sex.ContentValue : null,
+        search_area: search_region ? getAreas(JSON.parse(search_region.ContentValue)) : '',
+        search_checked_address: search_radius ? search_radius.ContentValue : false,
+        // search_radius: search_radius ? search_radius.ContentValue: false,
+
+        search_radius: search_radius ? search_radius.ContentValue.split('-')[1] : false,
+
+        search_userOrder: search_userOrder ? search_userOrder.ContentValue : null,
+
+        MSG_PRICE_TYPE_REPLY_AGE: reply_specificAge && reply_specificAge.ContentValue === '1',
+        MSG_PRICE_TYPE_REPLY_BIRTHDAY: reply_birthday && reply_birthday.ContentValue === '1',
+        MSG_PRICE_TYPE_REPLY_FAMILY_LEVEL:
+          reply_familyEconomic && reply_familyEconomic.ContentValue === '1',
+        MSG_PRICE_TYPE_REPLY_FULL_NAME: reply_fullName && reply_fullName.ContentValue === '1',
+        MSG_PRICE_TYPE_REPLY_SEX: reply_sex && reply_sex.ContentValue === '1',
+        MSG_PRICE_TYPE_REPLY_REGION: reply_area && reply_area.ContentValue === '1',
+
+        count: SmsOrderBaseInfo.SendCount,
+        sendtime: SmsOrderBaseInfo.SendTime,
+
+        priceOne: SmsOrderBaseInfo.PriceOne / 100,
+        totalPrice: SmsOrderBaseInfo.TotalPrice / 100,
+        salePrice: SmsOrderBaseInfo.SalePrice / 100,
+        payMoney: SmsOrderBaseInfo.PayMoney / 100,
+
+        templateName: ContentTemplateInfo.TemplateName,
+        smsContent: ContentTemplateInfo.SmsContent,
+        smsLink: ContentTemplateInfo.SmsLink,
+      };
+
+      return {
+        ...state,
+        isShowDetail: true,
+        orderDetail: result,
+      };
+    },
+    onCloseDetail(state, { payload }) {
+      return {
+        ...state,
+        isShowDetail: false,
       };
     },
   },
 };
+
+function getAreas(json) {
+  const list = [];
+  json.map(p => {
+    list.push(p.ProvinceCode);
+    p.CityList.map(c => {
+      list.push(c.CityCode);
+      c.CountyList.map(o => {
+        list.push(o.CountyCode);
+      });
+    });
+  });
+
+  return list;
+}

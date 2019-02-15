@@ -140,7 +140,6 @@ export default {
         method: 'POST',
       };
       const res: Res = yield call(ask, pars);
-      console.log(res)
       if (res.success) {
         yield put({
           type: 'onHideConfirm',
@@ -150,7 +149,7 @@ export default {
         router.push('/shortMessage/templateListForSend/orderList');
       } else {
         isSubmitting = false;
-        console.log(res.message, payload.container)
+        
         MessageBox.show(res.message, payload.container);
       }
     },

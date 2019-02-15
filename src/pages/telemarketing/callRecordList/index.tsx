@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Table, Divider, Icon, Tooltip,Modal,Select, Form, Input} from 'antd';
+import { Table, DatePicker } from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
-import { ShortMessageTemplateEdit } from 'components/shortMessageTemplateEdit';
+import router from 'umi/router';
 import { confirm } from 'components/confirm';
-import { FormItem } from 'components/formItem';
+import { Input2 } from 'components/input';
+import { ShortMessageSendConfirm } from 'components/shortMessageSendConfirm';
 
 interface Props {
   dispatch: (props: any) => void;
@@ -16,30 +17,33 @@ interface Props {
 
 interface State {
   height: number;
-  editvisible:boolean;
-  temvisible:boolean;
-  defaultSignName:string;
-  editSignId:string;
-  edittemplateid:string;
-  templateName:string;
 }
+
+const stateMap = {
+  1: '待发送',
+  2: '正在发送',
+  3: '商户取消发送',
+  4: '发送已完成',
+  5: '订单被无效',
+};
 
 class Component extends React.PureComponent<Props, State> {
   private divForm: HTMLDivElement;
   constructor(props: Props) {
     super(props);
     this.state = {
-      templateName:'',
       height: 0,
-      editvisible:false,
-      temvisible:false,
-      defaultSignName:'',
-      editSignId:'',
-      edittemplateid:''
     };
   }
 
   componentDidMount() {
+    this.props.dispatch({
+      type: `${namespace}/fetch`,
+      payload: {
+        container: this.divForm,
+      },
+    });
+
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
@@ -50,7 +54,7 @@ class Component extends React.PureComponent<Props, State> {
 
   onResize = () => {
     this.setState({
-      height: this.divForm.offsetHeight - 55 - 80,
+      height: this.divForm.offsetHeight - 55 - 80 - 50,
     });
   };
 
@@ -63,41 +67,7 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-  handleCancel = (e) => {
-    this.setState({
-      editvisible: false,
-      temvisible:false,
-      defaultSignName:''
-    });
-  }
-  onChangeTName = (e)=>{
-    this.setState({
-      templateName: e.target.value,
-    });
-  }
-  onOpenMEdit = record => {
-      this.setState({
-        defaultSignName:record.SignId,
-        edittemplateid:record.TemplateSysId,
-        editSignId:record.SignId
-      })
-      setTimeout(()=>{
-        this.setState({
-          editvisible:true,
-        })
-      },50)
-  };
-  onOpenTEdit = record => {
-    this.setState({
-      templateName:record.TemplateName,
-      edittemplateid:record.TemplateSysId,
-    })
-    setTimeout(()=>{
-      this.setState({
-        temvisible:true,
-      })
-    },50)
-};
+
   onPageChanged = (pageindex, pagecount) => {
     this.props.dispatch({
       type: `${namespace}/fetch`,
@@ -108,193 +78,183 @@ class Component extends React.PureComponent<Props, State> {
     });
   };
 
-  onOpenEdit = record => {
+  onDateChanged = e => {
     this.props.dispatch({
-      type: `${namespace}/showEdit`,
-      payload: {
-        currData: record,
-        isShowEdit: true,
-      },
+      type: `${namespace}/onDateChanged`,
+      payload: e,
     });
   };
 
-  onCloseEdit = () => {
+  onMobileChanged = e => {
     this.props.dispatch({
-      type: `${namespace}/showEdit`,
-      payload: {
-        isShowEdit: false,
-      },
+      type: `${namespace}/onMobileChanged`,
+      payload: e.target.value,
     });
   };
 
-  onSave = (data, container) => {
-    this.props.dispatch({
-      type: `${namespace}/onSave`,
-      payload: {
-        container,
-        data,
-      },
-    });
-  };
-  handleChange = value =>{
-    this.setState({
-      editSignId:value,
-    })
-  }
-  // 修改模板名称
-  saveTemplate = (container) =>{
-    this.props.dispatch({
-      type: `${namespace}/onEditTem`,
-      payload: {
-        container,
-        templateid:this.state.edittemplateid,
-        templatename:this.state.templateName
-      },
-    });
-    this.setState({
-      temvisible : false
-    })
-  }
-  saveSign = (container) =>{
-    this.props.dispatch({
-      type: `${namespace}/onEdit`,
-      payload: {
-        container,
-        templateid:this.state.edittemplateid,
-        signid:this.state.editSignId
-      },
-    });
-    this.setState({
-      editvisible : false
-    })
-  }
-  onDelete = record => {
+  onCancelSend = h => {
     confirm({
-      title: '确定要删除短信模板吗？',
+      title: '确定要取消短信发送吗？',
       onOk: () => {
         this.props.dispatch({
-          type: `${namespace}/onDelete`,
-          payload: record.TemplateSysId,
+          type: `${namespace}/onCancelSend`,
+          payload: h.OrderId,
         });
       },
     });
   };
+  onOpenDetail = h => {
+    this.props.dispatch({
+      type: `${namespace}/onOpenDetail`,
+      payload: h.OrderId,
+    });
+  };
+  onCloseDetail = () => {
+    this.props.dispatch({
+      type: `${namespace}/onCloseDetail`,
+      payload: {},
+    });
+  };
+  onParentChanged = e => {
+    this.props.dispatch({
+      type: `${namespace}/onParentChanged`,
+      payload: e.target.value,
+    });
+  };
+  onOpenSendDetail = h => {
+    router.push(`/shortMessage/templateListForSend/orderList/sendList?orderId=${h.OrderId}&clear=1`);
+  };
+  onOpenReadDetail = h => {
+    router.push(`/shortMessage/templateListForSend/orderList/visitList?orderId=${h.OrderId}&clear=1`);
+  };
 
   render() {
-    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData } = this.props.data;
+    const {
+      list,
+      totalCount,
+      pageindex,
+      pagecount,
+      timeRange,
+      mobile,
+      parent,
+      isShowDetail,
+      orderDetail,
+    } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
-        title: '短信名字',
-        dataIndex: 'TemplateName',
-        width: '10%',
+        title: '订单号码',
+        dataIndex: 'OrderId',
+        width: 100,
         align: 'center',
       },
       {
-        title: '短信内容',
-        dataIndex: 'SmsContent',
-        width: '30%',
+        title: '父母',
+        dataIndex: 'Father',
         align: 'center',
-      },
-      {
-        title: '短信链接',
-        dataIndex: 'SmsLink',
-        width: '14%',
-        align: 'center',
-      },
-      {
-        title: '审核状态',
-        dataIndex: 'ExamineStateName',
-        width: '12%',
-        align: 'center',
-        render: (text, h) => {
-          const red = h.ExamineState === 2 || h.ExamineState === 3 || h.ExamineState === 5;
-          if (h.ExamineFailReason) {
-            return (
-              <Tooltip placement="topLeft" title={h.ExamineFailReason} arrowPointAtCenter>
-                <span style={{ color: red ? 'red' : '' }}>
-                  {h.ExamineStateName}
-                  <Icon type="question-circle" />
-                </span>
-              </Tooltip>
-            );
-          } else {
-            return <span style={{ color: red ? 'red' : '' }}>{h.ExamineStateName}</span>;
-          }
+        render: (text,h) => {
+          return `${h.Father}/${h.Mother}`
         },
       },
       {
-        title: '提交时间',
-        dataIndex: 'CreateTime',
-        width: '12%',
+        title: '手机号码',
+        dataIndex: 'Mobile',
+        width: 100,
         align: 'center',
       },
       {
-        title: '短信编辑',
+        title: '最新拨打时间',
+        dataIndex: 'LastCallTime',
+        width: 100,
+        align: 'center',
+      },
+      {
+        title: '最新状态',
+        dataIndex: 'LastStatus',
+        width: 110,
+        align: 'center',
+        render: (text, h) => {
+          return stateMap[h.LastStatus]
+        },
+      },
+      {
+        title: '最新通话时长',
+        dataIndex: 'LastCallSecond',
+        width: 120,
+        align: 'center',
+      },
+      {
+        title: '被拨打次数',
+        dataIndex: 'CallTimes',
+        width: 120,
+        align: 'center',
+      },
+      {
+        title: '操作',
         key: 'action',
-        width: '22%',
+        width: 90,
         align: 'center',
         render: (text, h) => (
           <span>
-            {(h.ExamineState === 1 || h.ExamineState === 3) && (
+            {
               <React.Fragment>
-                <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
-                  编辑短信内容
+                {h.Status === 1 && (
+                  <React.Fragment>
+                    <a href="javascript:;" onClick={() => this.onCancelSend(h)}>
+                      取消发送
+                    </a>
+                    <br />
+                  </React.Fragment>
+                )}
+                <a href="javascript:;" onClick={() => this.onOpenDetail(h)}>
+                  订单详情
                 </a>
-                <Divider type="vertical" />
+                <br />
+                {(h.Status === 2 || h.Status === 4) && (
+                  <React.Fragment>
+                    <a href="javascript:;" onClick={() => this.onOpenSendDetail(h)}>
+                      发送详情
+                    </a>
+                    <br />
+                  </React.Fragment>
+                )}
+                {h.Status === 4 && (
+                  <a href="javascript:;" onClick={() => this.onOpenReadDetail(h)}>
+                    访问详情
+                  </a>
+                )}
               </React.Fragment>
-            )}
-            {(h.ExamineState !== 5) && (
-              <React.Fragment>
-                <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
-              修改签名
-              </a>
-              <Divider type="vertical" />
-              <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
-                修改模板名称
-              </a>
-              <Divider type="vertical" />
-              </React.Fragment>
-            )}
-            <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
-              删除
-            </a>
+            }
           </span>
         ),
       },
     ];
 
-    const statusMap = {
-      1: '待审核',
-      2: '审核中',
-      3: '审核拒绝',
-      4: '审核通过',
-      5: '管理员作废',
-    };
-
-    const listData = list.map(h => ({
-      ...h,
-      ExamineStateName: statusMap[h.ExamineState],
-    }));
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
-        <Button
-          className={styles.btnAdd}
-          ghost
-          type="primary"
-          onClick={() => this.onOpenEdit(null)}
-        >
-          添加
-        </Button>
+        <div className={styles.condition}>
+          <Input2
+            placeholder="父/母搜索"
+            value={parent}
+            onChange={this.onParentChanged}
+            className={styles.searchInput}
+          />
+          <Input2 placeholder="手机号搜索" value={mobile} className={styles.searchInput} onChange={this.onMobileChanged} />
+          <div className={styles.title}>时间范围：</div>
+          <DatePicker.RangePicker onChange={this.onDateChanged} value={timeRange} />
+          <Button ghost type="primary" className={styles.btn} onClick={this.onSelect}>
+            搜索
+          </Button>
+        </div>
         <Table
           columns={columns}
-          dataSource={listData}
+          dataSource={list}
           pagination={false}
           scroll={{ y: height }}
-          rowKey="TemplateSysId"
+          rowKey="OrderId"
           bordered={true}
           locale={{
-            emptyText: '暂无短信模板，请先去添加',
+            emptyText: '暂无记录',
           }}
         />
         <SplitPage
@@ -304,57 +264,13 @@ class Component extends React.PureComponent<Props, State> {
           onPageChanged={this.onPageChanged}
         />
 
-        {isShowEdit && (
-          <ShortMessageTemplateEdit
-            isEdit={true}
-            typelist={typelist}
-            data={currData}
-            onSave={this.onSave}
-            onClose={this.onCloseEdit}
+        {isShowDetail && (
+          <ShortMessageSendConfirm
+            onClose={this.onCloseDetail}
+            data={orderDetail}
+            doType="detail"
           />
         )}
-        <Modal title="修改签名" visible={this.state.editvisible}
-          style={{ top: 200}}
-          width='630px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
-              提交
-            </Button>,
-            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
-          ]}
-        >
-          <div className={styles.form}>
-           <Form>
-            <span>签名：</span>
-              <Select value={this.state.defaultSignName} style={{ width: 300 }} onChange={this.handleChange} >
-                {typelist.map((item,index) =>(
-                  <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
-                ))}
-              </Select>
-          </Form>
-        </div>
-        </Modal>
-        {/* 修改模板名称 */}
-        <Modal title="修改模板名称" visible={this.state.temvisible}
-          style={{ top: 200}}
-          width='630px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" type="primary" size="large" onClick={this.saveTemplate}>
-              提交
-            </Button>,
-            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
-          ]}
-        >
-          <div className={styles.form}>
-           <Form>
-            <Form.Item label="模板名称：">
-              <Input className={styles.lineInput} value={this.state.templateName} onChange={this.onChangeTName} placeholder="请输入模板名称"  />
-            </Form.Item>
-          </Form>
-        </div>
-        </Modal>
       </div>
     );
   }

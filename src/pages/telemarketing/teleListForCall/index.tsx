@@ -21,6 +21,9 @@ interface Props {
 interface State {
   height: number;
   addvisible:boolean;
+  typeValue:string;
+  typeIndex:number;
+  addOrderName:string;
 }
 
 class Component extends React.PureComponent<Props, State> {
@@ -29,8 +32,11 @@ class Component extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      addOrderName:'',
       height: 0,
-      addvisible:false
+      addvisible:false,
+      typeValue:'',
+      typeIndex:0
     };
     this.onGetExpectDebounce = debounce(this.onGetExpect, 300);
   }
@@ -46,9 +52,31 @@ class Component extends React.PureComponent<Props, State> {
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.onResize);
+  componentDidUpdate(){
+    if(!this.props.data.isShowConfirm){
+      this.setState({
+        addvisible:false
+      })
+    }
+  }
+  // componentWillUnmount() {
+  //   if(this.props.data.templateList && this.props.data.templateList.length > 0){
+  //     setTimeout(()=>{
+  //       this.setState({
+  //         typeValue:this.props.data.templateList[0].TemlateId
+  //       })
+  //     },200)
+  //   }
+  //   window.removeEventListener('resize', this.onResize);
+  // }
+  componentWillReceiveProps(nextProps){
+    if(this.props.data.templateList && this.props.data.templateList.length > 0){
+      this.setState(
+        {
+          typeValue:this.props.data.templateList[this.state.typeIndex].TemlateId
+        }
+      )
+      }
   }
   renderTreeNodes = data => {
     return data.map(item => {
@@ -91,6 +119,11 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
+  onOrderNameChange = e =>{
+      this.setState({
+        addOrderName:e.target.value
+      })
+  }
   onOrderSnChanged = e => {
     this.props.dispatch({
       type: `${namespace}/onOrderSnChanged`,
@@ -131,8 +164,16 @@ class Component extends React.PureComponent<Props, State> {
       addvisible: true,
     });
   }
-  addSave = (e) =>{
-
+  addSave = () =>{
+    const { search_region, form } = this.props.data;
+    this.props.dispatch({
+      type: `${namespace}/onSave`,
+      payload: {
+        addOrderName:this.state.addOrderName,
+        templateId:this.state.typeValue,
+        search_area_dis: search_region ? getAreaData(search_region.tree, form.search_area) : '',
+      },
+    });
   }
   onSearchCheckedAddressChanged = e => {
     this.props.dispatch({
@@ -156,6 +197,32 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
+  onChangeTemplate = (value) => {
+    this.getfetchPrice(value)
+    this.setState({
+      typeValue:value
+    })
+    if(this.props.data.templateList.length>0){
+      this.setState({
+        typeIndex:this.searchType(this.props.data.templateList,value)
+      })
+    }
+  }
+  searchType = (arr, dst)=>{
+    for (let j = 0; j < arr.length; j++) {
+      if (arr[j].TemlateId == dst) {
+        return j;
+      }
+    }
+  }
+  getfetchPrice = (ptid) => {
+    this.props.dispatch({
+      type: `${namespace}/fetchPrice`,
+      payload: {
+        TemlateId: ptid,
+      },
+    });
+  }
   onSearchAge1Changed = value => {
     this.props.dispatch({
       type: `${namespace}/onSearchAge1Changed`,
@@ -177,6 +244,12 @@ class Component extends React.PureComponent<Props, State> {
     });
     this.onGetExpectDebounce();
   };
+  onDelete = (h)=>{
+    this.props.dispatch({
+      type: `${namespace}/onDelete`,
+      payload: h.OrderId,
+    });
+  }
   onSearchUserOrderNew = e => {
     this.props.dispatch({
       type: `${namespace}/onSearchUserOrderNew`,
@@ -213,7 +286,6 @@ class Component extends React.PureComponent<Props, State> {
   onGotoAddTemplate = () => {
     router.push('/shortMessage/templateList');
   };
-
   render() {
     const { list, 
       totalCount, 
@@ -243,7 +315,7 @@ class Component extends React.PureComponent<Props, State> {
       search_address,
       // minSendCount,
       expectCount,
-      TypeList
+      templateList
     } = this.props.data;
     const td2Style = { width: '60px', textAlign: 'right' };
     const thWidth = 120;
@@ -302,7 +374,7 @@ class Component extends React.PureComponent<Props, State> {
                     拨打记录
                   </a>
                   <br />
-                  <a href="javascript:;" onClick={() => this.onOpenEdit(h)} className={styles.delete}>
+                  <a href="javascript:;" onClick={() => this.onDelete(h)} className={styles.delete}>
                     删除
                   </a>
                   <br />
@@ -316,14 +388,6 @@ class Component extends React.PureComponent<Props, State> {
 
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
-        {/* <Button
-          className={styles.btnOrder}
-          ghost
-          type="primary"
-          onClick={() => this.onOpenOrderList(null)}
-        >
-          订单记录
-        </Button> */}
         <div className={styles.condition}>
           <Input2
             placeholder="订单号"
@@ -344,8 +408,9 @@ class Component extends React.PureComponent<Props, State> {
           columns={columns}
           dataSource={list}
           pagination={false}
+          className={styles.tableContent}
           scroll={{ y: height }}
-          rowKey="orderId"
+          rowKey="OrderId"
           bordered={true}
           locale={{
             emptyText: '暂无短信内容模板，请前往短信模板创建',
@@ -371,7 +436,7 @@ class Component extends React.PureComponent<Props, State> {
         {/* 创建订单 */}
         <Modal title="创建订单" visible={this.state.addvisible}
           style={{ top: 200}}
-          width='630px'
+          width='830px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.addSave}>
@@ -381,6 +446,34 @@ class Component extends React.PureComponent<Props, State> {
           ]}
         >
         <div className={styles.form}>
+          <div className={styles.card}>
+            <div className={styles.cardTitle}>
+              <div>订单名称</div>
+              <Input2 placeholder="订单名称" value={this.state.addOrderName} onChange={this.onOrderNameChange} className={styles.orderInput}/>
+            </div>
+            <div className={styles.selectBox}>
+              
+            </div>
+            <div className={styles.cardTitle}>
+              <div>价格模板:</div>
+              <div className={styles.selectBox}>
+              <Select
+                placeholder="请选择模板"
+                value={this.state.typeValue}
+                className={styles.age}
+                onSelect={this.onChangeTemplate}
+                style={{ width: 190 }}
+              >
+                {templateList.map(h => (
+                  <Select.Option key={h.TemlateId} value={h.TemlateId}>{h.TemlateName}</Select.Option>
+                ))}
+              </Select>
+            </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.form}>
+
         <div className={styles.card}>
             <div className={styles.cardTitle}>
               <div>搜索条件</div>
@@ -392,6 +485,7 @@ class Component extends React.PureComponent<Props, State> {
                   // 年龄
                   <FormItem
                     title="年龄"
+                    thWidth={thWidth}
                   >
                     <div className={styles.ageline}>
                       从
@@ -403,9 +497,9 @@ class Component extends React.PureComponent<Props, State> {
                         style={{ width: 120 }}
                         disabled={search_isReadonly}
                       >
-                        {/* {search_age.list.map(h => (
+                        {search_age && search_age.list?search_age.list.map(h => (
                           <Select.Option key={String(h)}>{h}岁</Select.Option>
-                        ))} */}
+                        )):''}
                       </Select>
                       到
                       <Select
@@ -416,9 +510,9 @@ class Component extends React.PureComponent<Props, State> {
                         style={{ width: 120 }}
                         disabled={search_isReadonly}
                       >
-                        {/* {search_age.list.map(h => (
+                        {search_age && search_age.list?search_age.list.map(h => (
                           <Select.Option key={String(h)}>{h}岁</Select.Option>
-                        ))} */}
+                        )):''}
                       </Select>
                     </div>
                   </FormItem>
@@ -436,20 +530,21 @@ class Component extends React.PureComponent<Props, State> {
                       value={form.search_sex}
                       disabled={search_isReadonly}
                     >
-                      {/* {search_sex.list.map(h => (
+                      {search_sex && search_sex.list?search_sex.list.map(h => (
                         <Select.Option key={String(h.value)} value={h.value}>
                           {h.text}
                         </Select.Option>
-                      ))} */}
+                      )):''}
                     </Select>
                   </FormItem>
                 )}
                 {(
                   // 区域
                   <FormItem
-                    title="区域"
-                    thWidth={thWidth}
-                    splitHeight={0}
+                  title="区域"
+                  thWidth={thWidth}
+                  td2Style={td2Style}
+                  splitHeight={0}
                   >
                     <div className={styles.scroll}>
                       <Tree
@@ -460,7 +555,7 @@ class Component extends React.PureComponent<Props, State> {
                         filterTreeNode={() => false}
                         disabled={search_isReadonly}
                       >
-                        {/* {this.renderTreeNodes(search_region.tree)} */}
+                        {search_region && search_region.tree?this.renderTreeNodes(search_region.tree):''}
                       </Tree>
                     </div>
                   </FormItem>
@@ -485,7 +580,7 @@ class Component extends React.PureComponent<Props, State> {
                       <div className={styles.address}>{search_address}</div>
                     </FormItem>
                     {/* 半径 */}
-                    <FormItem title="半径" thWidth={thWidth}>
+                    <FormItem title="半径范围" thWidth={thWidth}>
                       <div className={styles.ageline}>
                         <Select
                           placeholder="请选择半径"
@@ -495,9 +590,9 @@ class Component extends React.PureComponent<Props, State> {
                           style={{ width: 120 }}
                           disabled={!form.search_checked_address || search_isReadonly}
                         >
-                          {/* {search_radius.list.map(h => (
+                          {search_radius && search_radius.list?search_radius.list.map(h => (
                             <Select.Option key={String(h)}>{h}公里</Select.Option>
-                          ))} */}
+                          )):''}
                         </Select>
                       </div>
                     </FormItem>
@@ -506,7 +601,7 @@ class Component extends React.PureComponent<Props, State> {
                 {(
                   // 发送顺序
                   <FormItem
-                    title="发送顺序"
+                    title="用户优先"
                     thWidth={thWidth}
                     td2Style={td2Style}
                   >

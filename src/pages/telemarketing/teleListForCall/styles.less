@@ -9,6 +9,9 @@
   width: 80%;
   margin-left:25px !important;
 }
+.orderInput{
+  margin-left:25px !important;
+}
 .delete{
   color: red;
 }
@@ -30,7 +33,10 @@
   position: relative;
   border: @border;
 }
-
+.tableContent{
+  height: 85%;
+  overflow: scroll;  
+}
 .btnOrder {
   position: absolute;
   z-index: 2;
@@ -70,4 +76,87 @@
   border-radius: 4px;
   height: 40px;
   width: 90px;
+}
+.form {
+  width: 750px;
+  margin: 0 auto;
+}
+.card {
+  border-radius: 4px;
+  background-color: #fff;
+  padding: 30px 0 17px 30px;
+  margin-top: 14px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  display: flex;
+  // padding: 30px 0 5px 30px;
+  padding-bottom: 5px;
+}
+
+.line {
+  border-bottom: solid 1px #ccc;
+  flex-grow: 1;
+  height: 15px;
+  margin-left: 10px;
+}
+.content {
+  padding-left: 76px;
+  width: 550px;
+}
+
+.contentOther {
+  .content;
+  width: 580px;
+}
+
+.ageline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.age {
+  width: 180px;
+}
+.sex {
+  width: 160px;
+}
+.address {
+  padding-top: 13px;
+}
+.selectBox{
+  padding-left: 20px;
+}
+.provinceItem {
+  display: flex;
+  padding: 5px 0 5px 20px;
+  width: 100%;
+}
+.scroll {
+  overflow-y: auto;
+  height: 300px;
+  border: solid 1px #ccc;
+}
+.dqmt {
+  margin-bottom: 10px;
+  padding-left: 90px;
+}
+.fk {
+  width: 50%;
+  float: left;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.clear {
+  clear: both;
+}
+.time {
+  display: flex;
+  align-items: center;
+}
+.tdOrder {
+  height: 45px;
+  display: flex;
+  align-items: center;
 }
