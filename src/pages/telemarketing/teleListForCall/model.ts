@@ -26,7 +26,7 @@ export default {
     timeRange: [],
     pageindex: 1,
     pagecount: pageSize,
-    isShowConfirm:true
+    isShowConfirm:true,
   },
 
   subscriptions: {
@@ -243,6 +243,7 @@ export default {
         ...state,
         pageindex: 1,
         list: [],
+        
       };
     },
     restore(state, { payload }) {

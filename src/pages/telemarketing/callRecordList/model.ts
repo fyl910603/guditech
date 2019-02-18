@@ -10,8 +10,11 @@ export default {
   namespace,
   state: {
     list: [],
+    phoneList:[],
+    smsList:[],
     pageindex: 1,
     pagecount: pageSize,
+    isShowRemark:true,
     timeRange: [],
   },
 
@@ -86,6 +89,73 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
+    // 获取电话明细
+    *fetchPhoneDetail({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/order/call/record/details',
+        body: {
+          orderid: payload.orderid,
+          familyid:payload.familyid
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchPhoneDetailSuccess',
+          payload: {
+            phonelist:res.data
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *fetchRemark({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/order/call/remark/modify',
+        body: {
+          OrderId: payload.OrderId,
+          FamilyId:payload.FamilyId,
+          Remark:payload.Remark
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchRemarkSuccess',
+          payload: {
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *fetchSmsDetail({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/order/call/record/sms/details',
+        body: {
+          orderid: payload.orderid,
+          familyid:payload.familyid
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchSmsDetailSuccess',
+          payload: {
+            smslist:res.data
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
     *onOpenDetail({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container } = payload;
@@ -117,12 +187,14 @@ export default {
     init(state, { payload }) {
       return {
         ...state,
+        isShowRemark:true,
         timeRange: [],
         parent: '',
         pageindex: 1,
         orderid: '',
         mobile:'',
         list: [],
+        // phoneList:[]
       };
     },
     restore(state, { payload }) {
@@ -140,6 +212,24 @@ export default {
           ...state,
         };
       }
+    },
+    fetchPhoneDetailSuccess(state, { payload }) {
+      return {
+        ...state,
+        phoneList: payload.phonelist,
+      };
+    },
+    fetchSmsDetailSuccess(state, { payload }) {
+      return {
+        ...state,
+        smsList: payload.smslist,
+      };
+    },
+    fetchRemarkSuccess(state, { payload }) {
+      return {
+        ...state,
+        
+      };
     },
     fetchSuccess(state, { payload }) {
       return {
