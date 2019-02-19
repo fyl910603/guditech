@@ -387,7 +387,6 @@ class Component extends React.PureComponent<Props, State> {
       expectCount,
       TypeList
     } = data;
-    console.log(this.props.data)
     let price = 0;
     let minSendCount,basePrice;
     if(TypeList.length > 0){

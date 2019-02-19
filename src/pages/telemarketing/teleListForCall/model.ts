@@ -14,6 +14,7 @@ export default {
     templateList:[],
     typelist:[],
     list: [],
+    orderData:{},
     form: {
       search_sex: '不限',
       sendtype: '1',
@@ -211,7 +212,29 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
-
+    *showOrderD({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container, data } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/order/details',
+        body: {
+          orderid: payload.OrderId,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'showOrderDSuccess',
+          payload: {
+            ...state,
+            orderData: res.data
+          }
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
     *onDelete({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
@@ -573,6 +596,13 @@ export default {
             }
           : null,
         isShowEdit: payload.isShowEdit,
+      };
+    },
+    showOrderDSuccess(state, { payload }) {
+      const orderData = payload.orderData;
+      return {
+        ...state,
+        orderData: payload.orderData
       };
     },
   },
