@@ -12,14 +12,14 @@ function Component(props) {
 
   const menuList: MenuDataItem[] = [
     {
-      icon: <Icon type="mail" />,
+      icon: <Icon type="phone" />,
       text: '电话营销',
       url: '/telemarketing/teleListForCall',
     },
     {
-      icon: <Icon type="appstore" />,
-      text: '拨打记录',
-      url: '/telemarketing/callRecordList',
+      icon: <Icon type="mail" />,
+      text: '短信模板',
+      url: '/telemarketing/smsTemplate',
     },
   ];
 

@@ -12,24 +12,35 @@ export const namespace = 'orderList';
 export default {
   namespace,
   state: {
+    seatList:[],
     list: [],
     phoneList:[],
     smsList:[],
+    CallData:{},
     pageindex: 1,
     pagecount: pageSize,
     isShowRemark:true,
+    isShowCall:false,
     timeRange: [],
   },
 
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === '/telemarketing/callRecordList?clear=1') {
+        if (location.pathname === '/telemarketing/teleListForCall/phoneDetail') {
           dispatch({
             type: 'init',
           });
           dispatch({
-            type: 'fetch'
+            type: 'fetchPhoneSeat',
+            payload:{}
+          });
+          dispatch({
+            type: 'fetch',
+            payload:{
+              orderid:location.query.orderid,
+              pagecount:30
+            }
           })
           if (location.query.clear !== '1') {
             dispatch({
@@ -47,15 +58,10 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container } = payload;
       const pars: Props = {
-        url: '/api/callmarketing/order/call/record',
+        url: '/api/callmarketing/order/call/details',
         body: {
-          pageindex: payload.pageindex || state.pageindex,
-          pagecount: state.pagecount,
-          starttime: state.timeRange[0] ? state.timeRange[0].format('YYYY-MM-DD 00:00:00') : '',
-          endtime: state.timeRange[1] ? state.timeRange[1].format('YYYY-MM-DD 23:59:59') : '',
-          parent: state.parent,
-          orderid: 0,
-          mobile:state.mobile
+          pagecount: payload.pagecount,
+          orderid: payload.orderid,
         },
         method: 'GET',
       };
@@ -64,11 +70,31 @@ export default {
         yield put({
           type: 'fetchSuccess',
           payload: {
-            ...res.data,
-            pageindex: payload.pageindex || state.pageindex,
-            pagecount: state.pagecount,
+            List:res.data,
+            
           },
         });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    // 获取电话坐席
+    *fetchPhoneSeat({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/seat/list',
+        body: {
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+          yield put({
+            type: 'fetchSeatSuccess',
+            payload: {
+              seatlist:res.data
+            },
+          });
       } else {
         MessageBox.show(res.message, container);
       }
@@ -84,10 +110,10 @@ export default {
       };
       const res: Res = yield call(ask, pars);
       if (res.success) {
-        yield put({
-          type: 'fetch',
-          payload: {},
-        });
+        // yield put({
+        //   type: 'fetch',
+        //   payload: {},
+        // });
       } else {
         MessageBox.show(res.message, container);
       }
@@ -198,6 +224,7 @@ export default {
       return {
         ...state,
         isShowRemark:true,
+        isShowCall:false,
         timeRange: [],
         parent: '',
         pageindex: 1,
@@ -229,6 +256,12 @@ export default {
         phoneList: payload.phonelist,
       };
     },
+    fetchSeatSuccess(state, { payload }) {
+      return {
+        ...state,
+        seatList: payload.seatlist,
+      };
+    },
     fetchSmsDetailSuccess(state, { payload }) {
       return {
         ...state,
@@ -251,23 +284,19 @@ export default {
       return {
         ...state,
         list: payload.List || [],
-        totalCount: payload.TotalCount || 0,
-        pageindex: payload.pageindex,
-        pagecount: payload.pagecount,
-
-        // 存下条件与页码，从子页回来时恢复
-        storeData: {
-          pageindex: payload.pageindex,
-          timeRange: state.timeRange,
-          templateName: state.templateName,
-          orderSn: state.orderSn,
-        },
       };
     },
     onDateChanged(state, { payload }) {
       return {
         ...state,
         timeRange: payload,
+      };
+    },
+    onOpenCall(state, { payload }) {
+      return {
+        ...state,
+        isShowCall: true,
+        CallData:payload
       };
     },
     onParentChanged(state, { payload }) {

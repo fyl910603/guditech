@@ -179,7 +179,21 @@ class Component extends React.PureComponent<Props, State> {
   };
   // 打开电话详情
   toJumpPhoneDetail = record =>{
-    
+    router.push({
+      pathname: '/telemarketing/teleListForCall/phoneDetail',
+      query:{
+        orderid:record.OrderId,
+        ordersn:record.OrderSn
+      }
+    })
+  }
+  toJumpCallRecord = record =>{
+    router.push({
+      pathname: '/telemarketing/teleListForCall/callRecord',
+      query:{
+        orderid:record.OrderId,
+      }
+    })
   }
   handleCancel = (e) => {
     this.setState({
@@ -460,7 +474,7 @@ class Component extends React.PureComponent<Props, State> {
                     电话详情
                   </a>
                   <br />
-                  <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
+                  <a href="javascript:;" onClick={() => this.toJumpCallRecord(h)}>
                     拨打记录
                   </a>
                   <br />

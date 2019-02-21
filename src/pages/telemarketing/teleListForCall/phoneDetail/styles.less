@@ -1,4 +1,4 @@
-@import '../../../variable.less';
+@import '../../../../variable.less';
 
 .title {
   padding: 0 20px 0 40px;
@@ -18,14 +18,26 @@
     border-bottom: none;
   }
   height: 100%;
-  border: @border;
+  // border: @border;
 }
 .topSpan{
   margin-left: 15px;
 }
+.reload{
+  float: right;
+  position: relative;
+  top: -10px;
+  margin-right: 10px;
+  color:#55c1de;
+  cursor: pointer;
+}
 .textareaBox{
   width: 80%;
   height: 200px;
+}
+.charges{
+  float: right;
+  color:#55c1de;
 }
 .textarea{
   display: inline-block;
@@ -47,8 +59,7 @@
 }
 .marketing{
   position: relative;
-  top: -10px;
-  height: 70px;
+  top: 10px;
   width: 60px;
   display: flex;
   display: -webkit-flex;
@@ -67,6 +78,9 @@
 }
 .spaceSpan{
   margin-right: 10px;
+}
+.tableContent{
+  height: 95%;
 }
 .searchInput{
   width: 80%;
@@ -100,6 +114,6 @@
 .condition {
   display: flex;
   align-items: center;
-  padding: 20px 0;
+  height: 5%;
 }
 

@@ -21,8 +21,10 @@
     "husky": "^0.14.3",
     "lint-staged": "^7.2.2",
     "react-router-breadcrumbs-hoc": "^2.1.5",
+    "socket.io-client": "^2.2.0",
     "umi": "^2.1.2",
-    "umi-plugin-react": "^1.1.1"
+    "umi-plugin-react": "^1.1.1",
+    "websocket": "^1.0.28"
   },
   "lint-staged": {
     "*.{js,jsx}": [

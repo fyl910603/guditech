@@ -33,7 +33,7 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        // if (location.pathname === `/shortMessage/${namespace}`) {
+        if (location.pathname === `telemarketing/teleListForCall`) {
           dispatch({
             type: 'init',
           });
@@ -54,7 +54,7 @@ export default {
               type: 'restore',
             });
           }
-        // }
+        }
       });
     },
   },

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Table, DatePicker,Icon,Modal,Tooltip,Input} from 'antd';
+import { Table, DatePicker, Icon, Modal, Tooltip, Input, Dropdown, Menu } from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
@@ -9,23 +9,22 @@ import router from 'umi/router';
 import { confirm } from 'components/confirm';
 import { Input2 } from 'components/input';
 import { ShortMessageSendConfirm } from 'components/shortMessageSendConfirm';
+import { CallTelephone } from 'components/callTelephone';
 
 interface Props {
   dispatch: (props: any) => void;
   data: any;
 }
-
 interface State {
   height: number;
-  phonevisible:boolean,
-  phoneInfo:string,
-  smsvisible:boolean,
-  remarkvisible:boolean,
-  smsInfo:string,
-  orderData:Object,
-  Remark:any
+  phonevisible: boolean,
+  phoneInfo: string,
+  smsvisible: boolean,
+  remarkvisible: boolean,
+  smsInfo: string,
+  orderData: Object,
+  Remark: any
 }
-
 const stateMap = {
   0: '通话中',
   1: '已接通',
@@ -43,25 +42,19 @@ class Component extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       height: 0,
-      phonevisible:false,
-      phoneInfo:'',
-      smsvisible:false,
-      remarkvisible:false,
-      smsInfo:'',
-      Remark:'',
-      orderData:{
+      phonevisible: false,
+      phoneInfo: '',
+      smsvisible: false,
+      remarkvisible: false,
+      smsInfo: '',
+      Remark: '',
+      orderData: {
       }
     };
+
   }
 
   componentDidMount() {
-    this.props.dispatch({
-      type: `${namespace}/fetch`,
-      payload: {
-        container: this.divForm,
-      },
-    });
-
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
@@ -72,7 +65,7 @@ class Component extends React.PureComponent<Props, State> {
 
   onResize = () => {
     this.setState({
-      height: this.divForm.offsetHeight - 55 - 80 - 50,
+      height: this.divForm.offsetHeight - 45 - 80,
     });
   };
 
@@ -133,23 +126,31 @@ class Component extends React.PureComponent<Props, State> {
       payload: {},
     });
   };
+  // 获取电话坐席
+  getPhoneSeat = () => {
+    // this.props.dispatch({
+    //   type: `${namespace}/fetchPhoneSeat`,
+    //   payload: {
+    //   }
+    // })
+  }
   // 获取电话明细
-  getPhoneDetail = (orderid,familyid)=>{
+  getPhoneDetail = (orderid, familyid) => {
     this.props.dispatch({
-      type:`${namespace}/fetchPhoneDetail`,
-      payload:{
-        orderid:orderid,
-        familyid:familyid
+      type: `${namespace}/fetchPhoneDetail`,
+      payload: {
+        orderid: orderid,
+        familyid: familyid
       }
     })
   }
   // 获取短信明细
-  getSmsDetail = (orderid,familyid)=>{
+  getSmsDetail = (orderid, familyid) => {
     this.props.dispatch({
-      type:`${namespace}/fetchSmsDetail`,
-      payload:{
-        orderid:orderid,
-        familyid:familyid
+      type: `${namespace}/fetchSmsDetail`,
+      payload: {
+        orderid: orderid,
+        familyid: familyid
       }
     })
   }
@@ -161,64 +162,71 @@ class Component extends React.PureComponent<Props, State> {
         this.props.dispatch({
           type: `${namespace}/fetchRemark`,
           payload: {
-            OrderId:this.state.orderData.OrderId,
-            FamilyId:this.state.orderData.FamilyId,
-            Remark:this.state.Remark
+            OrderId: this.state.orderData.OrderId,
+            FamilyId: this.state.orderData.FamilyId,
+            Remark: this.state.Remark
           },
         });
       },
     });
   };
-  handleCancel = () =>{
+  handleCancel = () => {
     this.setState({
-      phonevisible:false,
-      smsvisible:false,
-      remarkvisible:false,
+      phonevisible: false,
+      smsvisible: false,
+      remarkvisible: false,
     })
   }
   // 操作
-  onSend = record =>{
+  onSend = record => {
 
   }
-  toDial = record =>{
+  toDial = record => {
+    this.props.dispatch({
+      type: `${namespace}/onOpenCall`,
+      payload: record,
+    });
+  }
+  OpenPhoneDetail = record => {
+    setTimeout(() => {
+      this.getPhoneDetail(record.OrderId, record.FamilyId)
+      this.setState({
+        phonevisible: true,
+        phoneInfo: record.Mobile
+      })
+    }, 50)
+  }
+  OpenSmsDetail = record => {
+    setTimeout(() => {
+      this.getSmsDetail(record.OrderId, record.FamilyId)
+      this.setState({
+        smsvisible: true,
+        smsInfo: record.Mobile
+      })
+    }, 50)
+  }
+  //打开资费说明
+  onOpenCharges = () => {
 
-  }
-  OpenPhoneDetail = record =>{
-    setTimeout(()=>{
-      this.getPhoneDetail(record.OrderId,record.FamilyId)
-      this.setState({
-        phonevisible:true,
-        phoneInfo:record.Mobile
-      })
-    },50)
-  }
-  OpenSmsDetail = record =>{
-    setTimeout(()=>{
-      this.getSmsDetail(record.OrderId,record.FamilyId)
-      this.setState({
-        smsvisible:true,
-        smsInfo:record.Mobile
-      })
-    },50)
   }
   // 打开备注
-  OpenRemark = record =>{
+  OpenRemark = record => {
     this.props.dispatch({
       type: `${namespace}/fetchRemarkFalse`,
       payload: {
       },
     });
-    setTimeout(()=>{
+    setTimeout(() => {
       this.setState({
-        remarkvisible:true,
-        orderData:Object.assign(record),
-        Remark:record.Remark
+        remarkvisible: true,
+        orderData: Object.assign(record),
+        Remark: record.Remark
       })
-    },50)
+    }, 50)
   }
-  changeRemark = (e) =>{
+  changeRemark = (e) => {
     this.setState({
-      Remark:e.target.value
+      Remark: e.target.value
     })
   }
   onParentChanged = e => {
@@ -227,20 +235,28 @@ class Component extends React.PureComponent<Props, State> {
       payload: e.target.value,
     });
   };
-  formatSeconds = (a)=>{
-      var hh = parseInt(a/3600);  
-      if(hh<10) hh = "0" + hh;  
-      var mm = parseInt((a-hh*3600)/60);  
-      if(mm<10) mm = "0" + mm;  
-      var ss = parseInt((a-hh*3600)%60);  
-      if(ss<10) ss = "0" + ss;  
-      var length = hh + ":" + mm + ":" + ss;  
-      if(a>0){  
-        return length;  
-      }else{  
-        return "00:00:00";  
-      }  
+  reloadList = () => {
+    this.props.dispatch({
+      type: `${namespace}/fetch`,
+      payload: {
+        orderid: this.props.location.query.orderid
+      },
+    });
+  }
+  formatSeconds = (a) => {
+    var hh = parseInt(a / 3600);
+    if (hh < 10) hh = "0" + hh;
+    var mm = parseInt((a - hh * 3600) / 60);
+    if (mm < 10) mm = "0" + mm;
+    var ss = parseInt((a - hh * 3600) % 60);
+    if (ss < 10) ss = "0" + ss;
+    var length = hh + ":" + mm + ":" + ss;
+    if (a > 0) {
+      return length;
+    } else {
+      return "00:00:00";
     }
+  }
   onOpenSendDetail = h => {
     router.push(`/shortMessage/templateListForSend/orderList/sendList?orderId=${h.OrderId}&clear=1`);
   };
@@ -257,13 +273,29 @@ class Component extends React.PureComponent<Props, State> {
       timeRange,
       mobile,
       parent,
+      seatList,
       isShowDetail,
       isShowRemark,
+      isShowCall,
       orderDetail,
       phoneList,
+      CallData,
       smsList
     } = this.props.data;
     const { height } = this.state;
+    const menu = (
+      <Menu>
+        <Menu.Item>
+          <span>模板1</span>
+        </Menu.Item>
+        <Menu.Item>
+          <span>模板2</span>
+        </Menu.Item>
+        <Menu.Item>
+          <span>模板3</span>
+        </Menu.Item>
+      </Menu>
+    );
     const columns: any = [
       {
         title: '订单号码',
@@ -275,7 +307,7 @@ class Component extends React.PureComponent<Props, State> {
         title: '父母',
         dataIndex: 'Father',
         align: 'center',
-        render: (text,h) => {
+        render: (text, h) => {
           return `${h.Father}/${h.Mother}`
         },
       },
@@ -304,8 +336,8 @@ class Component extends React.PureComponent<Props, State> {
         title: '最新通话时长',
         width: 120,
         align: 'center',
-        render: (text,h) =>{
-            return <span>{this.formatSeconds(h.LastCallSecond)}</span>
+        render: (text, h) => {
+          return <span>{this.formatSeconds(h.LastCallSecond)}</span>
         }
       },
       {
@@ -332,18 +364,16 @@ class Component extends React.PureComponent<Props, State> {
                 <a href="javascript:;" onClick={() => this.onSend(h)}>
                   <div className={styles.send}>
                     <Icon type="mail" />
-                    发送信息
+                    <Dropdown overlay={menu} trigger={['click']}>
+                      <span>
+                        发送短信 <Icon type="down" />
+                      </span>
+                    </Dropdown>
                   </div>
                 </a>
                 <div className={styles.marketing}>
-                  <a href="javascript:;" onClick={() => this.OpenPhoneDetail(h)}>
-                      电话明细
-                  </a>
-                  <a href="javascript:;" onClick={() => this.OpenSmsDetail(h)}>
-                      短信明细
-                  </a>
                   <a href="javascript:;" onClick={() => this.OpenRemark(h)}>
-                      备注
+                    备注
                   </a>
                 </div>
               </React.Fragment>
@@ -352,118 +382,20 @@ class Component extends React.PureComponent<Props, State> {
         ),
       },
     ];
-    const phonecolumns: any = [
-      {
-        title: '订单号',
-        dataIndex: 'OrderId',
-        width: 100,
-        align: 'center',
-      },
-      {
-        title: '父母',
-        dataIndex: 'Father',
-        align: 'center',
-        render: (text,h) => {
-          return `${h.Father}/${h.Mother}`
-        },
-      },
-      {
-        title: '手机号码',
-        dataIndex: 'Mobile',
-        align: 'center',
-      },
-      {
-        title: '状态',
-        dataIndex: 'LastStatus',
-        align: 'center',
-        render: (text, h) => {
-          return stateMap[h.LastStatus]
-        },
-      },
-      {
-        title: '拨打时间',
-        dataIndex: 'LastCallTime',
-        align: 'center',
-      },
-      {
-        title: '通话时长',
-        align: 'center',
-        render: (text,h) =>{
-          return <span>{this.formatSeconds(h.LastCallSecond)}</span>
-        }
-      }
-    ];
-    const smscolumns: any = [
-      {
-        title: '订单号',
-        dataIndex: 'OrderId',
-        width: 100,
-        align: 'center',
-      },
-      {
-        title: '父母',
-        dataIndex: 'Father',
-        align: 'center',
-        render: (text,h) => {
-          return `${h.Father}/${h.Mother}`
-        },
-      },
-      {
-        title: '手机号码',
-        dataIndex: 'Mobile',
-        align: 'center',
-      },
-      {
-        title: '内容',
-        dataIndex: 'ContentTemplateName',
-        align: 'center',
-        render: (text, h) => {
-          return (
-            <Tooltip placement="topLeft" title={h.ContentTemplateName} arrowPointAtCenter>
-              <span>
-                {h.ContentTemplateName}
-                <Icon type="question-circle" />
-              </span>
-            </Tooltip>
-          )
-        },
-      },
-      {
-        title: '状态',
-        dataIndex: 'LastStatus',
-        align: 'center',
-        render: (text,h) => {
-          return stateSmsMap[h.LastStatus]
-        },
-      },
-      {
-        title: '发送时间',
-        dataIndex: 'LastCallTime',
-        align: 'center',
-      }
-    ];
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
         <div className={styles.condition}>
-          <Input2
-            placeholder="父/母搜索"
-            value={parent}
-            onChange={this.onParentChanged}
-            className={styles.searchInput}
-          />
-          <Input2 placeholder="手机号搜索" value={mobile} className={styles.searchInput} onChange={this.onMobileChanged} />
-          <div className={styles.title}>时间范围：</div>
-          <DatePicker.RangePicker onChange={this.onDateChanged} value={timeRange} />
-          <Button ghost type="primary" className={styles.btn} onClick={this.onSelect}>
-            搜索
-          </Button>
+          订单号：<span>{this.props.location.query.ordersn}</span>
+          {/* 已为您搜索到<span>100</span>位目标客户 */}
+          {/* <div className={styles.charges} onClick={()=>this.onOpenCharges()}>资费说明？</div> */}
         </div>
         <Table
+          className={styles.tableContent}
           columns={columns}
           dataSource={list}
           pagination={false}
           scroll={{ y: height }}
-          rowKey="OrderId"
+          rowKey="FamilyId"
           bordered={true}
           locale={{
             emptyText: '暂无记录',
@@ -475,7 +407,7 @@ class Component extends React.PureComponent<Props, State> {
           pageSize={pagecount}
           onPageChanged={this.onPageChanged}
         />
-
+        <div className={styles.reload} onClick={() => this.reloadList()}><Icon type="reload"></Icon>&nbsp;换一批</div>
         {isShowDetail && (
           <ShortMessageSendConfirm
             onClose={this.onCloseDetail}
@@ -483,70 +415,38 @@ class Component extends React.PureComponent<Props, State> {
             doType="detail"
           />
         )}
-        {/* 电话明细 */}
-          <Modal title={`电话明细-${this.state.phoneInfo}`} visible= {this.state.phonevisible}
-          style={{ top: 100}}
-          width='720px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" size="large" onClick={()=>this.handleCancel()}>关闭</Button>,
-          ]}
-          >
-          <Table
-            columns={phonecolumns}
-            dataSource={phoneList}
-            pagination={false}
-            scroll={{ y: height }}
-            rowKey={(record,index)=> index}
-            locale={{
-              emptyText: '暂无记录',
-            }}
-          />
-          </Modal>
-        {/* 短信明细 */}
-          <Modal title={`短信明细-${this.state.smsInfo}`} visible= {this.state.smsvisible}
-          style={{ top: 100}}
-          width='720px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" size="large" onClick={()=>this.handleCancel()}>关闭</Button>,
-          ]}
-          >
-          <Table
-            columns={smscolumns}
-            dataSource={smsList}
-            pagination={false}
-            scroll={{ y: height }}
-            locale={{
-              emptyText: '暂无记录',
-            }}
-          />
-          </Modal>
-          {/* 备注 */}
-          {isShowRemark && (
-          <Modal title="备注" visible= {this.state.remarkvisible}
-          style={{ top: 100}}
-          width='720px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" size="large" onClick={()=>this.submitRemark()}>
-              保存
+        {/* 备注 */}
+        {isShowRemark && (
+          <Modal title="备注" visible={this.state.remarkvisible}
+            style={{ top: 100 }}
+            width='720px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="submit" size="large" onClick={() => this.submitRemark()}>
+                保存
             </Button>,
-            <Button key="back" type="primary" size="large" onClick={()=>this.handleCancel()}>关闭</Button>
-            
-          ]}
+              <Button key="back" type="primary" size="large" onClick={() => this.handleCancel()}>关闭</Button>
+
+            ]}
           >
-          <div className={styles.topBox}>
-            <span className={styles.topSpan}>{this.state.orderData.Father!=='' && this.state.orderData.Mother!==''?`父母:${this.state.orderData.Father}/${this.state.orderData.Mother}`:''}</span>
-            <span className={styles.topSpan}>{this.state.orderData.Mobile!==''?`手机号码:${this.state.orderData.Mobile}`:''}</span>
-            <span className={styles.topSpan}>{this.state.orderData.RemarkLastUpdateTime!==''?`最后修改时间:${this.state.orderData.RemarkLastUpdateTime}`:''}</span>
-          </div>
-          <div className={styles.textareaBox}>
-            <textarea onChange={this.changeRemark} defaultValue={this.state.Remark} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
-          </div>
+            <div className={styles.topBox}>
+              <span className={styles.topSpan}>{this.state.orderData.Father !== '' && this.state.orderData.Mother !== '' ? `父母:${this.state.orderData.Father}/${this.state.orderData.Mother}` : ''}</span>
+              <span className={styles.topSpan}>{this.state.orderData.Mobile !== '' ? `手机号码:${this.state.orderData.Mobile}` : ''}</span>
+              <span className={styles.topSpan}>{this.state.orderData.RemarkLastUpdateTime !== '' ? `最后修改时间:${this.state.orderData.RemarkLastUpdateTime}` : ''}</span>
+            </div>
+            <div className={styles.textareaBox}>
+              <textarea onChange={this.changeRemark} defaultValue={this.state.Remark} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
+            </div>
           </Modal>
         )
         }
+        {/* 拨打电话弹窗 */}
+        {isShowCall && (
+          <CallTelephone 
+            data={seatList}
+            phoneData={CallData}
+          />
+        )}
       </div>
     );
   }
