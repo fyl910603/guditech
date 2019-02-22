@@ -5,12 +5,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 395px;
-  height: 60px;
+  flex-direction: column;
+  width: 350px;
+  height: 280px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 4px;
   text-align: center;
   z-index: 10000;
+}
+.msg .mobileNumber {
+  text-align: center;
+  font-size: 24px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+.msg .msgStatusIcon {
+  width: 90px;
+  height: 90px;
+  border-radius: 100%;
+  display: flex;
+  display: -webkit-flex;
+  justify-content: center;
+  align-items: center;
+}
+.msg .msgStatus {
+  font-size: 21px;
+}
+.msg .callIcon {
+  font-size: 52px;
+  transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
+  /* IE 9 */
+  -webkit-transform: rotate(-135deg);
+  /* Safari and Chrome */
+  position: relative;
+  top: 5px;
 }
