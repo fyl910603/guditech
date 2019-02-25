@@ -18,12 +18,15 @@ interface Props {
 interface State {
   height: number;
   phonevisible: boolean,
+  isShowTempTab: boolean,
   phoneInfo: string,
   smsvisible: boolean,
   remarkvisible: boolean,
   smsInfo: string,
   orderData: Object,
-  Remark: any
+  Remark: any,
+  selectData: object,
+  templateid: any,
 }
 const stateMap = {
   0: '通话中',
@@ -43,13 +46,15 @@ class Component extends React.PureComponent<Props, State> {
     this.state = {
       height: 0,
       phonevisible: false,
+      isShowTempTab: false,
       phoneInfo: '',
       smsvisible: false,
       remarkvisible: false,
       smsInfo: '',
       Remark: '',
-      orderData: {
-      }
+      orderData: {},
+      selectData: {},
+      templateid: ''
     };
 
   }
@@ -175,11 +180,21 @@ class Component extends React.PureComponent<Props, State> {
       phonevisible: false,
       smsvisible: false,
       remarkvisible: false,
+      isShowTempTab: false,
     })
   }
   // 操作
-  onSend = record => {
-
+  getFamilyData = record => {
+    this.setState({
+      selectData: record
+    })
+    this.onChangeTempStatus()
+  }
+  onOpenTemD = record => {
+    this.setState({
+      templateid: record,
+      isShowTempTab: true,
+    })
   }
   toDial = record => {
     this.props.dispatch({
@@ -224,10 +239,28 @@ class Component extends React.PureComponent<Props, State> {
       })
     }, 50)
   }
+  // 发送短信
+  onSend = () => {
+    this.props.dispatch({
+      type: `${namespace}/fetchSend`,
+      payload: {
+        orderid: this.state.selectData.OrderId,
+        familyid: this.state.selectData.FamilyId,
+        addressid: this.state.selectData.AddressId,
+        childid: this.state.selectData.ChildId,
+        templateid: this.state.templateid
+      },
+    });
+  }
   changeRemark = (e) => {
     this.setState({
       Remark: e.target.value
     })
+  }
+  onChangeTempStatus = () => {
+    this.props.dispatch({
+      type: `${namespace}/ChangeTempModal`
+    });
   }
   onParentChanged = e => {
     this.props.dispatch({
@@ -280,22 +313,46 @@ class Component extends React.PureComponent<Props, State> {
       orderDetail,
       phoneList,
       CallData,
-      smsList
+      templateList,
+      smsList,
+      isShowTemplateD
     } = this.props.data;
     const { height } = this.state;
+    var priceTempList = '';
+    if (templateList && templateList.length > 0) {
+      priceTempList = templateList.map((h, index) => (
+        <Menu.Item key={h.TemplateSysId}>
+          <a href="javascript:;" onClick={() => this.onOpenTemD(h.TemplateSysId)}>{h.TemplateName}</a>
+        </Menu.Item>
+      ))
+    }
     const menu = (
       <Menu>
-        <Menu.Item>
-          <span>模板1</span>
-        </Menu.Item>
-        <Menu.Item>
-          <span>模板2</span>
-        </Menu.Item>
-        <Menu.Item>
-          <span>模板3</span>
-        </Menu.Item>
+        {priceTempList}
       </Menu>
     );
+    // 模板表格
+    const columnsTemp: any = [
+      {
+        title: '模板名称',
+        dataIndex: 'TemplateName',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '模板内容',
+        dataIndex: 'SmsContent',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: 'URL链接',
+        dataIndex: 'SmsLink',
+        align: 'center',
+        width: 200,
+      }
+    ];
+    // 列表表格
     const columns: any = [
       {
         title: '订单号码',
@@ -361,12 +418,12 @@ class Component extends React.PureComponent<Props, State> {
                     拨打电话
                   </div>
                 </a>
-                <a href="javascript:;" onClick={() => this.onSend(h)}>
+                <a href="javascript:;">
                   <div className={styles.send}>
                     <Icon type="mail" />
                     <Dropdown overlay={menu} trigger={['click']}>
                       <span>
-                        发送短信 <Icon type="down" />
+                        发送短信 <Icon type="down" onClick={() => this.getFamilyData(h)} />
                       </span>
                     </Dropdown>
                   </div>
@@ -442,10 +499,37 @@ class Component extends React.PureComponent<Props, State> {
         }
         {/* 拨打电话弹窗 */}
         {isShowCall && (
-          <CallTelephone 
+          <CallTelephone
             data={seatList}
             phoneData={CallData}
           />
+        )}
+        {/* 价格模板 */}
+        {isShowTemplateD && (
+          <Modal title="价格模板" visible={this.state.isShowTempTab}
+            style={{ top: 100 }}
+            width='720px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="back" size="large" onClick={() => this.handleCancel()}>关闭</Button>,
+              <Button key="submit" type="primary" size="large" onClick={() => this.onSend()}>发送</Button>
+
+
+            ]}
+          >
+            <Table
+              className={styles.tableContent}
+              columns={columnsTemp}
+              dataSource={templateList}
+              pagination={false}
+              scroll={{ y: height }}
+              rowKey="TemplateSysId"
+              bordered={true}
+              locale={{
+                emptyText: '暂无记录',
+              }}
+            />
+          </Modal>
         )}
       </div>
     );

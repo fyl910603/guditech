@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './styles.less';
 import { Table, DatePicker, Icon, Modal, Button} from 'antd';
+import { getUser } from 'utils/localStore';
 let div: HTMLDivElement = null;
 let timeout: any = null;
 export interface Props {
@@ -15,6 +16,7 @@ const setSeat = {
   1: '座机',
   2: '网络电话',
 };
+const UserToken = getUser().UserToken
 interface State {
   visible:boolean;
   showMsg:boolean;
@@ -99,6 +101,28 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       showSeconds:true
     })
   }
+  toCalling = () =>{
+    this.setState({msg:'呼叫中'});
+  }
+  onHangUp = () =>{
+    let _this = this
+      this.setState({
+        callStatus:'2',
+      })
+    this.setState({msg:'已挂断'});
+    clearInterval()
+    // setTimeout(()=>{
+    //   _this.setState({
+    //     showMsg:false,
+    //   })
+    // },3000)
+  }
+  onHangUping = () =>{
+    this.setState({msg:'挂断中'});
+  }
+  toHangUp = () =>{
+
+  }
   toCallPhone = ()=>{
     const ws = new WebSocket('ws://123.206.174.209:12345');
     // console.log(ws)
@@ -118,8 +142,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
             _this.setState({msg:'拨号中'});
             break;
           case 2:
-            _this.onCalling();
-            // _this.setState({msg:'主叫振铃'});
+            _this.toCalling();
             break;
           case 3:
             _this.setState({msg:'被叫振铃'});
@@ -128,10 +151,10 @@ export class CallTelephone extends React.PureComponent<Props, State> {
             _this.onCalling();
             break;
           case 5:
-            _this.setState({msg:'挂断中'});
+            _this.onHangUping()
             break;
           case 6:
-            _this.setState({msg:'已挂断'});
+            _this.onHangUp()
             break;
           default:
           break;
@@ -162,12 +185,13 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     // console.log(this.props)
     let backgroundColor = ''
     switch (this.state.callStatus){
-      case '4':
+      case '2':
         backgroundColor = '#9D9D9D';
       default:
         backgroundColor = '#e73c2c';
         break;
     }
+    console.log(123)
     const columns: any = [
       {
         title: '电话号码',
@@ -240,7 +264,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
           {this.state.showSeconds && (
             <p>{this.state.Seconds!= 0?this.state.Seconds: '00:00:00'}</p>
           )}
-          <div className={styles.msgStatusIcon} style={{backgroundColor}}>
+          <div className={styles.msgStatusIcon} >
             <Icon type="phone" className={styles.callIcon}></Icon>
           </div>
         </div>

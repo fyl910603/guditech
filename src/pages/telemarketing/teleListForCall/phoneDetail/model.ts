@@ -19,8 +19,10 @@ export default {
     CallData:{},
     pageindex: 1,
     pagecount: pageSize,
+    templateList:[],
     isShowRemark:true,
     isShowCall:false,
+    isShowTemplateD:true,
     timeRange: [],
   },
 
@@ -33,6 +35,10 @@ export default {
           });
           dispatch({
             type: 'fetchPhoneSeat',
+            payload:{}
+          });
+          dispatch({
+            type: 'fetchPticeTemp',
             payload:{}
           });
           dispatch({
@@ -73,6 +79,28 @@ export default {
             List:res.data,
             
           },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *fetchPticeTemp({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/template/content/list',
+        body: {
+          pageindex: payload.pageindex || state.pageindex,
+          pagecount: state.pagecount,
+          send: true,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchPticeTempSuccess',
+          payload:res.data,
         });
       } else {
         MessageBox.show(res.message, container);
@@ -135,6 +163,37 @@ export default {
           type: 'fetchPhoneDetailSuccess',
           payload: {
             phonelist:res.data
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    // 发送短信
+    *fetchSend({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/order/call/record/sms/send',
+        body: {
+          orderid: payload.orderid,
+          familyid:payload.familyid,
+          addressid:payload.addressid,
+          childid:payload.childid,
+          templateid:payload.templateid
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchSendSuccess',
+          payload: {
+          },
+        });
+        modalSuccess({
+          title: '短信发送成功',
+          pic: successPic,
+          onOk: () => {
           },
         });
       } else {
@@ -225,6 +284,7 @@ export default {
         ...state,
         isShowRemark:true,
         isShowCall:false,
+        isShowTemplateD:true,
         timeRange: [],
         parent: '',
         pageindex: 1,
@@ -250,10 +310,28 @@ export default {
         };
       }
     },
+    ChangeTempModal(state, { payload }) {
+      return {
+        ...state,
+        isShowTemplateD: true,
+      };
+    },
+    fetchSendSuccess(state, { payload }) {
+      return {
+        ...state,
+        isShowTemplateD: false,
+      };
+    },
     fetchPhoneDetailSuccess(state, { payload }) {
       return {
         ...state,
         phoneList: payload.phonelist,
+      };
+    },
+    fetchPticeTempSuccess(state, { payload }) {
+      return {
+        ...state,
+        templateList: payload.List,
       };
     },
     fetchSeatSuccess(state, { payload }) {
