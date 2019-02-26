@@ -12,7 +12,7 @@ const Component = ({ dispatch, data }) => {
   const { bannerList } = data;
 
   function toCommission() {
-    router.push('/commission');
+    router.push('/commissionMarket');
   }
 
   function toShortMessage() {

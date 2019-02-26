@@ -34,7 +34,8 @@ const routes = [
   { path: '/telemarketing/teleListForCall', breadcrumb: '电话营销' },
   { path: '/telemarketing/teleListForCall/phoneDetail', breadcrumb: '电话记录' },
   { path: '/telemarketing/teleListForCall/callRecord', breadcrumb: '拨打记录' },
-  { path: '/telemarketing/smsTemplate', breadcrumb: '短信模板' }
+  { path: '/telemarketing/smsTemplate', breadcrumb: '短信模板' },
+  { path: '/commissionMarket', breadcrumb: '委托营销' }
 ];
 function getName(){
   return getQuery('name') != undefined ? getQuery('name'):'常见问题'

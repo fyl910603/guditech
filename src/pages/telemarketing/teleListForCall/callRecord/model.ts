@@ -12,10 +12,13 @@ export const namespace = 'orderList';
 export default {
   namespace,
   state: {
+    seatList:[],
     list: [],
     phoneList:[],
+    CallData:{},
     smsList:[],
     pageindex: 1,
+    isShowCall:false,
     pagecount: pageSize,
     isShowRemark:true,
     timeRange: [],
@@ -24,13 +27,17 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === '/telemarketing/callRecordList?clear=1') {
+        if (location.pathname === '/telemarketing/teleListForCall/callRecord?clear=1') {
           dispatch({
             type: 'init',
           });
           dispatch({
             type: 'fetch'
           })
+          dispatch({
+            type: 'fetchPhoneSeat',
+            payload:{}
+          });
           if (location.query.clear !== '1') {
             dispatch({
               type: 'restore',
@@ -69,6 +76,27 @@ export default {
             pagecount: state.pagecount,
           },
         });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    // 获取电话坐席
+    *fetchPhoneSeat({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/seat/list',
+        body: {
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+          yield put({
+            type: 'fetchSeatSuccess',
+            payload: {
+              seatlist:res.data
+            },
+          });
       } else {
         MessageBox.show(res.message, container);
       }
@@ -198,6 +226,7 @@ export default {
       return {
         ...state,
         isShowRemark:true,
+        isShowCall:false,
         timeRange: [],
         parent: '',
         pageindex: 1,
@@ -229,6 +258,12 @@ export default {
         phoneList: payload.phonelist,
       };
     },
+    fetchSeatSuccess(state, { payload }) {
+      return {
+        ...state,
+        seatList: payload.seatlist,
+      };
+    },
     fetchSmsDetailSuccess(state, { payload }) {
       return {
         ...state,
@@ -245,6 +280,13 @@ export default {
       return {
         ...state,
         isShowRemark:true
+      };
+    },
+    onOpenCall(state, { payload }) {
+      return {
+        ...state,
+        isShowCall: true,
+        CallData:payload
       };
     },
     fetchSuccess(state, { payload }) {

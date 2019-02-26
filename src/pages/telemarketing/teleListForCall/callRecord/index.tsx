@@ -9,7 +9,7 @@ import router from 'umi/router';
 import { confirm } from 'components/confirm';
 import { Input2 } from 'components/input';
 import { ShortMessageSendConfirm } from 'components/shortMessageSendConfirm';
-
+import { CallTelephone } from 'components/callTelephone';
 interface Props {
   dispatch: (props: any) => void;
   data: any;
@@ -181,7 +181,10 @@ class Component extends React.PureComponent<Props, State> {
 
   }
   toDial = record =>{
-
+    this.props.dispatch({
+      type: `${namespace}/onOpenCall`,
+      payload: record,
+    });
   }
   OpenPhoneDetail = record =>{
     setTimeout(()=>{
@@ -251,12 +254,15 @@ class Component extends React.PureComponent<Props, State> {
   render() {
     const {
       list,
+      seatList,
+      CallData,
       totalCount,
       pageindex,
       pagecount,
       timeRange,
       mobile,
       parent,
+      isShowCall,
       isShowDetail,
       isShowRemark,
       orderDetail,
@@ -522,6 +528,13 @@ class Component extends React.PureComponent<Props, State> {
             }}
           />
           </Modal>
+          {/* 拨打电话弹窗 */}
+          {isShowCall && (
+            <CallTelephone
+              data={seatList}
+              phoneData={CallData}
+            />
+          )}
           {/* 备注 */}
           {isShowRemark && (
           <Modal title="备注" visible= {this.state.remarkvisible}

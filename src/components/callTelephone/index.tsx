@@ -40,31 +40,11 @@ export class CallTelephone extends React.PureComponent<Props, State> {
 
   }
   componentWillUpdate(){
-    console.log('update')
   }
   componentDidMount(){
     
-    // ws.onopen = function (evt) {
-    //   console.log("Connection open ...");
-    //   ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:"875C24DA-545F-4EB7-87BA-25FC2BB29267",FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
-    // };
-    // ws.onopen = function (evt){
-    //   console.log('connect open')
-    //   ws.send('hello')
-    // }
-    // ws.onmessage = function (evt) {
-    //   console.log("Received Message: " + evt.data);
-    //   // ws.close();
-    // };
-
-    // ws.onclose = function (evt) {
-    //   console.log("Connection closed.");
-    // };
   }
   componentWillUnmount(){
-    // ws.onclose = function (evt) {
-    //   console.log("Connection closed.");
-    // };
   }
   handleCancel = ()=>{
     this.setState({
@@ -102,7 +82,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     })
   }
   toCalling = () =>{
-    this.setState({msg:'呼叫中'});
+    this.setState({msg:'呼叫中...'});
   }
   onHangUp = () =>{
     let _this = this
@@ -111,35 +91,39 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       })
     this.setState({msg:'已挂断'});
     clearInterval()
-    // setTimeout(()=>{
-    //   _this.setState({
-    //     showMsg:false,
-    //   })
-    // },3000)
+    setTimeout(()=>{
+      _this.setState({
+        showMsg:false,
+      })
+    },3000)
   }
   onHangUping = () =>{
     this.setState({msg:'挂断中'});
   }
   toHangUp = () =>{
-
+    if(this.state.msg == '通话中'){
+      const ws = new WebSocket('ws://123.206.174.209:12345');
+      ws.onopen = function (evt) {
+        ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
+      };
+      ws.onmessage = function (evt) {
+        console.log(evt.data)
+      }
+    }
   }
   toCallPhone = ()=>{
     const ws = new WebSocket('ws://123.206.174.209:12345');
-    // console.log(ws)
     ws.onopen = function (evt) {
       console.log("Connection open ...");
-      // ws.send('hello')
       ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:"875C24DA-545F-4EB7-87BA-25FC2BB29267",FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
     };
     let _this = this 
     ws.onmessage = function (evt) {
-      // console.log("Received Message: " + evt.data);
       let data = JSON.parse(evt.data)
-      console.log(evt.data)
       if(data.Status!= undefined){
         switch(data.Status){
           case 1:
-            _this.setState({msg:'拨号中'});
+            _this.setState({msg:'拨号中...'});
             break;
           case 2:
             _this.toCalling();
@@ -161,37 +145,17 @@ export class CallTelephone extends React.PureComponent<Props, State> {
         }
       }
     };
-    
-    // ws.onerror = function(evt){
-    //   console.log("Error Message: " + evt);
-    // }
-    // ws.onclose = function (evt) {
-    //   console.log("Connection closed.");
-    // };
     this.setState({
       visible:false,
       showMsg:true,
       msg:'拨号中...'
     })
-    // div = document.createElement('div');
-    // div.innerHTML = '测试下';
-    // div.className = styles.msg;
   }
   toSetDefault = (record) =>{
     localStorage.setItem('defaultSeatCall',record.SeatId)
   }
   render(){
     const {data,phoneData} = this.props
-    // console.log(this.props)
-    let backgroundColor = ''
-    switch (this.state.callStatus){
-      case '2':
-        backgroundColor = '#9D9D9D';
-      default:
-        backgroundColor = '#e73c2c';
-        break;
-    }
-    console.log(123)
     const columns: any = [
       {
         title: '电话号码',
@@ -264,7 +228,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
           {this.state.showSeconds && (
             <p>{this.state.Seconds!= 0?this.state.Seconds: '00:00:00'}</p>
           )}
-          <div className={styles.msgStatusIcon} >
+          <div onClick={()=>this.toHangUp()} className={this.state.callStatus == '2'?styles.msgErrorIcon:styles.msgSuccessIcon} >
             <Icon type="phone" className={styles.callIcon}></Icon>
           </div>
         </div>

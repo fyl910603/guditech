@@ -9,7 +9,6 @@ import router from 'umi/router';
 
 function Component(props) {
   const { location, children, user } = props;
-
   const menuList: MenuDataItem[] = [
     {
       icon: <Icon type="phone" />,
