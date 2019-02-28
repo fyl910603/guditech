@@ -90,7 +90,7 @@ export function Header(props: Props) {
         {user.NickName}
       </div>
       <div className={styles.balance} onClick={toBalance}>
-        当前账户余额：{(parseFloat(user.BasicMoney)/ 100).toFixed(2)}元
+        余额：{(parseFloat(user.BasicMoney)/ 100).toFixed(2)}元
       </div>
       <div className={styles.recharge} onClick={toRecharge}>
         充值
