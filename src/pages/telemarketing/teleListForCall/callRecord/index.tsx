@@ -55,13 +55,6 @@ class Component extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    this.props.dispatch({
-      type: `${namespace}/fetch`,
-      payload: {
-        container: this.divForm,
-      },
-    });
-
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
@@ -469,7 +462,7 @@ class Component extends React.PureComponent<Props, State> {
           dataSource={list}
           pagination={false}
           scroll={{ y: height }}
-          rowKey="OrderId"
+          rowKey="FamilyId"
           bordered={true}
           locale={{
             emptyText: '暂无记录',

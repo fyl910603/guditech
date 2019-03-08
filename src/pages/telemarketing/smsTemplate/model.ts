@@ -24,7 +24,7 @@ export default {
           dispatch({
             type: 'fetch',
             payload: {
-              status: 1
+              status: 1,
             },
           });
           dispatch({
@@ -47,6 +47,7 @@ export default {
         body: {
           pageindex: payload.pageindex || state.pageindex,
           pagecount: state.pagecount,
+          type:'1'
         },
         method: 'GET',
       };
@@ -58,6 +59,7 @@ export default {
             ...res.data,
             pageindex: payload.pageindex || state.pageindex,
             pagecount: state.pagecount,
+            
           },
         });
       } else {
@@ -72,7 +74,7 @@ export default {
       const pars: Props = {
         url: '/api/smssend/sign/list',
         body: {
-          status: payload.status,
+          status:1,
           channelcode:channelcode
         },
         method: 'GET',
@@ -158,10 +160,9 @@ export default {
         url = '/api/template/content/modify';
         data.templateid = state.currData.templateid;
       }
-
       const pars: Props = {
         url,
-        body: data,
+        body: Object.assign(data,{type:1}),
         method: state.currData ? 'PUT' : 'POST',
       };
       const res: Res = yield call(ask, pars);

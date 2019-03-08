@@ -248,7 +248,8 @@ class Component extends React.PureComponent<Props, State> {
         familyid: this.state.selectData.FamilyId,
         addressid: this.state.selectData.AddressId,
         childid: this.state.selectData.ChildId,
-        templateid: this.state.templateid
+        templateid: this.state.templateid,
+        container: this.divForm
       },
     });
   }

@@ -159,6 +159,7 @@ class Component extends React.PureComponent<Props, State> {
       payload: {
         container,
         data,
+        type:1
       },
     });
   };

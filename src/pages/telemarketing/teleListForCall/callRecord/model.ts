@@ -27,12 +27,13 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === '/telemarketing/teleListForCall/callRecord?clear=1') {
+        if (location.pathname === '/telemarketing/teleListForCall/callRecord') {
           dispatch({
             type: 'init',
           });
           dispatch({
-            type: 'fetch'
+            type: 'fetch',
+            payload:{}
           })
           dispatch({
             type: 'fetchPhoneSeat',
@@ -61,7 +62,7 @@ export default {
           starttime: state.timeRange[0] ? state.timeRange[0].format('YYYY-MM-DD 00:00:00') : '',
           endtime: state.timeRange[1] ? state.timeRange[1].format('YYYY-MM-DD 23:59:59') : '',
           parent: state.parent,
-          orderid: 0,
+          orderid: location.search.split('=')[1],
           mobile:state.mobile
         },
         method: 'GET',

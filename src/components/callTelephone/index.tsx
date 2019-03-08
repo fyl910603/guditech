@@ -11,7 +11,7 @@ export interface Props {
   onClose: () => void;
   onError: (msg: string) => void;
 }
-// const ws = new WebSocket('ws://123.206.174.209:12345');
+const ws = new WebSocket('wss://test.guditech.com/marketingCall');
 const setSeat = {
   1: '座机',
   2: '网络电话',
@@ -45,6 +45,9 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     
   }
   componentWillUnmount(){
+    ws.onclose = function(){
+      console.log('webscoket连接关闭')
+    }
   }
   handleCancel = ()=>{
     this.setState({
@@ -61,7 +64,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     },1000)
   }
   formatSeconds = (a) => {
-    var hh = parseInt(a / 3600);
+    var hh= parseInt(a / 3600);
     if (hh < 10) hh = "0" + hh;
     var mm = parseInt((a - hh * 3600) / 60);
     if (mm < 10) mm = "0" + mm;
@@ -102,7 +105,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   toHangUp = () =>{
     if(this.state.msg == '通话中'){
-      const ws = new WebSocket('ws://123.206.174.209:12345');
+      
       ws.onopen = function (evt) {
         ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
       };
@@ -112,7 +115,8 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     }
   }
   toCallPhone = ()=>{
-    const ws = new WebSocket('ws://123.206.174.209:12345');
+    const ws = new WebSocket('wss://test.guditech.com/marketingCall');
+    console.log(ws)
     ws.onopen = function (evt) {
       console.log("Connection open ...");
       ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:"875C24DA-545F-4EB7-87BA-25FC2BB29267",FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
