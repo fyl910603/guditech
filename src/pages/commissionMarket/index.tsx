@@ -5,10 +5,11 @@ import { Table, Divider, Icon, Tooltip,Modal,Select, Form, Input} from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
-import { ShortMessageTemplateEdit } from 'components/shortMessageTemplateEdit';
+import { DelegateTemplateEdit } from 'components/delegateTemplateEdit';
 import { confirm } from 'components/confirm';
 import { FormItem } from 'components/formItem';
 import { Input2 } from 'components/input';
+import { TextArea2 } from 'components/textArea';
 
 interface Props {
   dispatch: (props: any) => void;
@@ -126,9 +127,9 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-  onTemplateNameChanged = e => {
+  onDelegateNameChanged = e => {
     this.props.dispatch({
-      type: `${namespace}/onTemplateNameChanged`,
+      type: `${namespace}/ondelegateNameChanged`,
       payload: e.target.value,
     });
   };
@@ -161,6 +162,7 @@ class Component extends React.PureComponent<Props, State> {
   };
 
   onSave = (data, container) => {
+    console.log(data)
     this.props.dispatch({
       type: `${namespace}/onSave`,
       payload: {
@@ -203,137 +205,241 @@ class Component extends React.PureComponent<Props, State> {
   }
   onDelete = record => {
     confirm({
-      title: '确定要删除短信模板吗？',
+      title: `确定要删除${record.Name}活动吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/onDelete`,
-          payload: record.TemplateSysId,
+          payload: record.Id,
         });
       },
     });
   };
+  toPause = record =>{
+    confirm({
+      title: `您确定将该用户的状态从
+      [${record.ExamineStateName}]变为[暂停委托]吗？`,
+      onOk: () => {
+        this.props.dispatch({
+          type: `${namespace}/changeStatus`,
+          payload:{
+            Id:record.Id,
+            Status:3
+          }
+        });
+      },
+    });
+  }
+  toStop = record =>{
+    confirm({
+      title: `您确定将该用户的状态从
+      [${record.ExamineStateName}]变为[停止委托]吗？`,
+      onOk: () => {
+        this.props.dispatch({
+          type: `${namespace}/changeStatus`,
+          payload:{
+            Id:record.Id,
+            Status:4
+          }
+        });
+      },
+    });
+  }
+  toCancel = record =>{
+    confirm({
+      title: `您确定将该用户的状态从
+      [${record.ExamineStateName}]变为[取消委托]吗？`,
+      onOk: () => {
+        this.props.dispatch({
+          type: `${namespace}/changeStatus`,
+          payload:{
+            Id:record.Id,
+            Status:4
+          }
+        });
+      },
+    });
+  }
+  toRecover = record =>{
+    confirm({
+      title: `您确定将该用户的状态从
+      [${record.ExamineStateName}]变为[恢复委托]吗？`,
+      onOk: () => {
+        this.props.dispatch({
+          type: `${namespace}/changeStatus`,
+          payload:{
+            Id:record.Id,
+            Status:2
+          }
+        });
+      },
+    });
+  }
+  toRenew = record =>{
+    confirm({
+      title: `您确定将该用户的状态从
+      [${record.ExamineStateName}]变为[重新委托]吗？`,
+      onOk: () => {
+        this.props.dispatch({
+          type: `${namespace}/changeStatus`,
+          payload:{
+            Id:record.Id,
+            Status:1
+          }
+        });
+      },
+    });
+  }
   onChangeTemplate = (value) => {
-    // this.getfetchPrice(value)
-    // this.setState({
-    //   typeValue: value
-    // })
-    // if (this.props.data.templateList.length > 0) {
-    //   this.setState({
-    //     typeIndex: this.searchType(this.props.data.templateList, value)
-    //   })
-    // }
+    this.props.dispatch({
+      type: `${namespace}/onStatusChanged`,
+      payload: value,
+    });
+  }
+  // 备注
+  oncontentChanged = (e) =>{
+    console.log(e.target.value)
   }
   render() {
-    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData,activityName } = this.props.data;
+    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData,delegateName,delegateStatus } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
-        title: '模板名称',
-        dataIndex: 'TemplateName',
+        title: '活动名称',
+        dataIndex: 'Name',
         width: '10%',
         align: 'center',
       },
       {
-        title: '短信内容',
-        dataIndex: 'SmsContent',
-        width: '30%',
-        align: 'center',
-      },
-      {
-        title: '审核状态',
-        dataIndex: 'ExamineStateName',
-        width: '12%',
+        title: '委托状态',
+        dataIndex: 'Status',
+        width: '8%',
         align: 'center',
         render: (text, h) => {
-          const red = h.ExamineState === 2 || h.ExamineState === 3 || h.ExamineState === 5;
-          if (h.ExamineFailReason) {
-            return (
-              <Tooltip placement="topLeft" title={h.ExamineFailReason} arrowPointAtCenter>
-                <span style={{ color: red ? 'red' : '' }}>
-                  {h.ExamineStateName}
-                  <Icon type="question-circle" />
-                </span>
-              </Tooltip>
-            );
-          } else {
-            return <span style={{ color: red ? 'red' : '' }}>{h.ExamineStateName}</span>;
-          }
+          const red = h.Status === 6  ;
+          return <span style={{ color: red ? 'red' : '' }}>{h.ExamineStateName}</span>;
         },
       },
       {
-        title: '提交时间',
-        dataIndex: 'CreateTime',
-        width: '12%',
+        title: '委托描述',
+        dataIndex: 'Description',
+        width: '10%',
         align: 'center',
+      },
+      {
+        title: '委托数量',
+        dataIndex: 'DelegateCount',
+        width: '6%',
+        align: 'center',
+      },
+      {
+        title: '活动时间',
+        dataIndex: 'CreateTime',
+        width: '10%',
+        align: 'center',
+        render: (text, h) => {
+            return <span>{h.StartTime}至{h.EndTime}</span>;
+        },
       },
       {
         title: '操作',
         key: 'action',
-        width: '22%',
+        width: '36%',
         align: 'center',
         render: (text, h) => (
           <span>
-            {(h.ExamineState === 1 || h.ExamineState === 3) && (
               <React.Fragment>
                 <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
-                  编辑短信内容
+                  委托详情
                 </a>
                 <Divider type="vertical" />
               </React.Fragment>
-            )}
-            {(h.ExamineState !== 5) && (
               <React.Fragment>
-                <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
-              修改签名
+              <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
+                客户名单
               </a>
               <Divider type="vertical" />
               <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
-                修改模板名称
+                备注
+              </a>
+              </React.Fragment>
+              <Divider type="vertical" />
+              {h.Status == 1 && (
+                <Button ghost type="primary" className={styles.tabBtn} onClick={() =>this.toCancel(h)}>
+                  取消委托
+                </Button>
+              )}
+              {h.Status == 2 && (
+                <Button ghost type="primary" className={styles.tabBtn} onClick={() =>this.toPause(h)}>
+                  暂停委托
+                </Button>
+              )}
+              {(h.Status == 2 || h.Status == 3) && (
+                <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toStop(h)}>
+                  停止委托
+                </Button>
+              )}
+              {(h.Status == 3) && (
+                <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toRecover(h)}>
+                  恢复委托
+                </Button>
+              )}
+              {(h.Status == 6) && (
+                <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toRenew(h)}>
+                  重新委托
+                </Button>
+              )}
+              <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
+                编辑
               </a>
               <Divider type="vertical" />
-              </React.Fragment>
-            )}
-            <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
-              删除
-            </a>
+              {(h.Status == 6 || h.Status == 1) && (
+                <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
+                  删除
+                </a>
+              )}
           </span>
         ),
       },
     ];
 
     const statusMap = {
-      1: '待审核',
-      2: '审核中',
-      3: '审核拒绝',
-      4: '审核通过',
-      5: '管理员作废',
+      1: '申请委托中',
+      2: '委托中',
+      3: '暂停委托',
+      4: '停止委托',
+      5: '委托完成',
+      6: '委托失败',
+      7: '管理员作废',
     };
 
     const listData = list.map(h => ({
       ...h,
-      ExamineStateName: statusMap[h.ExamineState],
+      ExamineStateName: statusMap[h.Status],
     }));
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
           <div className={styles.condition}>
           <Input2
             placeholder="活动名称"
-            value={activityName}
+            value={delegateName}
             className={styles.searchInput}
-            onChange={this.onTemplateNameChanged}
+            onChange={this.onDelegateNameChanged}
           />
+          <label htmlFor="">状态：</label>
           <Select
             placeholder="委托状态"
-            value={this.state.typeValue}
+            defaultValue = '0'
             className={styles.age}
             onSelect={this.onChangeTemplate}
             style={{ width: 190 }}
           > 
             <Select.Option value='0'>全部</Select.Option>
-            <Select.Option value='1'>重新委托</Select.Option>
-            <Select.Option value='2'>回复委托</Select.Option>
+            <Select.Option value='1'>申请委托中</Select.Option>
+            <Select.Option value='2'>委托中</Select.Option>
             <Select.Option value='3'>暂停委托</Select.Option>
             <Select.Option value='4'>停止委托</Select.Option>
+            <Select.Option value='5'>委托完成</Select.Option>
+            <Select.Option value='6'>委托失败</Select.Option>
           </Select>
           <Button ghost type="primary" className={styles.btn} onClick={this.onSelect}>
             搜索
@@ -352,10 +458,10 @@ class Component extends React.PureComponent<Props, State> {
           dataSource={listData}
           pagination={false}
           scroll={{ y: height }}
-          rowKey="TemplateSysId"
+          rowKey="Id"
           bordered={true}
           locale={{
-            emptyText: '暂无短信模板，请先去添加',
+            emptyText: '暂无委托列表，请先去添加',
           }}
         />
         <SplitPage
@@ -366,9 +472,8 @@ class Component extends React.PureComponent<Props, State> {
         />
 
         {isShowEdit && (
-          <ShortMessageTemplateEdit
+          <DelegateTemplateEdit
             isEdit={true}
-            typelist={typelist}
             data={currData}
             onSave={this.onSave}
             onClose={this.onCloseEdit}
@@ -409,12 +514,16 @@ class Component extends React.PureComponent<Props, State> {
           ]}
         >
           <div className={styles.form}>
-           <Form>
-            <Form.Item label="模板名称：">
-              <Input className={styles.lineInput} value={this.state.templateName} onChange={this.onChangeTName} placeholder="请输入模板名称"  />
-            </Form.Item>
-          </Form>
-        </div>
+            <TextArea2
+              placeholder="请输入活动内容"
+              value={Description}
+              onChange={this.oncontentChanged}
+              maxLength={128}
+              showFontCount={true}
+              className={styles.textarea}
+              disabled={false}
+            />
+          </div>
         </Modal>
       </div>
     );

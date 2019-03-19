@@ -24,7 +24,8 @@ export default {
           dispatch({
             type: 'fetch',
             payload: {
-              status: 1
+              Status: 0,
+              DelegateName:''
             },
           });
           dispatch({
@@ -43,12 +44,14 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container } = payload;
       const pars: Props = {
-        url: '/api/template/content/list',
+        url: '/api/callcenter/delegate/list',
         body: {
+          DelegateName:state.delegateName,
+          Status:state.delegateStatus,
           pageindex: payload.pageindex || state.pageindex,
           pagecount: state.pagecount,
         },
-        method: 'GET',
+        method: 'POST',
       };
       const res: Res = yield call(ask, pars);
       if (res.success) {
@@ -92,7 +95,7 @@ export default {
         url: '/api/template/content/name/modify',
         body: {
           templateid: payload.templateid,
-          templatename: payload.templatename,
+          delegateName: payload.delegateName,
         },
         method: 'PUT',
       };
@@ -152,17 +155,17 @@ export default {
     *onSave({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
-      let url = '/api/template/content/add';
+      let url = '/api/callcenter/delegate/add';
 
       if (state.currData) {
-        url = '/api/template/content/modify';
-        data.templateid = state.currData.templateid;
+        url = '/api/callcenter/delegate/modify';
+        data.Id = state.currData.Id;
       }
 
       const pars: Props = {
         url,
         body: data,
-        method: state.currData ? 'PUT' : 'POST',
+        method:'POST',
       };
       const res: Res = yield call(ask, pars);
       if (res.success) {
@@ -177,28 +180,53 @@ export default {
           },
         });
         modalSuccess({
-          message: '短信模板提交审核成功，我们将在1~3个工作日完成审核!',
+          message: '委托活动添加成功',
         });
         
       } else {
         MessageBox.show(res.message, container);
       }
     },
-
-    *onDelete({ payload }, { put, call, select }) {
+    // 修改委托状态
+    *changeStatus({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
       const pars: Props = {
-        url: '/api/template/content/delete',
+        url: '/api/callcenter/delegate/status/modify',
         body: {
-          templateid: payload,
+          Id: payload.Id,
+          Status: payload.Status,
+          Description:''
         },
-        method: 'DELETE',
+        method: 'POST',
       };
       const res: Res = yield call(ask, pars);
       if (res.success) {
         modalSuccess({
-          message: '该短信模板删除成功!',
+          message: '状态修改成功!',
+        });
+        yield put({
+          type: 'fetch',
+          payload: {},
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *onDelete({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container, data } = payload;
+      const pars: Props = {
+        url: '/api/callcenter/delegate/delete',
+        body: {
+          Id: payload,
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        modalSuccess({
+          message: '删除成功!',
         });
         yield put({
           type: 'fetch',
@@ -215,6 +243,8 @@ export default {
       return {
         ...state,
         pageindex: 1,
+        delegateName: '',
+        delegateStatus:0,
         list: [],
       };
     },
@@ -239,16 +269,30 @@ export default {
         isShowSign: payload.isShowSign,
       };
     },
+    ondelegateNameChanged(state, { payload }) {
+      return {
+        ...state,
+        delegateName: payload,
+      };
+    },
+    onStatusChanged(state,{payload}){
+      return {
+        ...state,
+        delegateStatus: payload,
+      };
+    },
     showEdit(state, { payload }) {
       const currData = payload.currData;
       return {
         ...state,
         currData: currData
           ? {
-              templateid: currData.TemplateSysId,
-              templatcontent: currData.SmsContent,
-              templatlink: currData.SmsLink,
-              templatename: currData.TemplateName,
+              Id: currData.Id,
+              Description: currData.Description,
+              Name: currData.Name,
+              StartTime: currData.StartTime,
+              EndTime: currData.EndTime,
+              DelegateCount: currData.DelegateCount,
             }
           : null,
         isShowEdit: payload.isShowEdit,

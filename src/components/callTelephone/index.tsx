@@ -116,7 +116,6 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   toCallPhone = ()=>{
     const ws = new WebSocket('wss://test.guditech.com/marketingCall');
-    console.log(ws)
     ws.onopen = function (evt) {
       console.log("Connection open ...");
       ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:"875C24DA-545F-4EB7-87BA-25FC2BB29267",FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
