@@ -102,12 +102,16 @@ class Component extends React.PureComponent<Props, State> {
     });
   }
   onOpenMEdit = record => {
-    router.push({
-      pathname: `/commissionMarket/customerList`,
-      query:{
-        Id:record.Id
-      }
-    })
+      this.setState({
+        defaultSignName:record.SignId,
+        edittemplateid:record.TemplateSysId,
+        editSignId:record.SignId
+      })
+      setTimeout(()=>{
+        this.setState({
+          editvisible:true,
+        })
+      },50)
   };
   onOpenTEdit = record => {
     this.setState({
@@ -131,9 +135,17 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-  onDelegateNameChanged = e => {
+  // 客户姓名改变
+  onCustomerNameChanged = e => {
     this.props.dispatch({
-      type: `${namespace}/ondelegateNameChanged`,
+      type: `${namespace}/oncustomerNameChanged`,
+      payload: e.target.value,
+    });
+  };
+  // 客户电话改变
+  onCustomerMobileChanged = e => {
+    this.props.dispatch({
+      type: `${namespace}/oncustomerMobileChanged`,
       payload: e.target.value,
     });
   };
@@ -318,14 +330,11 @@ class Component extends React.PureComponent<Props, State> {
   // 打开委托详情
   onOpenDetails = (h) =>{
     router.push({
-      pathname: `/commissionMarket/commissionDetail`,
-      query:{
-        Id:h.Id
-      }
+      pathname: `/commissionMarket/${h.Id}`,
     })
   }
   render() {
-    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData,delegateName,delegateStatus,isShowRemark,Remark } = this.props.data;
+    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData,CustomerMobile,CustomerName,delegateStatus,isShowRemark,Remark } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
@@ -445,10 +454,16 @@ class Component extends React.PureComponent<Props, State> {
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
           <div className={styles.condition}>
           <Input2
-            placeholder="活动名称"
-            value={delegateName}
+            placeholder="客户姓名:"
+            value={CustomerName}
             className={styles.searchInput}
-            onChange={this.onDelegateNameChanged}
+            onChange={this.onCustomerNameChanged}
+          />
+          <Input2
+            placeholder="客户电话:"
+            value={CustomerMobile}
+            className={styles.searchInput}
+            onChange={this.onCustomerMobileChanged}
           />
           <label htmlFor="">状态：</label>
           <Select

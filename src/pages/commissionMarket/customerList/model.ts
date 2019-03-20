@@ -26,7 +26,8 @@ export default {
             type: 'fetch',
             payload: {
               Status: 0,
-              DelegateName:''
+              CustomerName:'',
+              CustomerMobile:''
             },
           });
           dispatch({
@@ -47,8 +48,8 @@ export default {
       const pars: Props = {
         url: '/api/callcenter/delegate/list',
         body: {
-          DelegateName:state.delegateName,
-          Status:state.delegateStatus,
+          DelegateName:state.CustomerName,
+          Status:state.Status,
           pageindex: payload.pageindex || state.pageindex,
           pagecount: state.pagecount,
         },
@@ -68,6 +69,24 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
+    // 获取签名类型
+    *fetchdelegateDetail({ payload }, { put, call, select }) {
+      const {container } = payload;
+      const state = yield select(state => state[namespace]);
+      const pars: Props = {
+        url: '/api/callcenter/delegate/details',
+        body: {
+          Id: payload.Id,
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({ type: 'fetchDetailSuccess', payload:res.data});
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
     // 修改模板名称
     *onEditTem({ payload }, { put, call, select }) {
       const {container } = payload;
@@ -76,7 +95,7 @@ export default {
         url: '/api/template/content/name/modify',
         body: {
           templateid: payload.templateid,
-          delegateName: payload.delegateName,
+          CustomerName: payload.CustomerName,
         },
         method: 'PUT',
       };
@@ -255,10 +274,16 @@ export default {
       return {
         ...state,
         pageindex: 1,
-        delegateName: '',
-        delegateStatus:0,
+        CustomerName: '',
+        Status:0,
         isShowRemark:false,
         list: [],
+      };
+    },
+    fetchDetailSuccess(state, { payload }) {
+      return {
+        ...state,
+        delegateInfo: payload || {},
       };
     },
     fetchSuccess(state, { payload }) {
@@ -276,16 +301,22 @@ export default {
         isShowSign: payload.isShowSign,
       };
     },
-    ondelegateNameChanged(state, { payload }) {
+    oncustomerNameChanged(state, { payload }) {
       return {
         ...state,
-        delegateName: payload,
+        CustomerName: payload,
+      };
+    },
+    oncustomerMobileChanged(state, { payload }) {
+      return {
+        ...state,
+        CustomerMobile: payload,
       };
     },
     onStatusChanged(state,{payload}){
       return {
         ...state,
-        delegateStatus: payload,
+        Status: payload,
       };
     },
     onRemarkChanged(state,{payload}){
