@@ -3,7 +3,7 @@ import { MessageBox } from 'components/messageBox';
 import { modalSuccess } from 'components/modal';
 import { pageSize } from "utils/pageSize";
 
-export const namespace = 'smsTemplate';
+export const namespace = 'commissionMarket';
 
 export default {
   namespace,
@@ -18,7 +18,7 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        // if (location.pathname === `/shortMessage/${namespace}`) {
+        if (location.pathname === `/commissionMarket/${namespace}`) {
           dispatch({
             type: 'init',
           });
@@ -34,7 +34,7 @@ export default {
             payload: {
             },
           });
-        // }
+        }
       });
     }
   },

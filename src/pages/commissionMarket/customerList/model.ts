@@ -3,7 +3,7 @@ import { MessageBox } from 'components/messageBox';
 import { modalSuccess } from 'components/modal';
 import { pageSize } from "utils/pageSize";
 
-export const namespace = 'smsTemplate';
+export const namespace = 'customerList';
 
 export default {
   namespace,
@@ -46,9 +46,11 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container } = payload;
       const pars: Props = {
-        url: '/api/callcenter/delegate/list',
+        url: '/api/callcenter/delegate/customer/list',
         body: {
-          DelegateName:state.CustomerName,
+          DelegateId:location.search.split('=')[1],
+          CustomerName:state.CustomerName,
+          CustomerMobile:state.CustomerMobile,
           Status:state.Status,
           pageindex: payload.pageindex || state.pageindex,
           pagecount: state.pagecount,
