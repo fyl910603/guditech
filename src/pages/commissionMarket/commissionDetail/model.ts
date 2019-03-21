@@ -3,7 +3,7 @@ import { MessageBox } from 'components/messageBox';
 import { modalSuccess } from 'components/modal';
 import { pageSize } from "utils/pageSize";
 
-export const namespace = 'smsTemplate';
+export const namespace = 'commissionDetail';
 
 export default {
   namespace,
@@ -17,23 +17,14 @@ export default {
 
   subscriptions: {
     setup({ dispatch, history }, done) {
-      // history.listen(location => {
-      //     dispatch({
-      //       type: 'init',
-      //     });
-      //     dispatch({
-      //       type: 'fetch',
-      //       payload: {
-      //         Status: 0,
-      //         DelegateName:''
-      //       },
-      //     });
-      //     dispatch({
-      //       type: 'fetchType',
-      //       payload: {
-      //       },
-      //     });
-      // });
+      history.listen(location => {
+          dispatch({
+            type: 'fetchdelegateDetail',
+            payload: {
+              Id:location.search.split('=')[1]
+            },
+          });
+      });
     }
   },
 

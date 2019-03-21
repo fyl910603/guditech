@@ -483,15 +483,15 @@ class Component extends React.PureComponent<Props, State> {
           <Button ghost type="primary" className={styles.btn} onClick={this.onSelect}>
             搜索
           </Button>
-        </div>
-        <Button
-          className={styles.btnAdd}
-          ghost
-          type="primary"
-          onClick={() => this.onOpenEdit(null)}
-        >
-          添加
+          <Button
+            className={styles.btnAdd}
+            ghost
+            type="primary"
+            onClick={() => this.onOpenEdit(null)}
+          >
+          导出
         </Button>
+        </div>
         <Table
           columns={columns}
           dataSource={listData}
