@@ -474,12 +474,11 @@ class Component extends React.PureComponent<Props, State> {
             style={{ width: 190 }}
           > 
             <Select.Option value='0'>全部</Select.Option>
-            <Select.Option value='1'>申请委托中</Select.Option>
-            <Select.Option value='2'>委托中</Select.Option>
-            <Select.Option value='3'>暂停委托</Select.Option>
-            <Select.Option value='4'>停止委托</Select.Option>
-            <Select.Option value='5'>委托完成</Select.Option>
-            <Select.Option value='6'>委托失败</Select.Option>
+            <Select.Option value='1'>潜在客户</Select.Option>
+            <Select.Option value='2'>预约中</Select.Option>
+            <Select.Option value='3'>确认到店</Select.Option>
+            <Select.Option value='4'>确认成交</Select.Option>
+            <Select.Option value='5'>无效</Select.Option>
           </Select>
           <Button ghost type="primary" className={styles.btn} onClick={this.onSelect}>
             搜索
