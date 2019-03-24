@@ -202,6 +202,15 @@ class Component extends React.PureComponent<Props, State> {
       payload: record,
     });
   }
+  // 默认坐席改变
+  onchangeD = () =>{
+    console.log('88888888')
+      this.props.dispatch({
+      type: `${namespace}/fetchPhoneSeat`,
+      payload: {
+      }
+    })
+  }
   OpenPhoneDetail = record => {
     setTimeout(() => {
       this.getPhoneDetail(record.OrderId, record.FamilyId)
@@ -421,7 +430,7 @@ class Component extends React.PureComponent<Props, State> {
                 </a>
                 <a href="javascript:;">
                   <div className={styles.send}>
-                    <Icon type="mail" />
+                    <Icon type="mail"/>
                     <Dropdown overlay={menu} trigger={['click']}>
                       <span>
                         发送短信 <Icon type="down" onClick={() => this.getFamilyData(h)} />
@@ -503,6 +512,7 @@ class Component extends React.PureComponent<Props, State> {
           <CallTelephone
             data={seatList}
             phoneData={CallData}
+            onchangeD = {this.onchangeD}
           />
         )}
         {/* 价格模板 */}

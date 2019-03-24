@@ -8,17 +8,19 @@ export const namespace = 'customerList';
 export default {
   namespace,
   state: {
-    list: [],
-    delegateInfo:{},
+    customerList: [],
+    Arrival:0,
+    TotalCount:0,
+    Unbooked:0,
     pageindex: 1,
-    Description:'',
     pagecount: pageSize,
   },
 
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        // if (location.pathname === `/shortMessage/${namespace}`) {
+        if (location.pathname === `/commissionMarket/${namespace}`) {
+          console.log(11111)
           dispatch({
             type: 'init',
           });
@@ -26,16 +28,17 @@ export default {
             type: 'fetch',
             payload: {
               Status: 0,
+              DelegateId:location.search.split('=')[1],
               CustomerName:'',
               CustomerMobile:''
             },
           });
-          dispatch({
-            type: 'fetchType',
-            payload: {
-            },
-          });
-        // }
+          // dispatch({
+          //   type: 'fetchType',
+          //   payload: {
+          //   },
+          // });
+        }
       });
     }
   },
@@ -121,17 +124,19 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
-    // 修改签名类型
-    *onEdit({ payload }, { put, call, select }) {
+    // 预约
+    *onSaveAppoint({ payload }, { put, call, select }) {
       const {container } = payload;
       const state = yield select(state => state[namespace]);
       const pars: Props = {
-        url: '/api/template/content/sign/modify',
+        url: '/api/callcenter/delegate/customer/status/modify',
         body: {
-          templateid: payload.templateid,
-          signid: payload.signid,
+          Id: payload.Id,
+          Status: 2,
+          Time:state.Time.format('YYYY-MM-DD HH:mm:ss'),
+          Remark:state.currData.SellerRemark
         },
-        method: 'PUT',
+        method: 'POST',
       };
       const res: Res = yield call(ask, pars);
       if (res.success) {
@@ -140,9 +145,9 @@ export default {
           payload: {},
         });
         yield put({
-          type: 'showSignEdit',
+          type: 'showAppoint',
           payload: {
-            isShowSign: false,
+            isShowAppoint: false,
           },
         });
         modalSuccess({
@@ -194,7 +199,7 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
       const pars: Props = {
-        url: '/api/callcenter/delegate/remark/modify',
+        url: '/api/callcenter/delegate/customer/remark/modify',
         body: {
           'Id': payload.Id,
           'Remark':payload.Remark
@@ -225,11 +230,12 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
       const pars: Props = {
-        url: '/api/callcenter/delegate/status/modify',
+        url: '/api/callcenter/delegate/customer/status/modify',
         body: {
           Id: payload.Id,
           Status: payload.Status,
-          Description:''
+          Time:payload.Time,
+          Remark:payload.Remark
         },
         method: 'POST',
       };
@@ -277,8 +283,12 @@ export default {
         ...state,
         pageindex: 1,
         CustomerName: '',
+        CustomerMobile:'',
         Status:0,
+        currData:{},
+        Time:'',
         isShowRemark:false,
+        isShowAppoint:false,
         list: [],
       };
     },
@@ -293,6 +303,8 @@ export default {
         ...state,
         list: payload.List || [],
         totalCount: payload.TotalCount || 0,
+        arrival: payload.Arrival || 0,
+        unbooked: payload.Unbooked || 0,
         pageindex: payload.pageindex,
         pagecount: payload.pagecount,
       };
@@ -329,13 +341,43 @@ export default {
         },
       };
     },
+    onDateChanged(state, { payload }) {
+      return {
+        ...state,
+        Time: payload,
+      };
+    },
+    //
+    onAppointRemarkChanged(state,{payload}){
+      return {
+        ...state,
+        currData:{
+          SellerRemark:payload,
+        },
+      };
+    },
+    showAppoint(state, { payload }) {
+      const currData = payload.currData;
+      console.log(currData)
+      return {
+        ...state,
+        currData: currData
+          ? {
+              SellerRemark: currData.SellerRemark,
+              ChildName:currData.ChildName
+            }
+          : null,
+        isShowAppoint: payload.isShowAppoint,
+      };
+    },
     showRemark(state, { payload }) {
       const currData = payload.currData;
       return {
         ...state,
         currData: currData
           ? {
-              Remark: currData.Remark,
+              Remark: currData.SellerRemark,
+              ChildName:currData.ChildName
             }
           : null,
         isShowRemark: payload.isShowRemark,

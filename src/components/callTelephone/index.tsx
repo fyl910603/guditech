@@ -2,11 +2,13 @@ import * as React from 'react';
 import styles from './styles.less';
 import { Table, DatePicker, Icon, Modal, Button} from 'antd';
 import { getUser } from 'utils/localStore';
+import { async } from 'q';
 let div: HTMLDivElement = null;
 let timeout: any = null;
 export interface Props {
   phoneData: Object;
   data: any;
+  onchangeD?: () => void;
   onSuccess: (code) => void;
   onClose: () => void;
   onError: (msg: string) => void;
@@ -39,10 +41,9 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     };
 
   }
-  componentWillUpdate(){
+  componentWillUpdate(){  
   }
   componentDidMount(){
-    
   }
   componentWillUnmount(){
     ws.onclose = function(){
@@ -118,7 +119,8 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     const ws = new WebSocket('wss://test.guditech.com/marketingCall');
     ws.onopen = function (evt) {
       console.log("Connection open ...");
-      ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:"875C24DA-545F-4EB7-87BA-25FC2BB29267",FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
+      console.log(this.props.data)
+      // ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:getUser().UserToken,FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
     };
     let _this = this 
     ws.onmessage = function (evt) {
@@ -155,7 +157,12 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     })
   }
   toSetDefault = (record) =>{
-    localStorage.setItem('defaultSeatCall',record.SeatId)
+    localStorage.setItem('defaultSeatCall',record.SeatId);
+    const { onchangeD } = this.props;
+    console.log(this.props)
+    if(onchangeD){
+      onchangeD()
+    }
   }
   render(){
     const {data,phoneData} = this.props
@@ -190,7 +197,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
                  && (<Button type="primary" size="small" onClick={()=>this.toSetDefault(h)}>设为默认</Button>)
                 }
                 {localStorage.getItem('defaultSeatCall') == h.SeatId
-                 && (<Button type="primary" size="small" disabled>设为默认</Button>)
+                 && (<Button type="primary" size="small" disabled={localStorage.getItem('defaultSeatCall') == h.SeatId?true:false}>设为默认</Button>)
                 }
               </React.Fragment>
             }

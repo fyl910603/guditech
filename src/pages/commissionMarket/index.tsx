@@ -308,7 +308,7 @@ class Component extends React.PureComponent<Props, State> {
       payload: value,
     });
   }
-  // 备注
+  // 备注改变
   oncontentChanged = (e) =>{
     this.props.dispatch({
       type: `${namespace}/onRemarkChanged`,

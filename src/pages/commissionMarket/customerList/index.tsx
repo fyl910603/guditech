@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Table, Divider, Icon, Tooltip,Modal,Select, Form, Input} from 'antd';
+import { Table, Divider, Icon, Tooltip, Modal, Select, Form, Input, DatePicker } from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
@@ -11,6 +11,7 @@ import { FormItem } from 'components/formItem';
 import { Input2 } from 'components/input';
 import { TextArea2 } from 'components/textArea';
 import router from 'umi/router';
+import {exportExcel} from 'xlsx-oc'
 
 interface Props {
   dispatch: (props: any) => void;
@@ -19,15 +20,16 @@ interface Props {
 
 interface State {
   height: number;
-  typeValue:string;
-  editvisible:boolean;
-  temvisible:boolean;
-  remarkvisible:boolean; 
-  defaultSignName:string;
-  editSignId:string;
-  edittemplateid:string;
-  templateName:string;
-  Id:string;
+  typeValue: string;
+  editvisible: boolean;
+  temvisible: boolean;
+  remarkvisible: boolean;
+  appointvisible: boolean;
+  defaultSignName: string;
+  editSignId: string;
+  edittemplateid: string;
+  templateName: string;
+  Id: string;
 }
 
 class Component extends React.PureComponent<Props, State> {
@@ -35,16 +37,17 @@ class Component extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      typeValue:'0',
-      templateName:'',
+      typeValue: '0',
+      templateName: '',
       height: 0,
-      Id:'',
-      editvisible:false,
-      remarkvisible:false,
-      temvisible:false,
-      defaultSignName:'',
-      editSignId:'',
-      edittemplateid:''
+      Id: '',
+      editvisible: false,
+      appointvisible: false,
+      remarkvisible: false,
+      temvisible: false,
+      defaultSignName: '',
+      editSignId: '',
+      edittemplateid: ''
     };
   }
 
@@ -91,32 +94,33 @@ class Component extends React.PureComponent<Props, State> {
   handleCancel = (e) => {
     this.setState({
       editvisible: false,
-      temvisible:false,
-      remarkvisible:false,
-      defaultSignName:''
+      temvisible: false,
+      remarkvisible: false,
+      appointvisible:false,
+      defaultSignName: ''
     });
   }
-  onChangeTName = (e)=>{
+  onChangeTName = (e) => {
     this.setState({
       templateName: e.target.value,
     });
   }
   onOpenMEdit = record => {
+    this.setState({
+      defaultSignName: record.SignId,
+      edittemplateid: record.TemplateSysId,
+      editSignId: record.SignId
+    })
+    setTimeout(() => {
       this.setState({
-        defaultSignName:record.SignId,
-        edittemplateid:record.TemplateSysId,
-        editSignId:record.SignId
+        editvisible: true,
       })
-      setTimeout(()=>{
-        this.setState({
-          editvisible:true,
-        })
-      },50)
+    }, 50)
   };
   onOpenTEdit = record => {
     this.setState({
-      remarkvisible:true,
-      Id:record.Id
+      remarkvisible: true,
+      Id: record.Id
     })
     this.props.dispatch({
       type: `${namespace}/showRemark`,
@@ -125,7 +129,7 @@ class Component extends React.PureComponent<Props, State> {
         isShowRemark: true,
       },
     });
-};
+  };
   onPageChanged = (pageindex, pagecount) => {
     this.props.dispatch({
       type: `${namespace}/fetch`,
@@ -187,45 +191,44 @@ class Component extends React.PureComponent<Props, State> {
     });
   };
   // 保存备注
-  saveRemark = ()=>{
+  saveRemark = () => {
     this.props.dispatch({
       type: `${namespace}/changeRemark`,
       payload: {
-        Id:this.state.Id,
-        Remark:this.props.data.currData.Remark
+        Id: this.state.Id,
+        Remark: this.props.data.currData.Remark
       },
     });
   }
-  handleChange = value =>{
+  handleChange = value => {
     this.setState({
-      editSignId:value,
+      editSignId: value,
     })
   }
   // 修改模板名称
-  saveTemplate = (container) =>{
+  saveTemplate = (container) => {
     this.props.dispatch({
       type: `${namespace}/onEditTem`,
       payload: {
         container,
-        templateid:this.state.edittemplateid,
-        templatename:this.state.templateName
+        templateid: this.state.edittemplateid,
+        templatename: this.state.templateName
       },
     });
     this.setState({
-      temvisible : false
+      temvisible: false
     })
   }
-  saveSign = (container) =>{
+  saveSign = (container) => {
     this.props.dispatch({
-      type: `${namespace}/onEdit`,
+      type: `${namespace}/onSaveAppoint`,
       payload: {
         container,
-        templateid:this.state.edittemplateid,
-        signid:this.state.editSignId
+        Id:this.state.Id
       },
     });
     this.setState({
-      editvisible : false
+      editvisible: false
     })
   }
   onDelete = record => {
@@ -239,76 +242,85 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-  toPause = record =>{
+  // 无效
+  toVoid = record => {
     confirm({
       title: `您确定将该用户的状态从
-      [${record.ExamineStateName}]变为[暂停委托]吗？`,
+      [${record.ExamineStateName}]变为[无效]吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/changeStatus`,
-          payload:{
-            Id:record.Id,
-            Status:3
+          payload: {
+            Id: record.Id,
+            Status: 5,
+            Time: '',
+            Remark: ''
           }
         });
       },
     });
   }
-  toStop = record =>{
+  // 确认成交
+  toDeal = record => {
     confirm({
       title: `您确定将该用户的状态从
-      [${record.ExamineStateName}]变为[停止委托]吗？`,
+      [${record.ExamineStateName}]变为[确认成交]吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/changeStatus`,
-          payload:{
-            Id:record.Id,
-            Status:4
+          payload: {
+            Id: record.Id,
+            Status: 4,
+            Time: '',
+            Remark: ''
           }
         });
       },
     });
   }
-  toCancel = record =>{
+  // 潜在客户
+  onPotential = record => {
     confirm({
       title: `您确定将该用户的状态从
-      [${record.ExamineStateName}]变为[取消委托]吗？`,
+      [${record.ExamineStateName}]变为[潜在客户吗]吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/changeStatus`,
-          payload:{
-            Id:record.Id,
-            Status:4
+          payload: {
+            Id: record.Id,
+            Status: 1,
+            Time: '',
+            Remark: ''
           }
         });
       },
     });
   }
-  toRecover = record =>{
-    confirm({
-      title: `您确定将该用户的状态从
-      [${record.ExamineStateName}]变为[恢复委托]吗？`,
-      onOk: () => {
-        this.props.dispatch({
-          type: `${namespace}/changeStatus`,
-          payload:{
-            Id:record.Id,
-            Status:2
-          }
-        });
+  // 打开预约
+  toOpenAppoint = record => {
+    this.setState({
+      appointvisible: true,
+      Id: record.Id
+    })
+    this.props.dispatch({
+      type: `${namespace}/showAppoint`,
+      payload: {
+        currData: record,
+        isShowAppoint: true,
       },
     });
   }
-  toRenew = record =>{
+  // 确认到店
+  toArrive = record => {
     confirm({
       title: `您确定将该用户的状态从
       [${record.ExamineStateName}]变为[重新委托]吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/changeStatus`,
-          payload:{
-            Id:record.Id,
-            Status:1
+          payload: {
+            Id: record.Id,
+            Status: 1
           }
         });
       },
@@ -320,26 +332,63 @@ class Component extends React.PureComponent<Props, State> {
       payload: value,
     });
   }
-  // 备注
-  oncontentChanged = (e) =>{
+  // 备注改变
+  oncontentChanged = (e) => {
     this.props.dispatch({
       type: `${namespace}/onRemarkChanged`,
       payload: e.target.value,
     });
   }
+  appointRemarkChanged = (e) =>{
+    this.props.dispatch({
+      type: `${namespace}/onAppointRemarkChanged`,
+      payload: e.target.value,
+    });
+  }
+  // 预约时间改变
+  onDateChanged = e => {
+    this.props.dispatch({
+      type: `${namespace}/onDateChanged`,
+      payload: e,
+    });
+  };
+  onOk = value =>{
+    this.props.dispatch({
+      type: `${namespace}/onDateChanged`,
+      payload: value,
+    });
+  }
   // 打开委托详情
-  onOpenDetails = (h) =>{
+  onOpenDetails = (h) => {
     router.push({
       pathname: `/commissionMarket/${h.Id}`,
     })
   }
+  // 导出excel表格
+  exportDefaultExcel = (data) => {
+    var _headers = [
+    { k: 'ChildName', v: '孩子姓名' },
+    { k: 'Mobile', v: '联系方式' },
+    { k: 'ExamineStateName', v: '委托状态' }, 
+    { k: 'AppointmentCount', v: '预约次数' },
+    { k: 'AppointmentTime', v: '预约时间' }, 
+    { k: 'ArriveTime', v: '到店日期' },
+    ]
+    exportExcel(_headers, data);
+  }
   render() {
-    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData,CustomerMobile,CustomerName,delegateStatus,isShowRemark,Remark } = this.props.data;
+    const { list, typelist, totalCount, arrival, unbooked, pageindex, pagecount, isShowEdit, isShowSign, currData, CustomerMobile, CustomerName, delegateStatus, isShowRemark, isShowAppoint, Remark, Time } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
-        title: '活动名称',
-        dataIndex: 'Name',
+        title: '孩子姓名',
+        dataIndex: 'ChildName',
+        width: '10%',
+        align: 'center',
+      },
+      {
+        title: '联系方式',
+        dataIndex: 'Mobile',
         width: '10%',
         align: 'center',
       },
@@ -349,29 +398,39 @@ class Component extends React.PureComponent<Props, State> {
         width: '8%',
         align: 'center',
         render: (text, h) => {
-          const red = h.Status === 6  ;
+          const red = h.Status === 6;
           return <span style={{ color: red ? 'red' : '' }}>{h.ExamineStateName}</span>;
         },
       },
       {
-        title: '委托描述',
-        dataIndex: 'Description',
+        title: '预约次数',
+        dataIndex: 'AppointmentCount',
         width: '10%',
         align: 'center',
       },
       {
-        title: '委托数量',
-        dataIndex: 'DelegateCount',
-        width: '6%',
+        title: '预约日期',
+        dataIndex: 'AppointmentTime',
+        width: '9%',
         align: 'center',
       },
       {
-        title: '活动时间',
-        dataIndex: 'CreateTime',
-        width: '10%',
+        title: '到店日期',
+        dataIndex: 'ArriveTime',
+        width: '9%',
+        align: 'center'
+      },
+      {
+        title: '备注',
+        dataIndex: 'SellerRemark',
+        width: '8%',
         align: 'center',
         render: (text, h) => {
-            return <span>{h.StartTime}至{h.EndTime}</span>;
+          return <span><React.Fragment>
+            <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
+              (详情)
+            </a>
+          </React.Fragment></span>;
         },
       },
       {
@@ -381,69 +440,47 @@ class Component extends React.PureComponent<Props, State> {
         align: 'center',
         render: (text, h) => (
           <span>
-              <React.Fragment>
-                <a href="javascript:;" onClick={() => this.onOpenDetails(h)}>
-                  委托详情
-                </a>
-                <Divider type="vertical" />
-              </React.Fragment>
-              <React.Fragment>
-              <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
-                客户名单
-              </a>
-              <Divider type="vertical" />
-              <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
-                备注
-              </a>
-              </React.Fragment>
-              <Divider type="vertical" />
-              {h.Status == 1 && (
-                <Button ghost type="primary" className={styles.tabBtn} onClick={() =>this.toCancel(h)}>
-                  取消委托
+            {(h.Status == 2 || h.Status == 3 || h.Status == 5) && (
+              <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.onPotential(h)}>
+                潜在客户
                 </Button>
-              )}
-              {h.Status == 2 && (
-                <Button ghost type="primary" className={styles.tabBtn} onClick={() =>this.toPause(h)}>
-                  暂停委托
+            )}
+            {(h.Status == 1 || h.Status == 2 || h.Status == 3) && (
+              <Button ghost type="primary" className={styles.voidBtn} onClick={() => this.toVoid(h)}>
+                无效
                 </Button>
-              )}
-              {(h.Status == 2 || h.Status == 3) && (
-                <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toStop(h)}>
-                  停止委托
+            )}
+            {(h.Status == 2) && (
+              <Button ghost type="primary" className={styles.appointBtn} onClick={() => this.toOpenAppoint(h)}>
+                再次预约
                 </Button>
-              )}
-              {(h.Status == 3) && (
-                <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toRecover(h)}>
-                  恢复委托
+            )}
+            {(h.Status == 1) && (
+              <Button ghost type="primary" className={styles.appointBtn} onClick={() => this.toOpenAppoint(h)}>
+                预约
                 </Button>
-              )}
-              {(h.Status == 6) && (
-                <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toRenew(h)}>
-                  重新委托
+            )}
+            {(h.Status == 2) && (
+              <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toArrive(h)}>
+                确认到店
                 </Button>
-              )}
-              <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
-                编辑
-              </a>
-              <Divider type="vertical" />
-              {(h.Status == 6 || h.Status == 1) && (
-                <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
-                  删除
-                </a>
-              )}
+            )}
+            {(h.Status == 3) && (
+              <Button ghost type="primary" className={styles.dealBtn} onClick={() => this.toDeal(h)}>
+                确认成交
+                </Button>
+            )}
           </span>
         ),
       },
     ];
 
     const statusMap = {
-      1: '申请委托中',
-      2: '委托中',
-      3: '暂停委托',
-      4: '停止委托',
-      5: '委托完成',
-      6: '委托失败',
-      7: '管理员作废',
+      1: '潜在客户',
+      2: '预约中',
+      3: '确认到店',
+      4: '确认成交',
+      5: '无效',
     };
 
     const listData = list.map(h => ({
@@ -452,7 +489,7 @@ class Component extends React.PureComponent<Props, State> {
     }));
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
-          <div className={styles.condition}>
+        <div className={styles.condition}>
           <Input2
             placeholder="客户姓名:"
             value={CustomerName}
@@ -468,11 +505,11 @@ class Component extends React.PureComponent<Props, State> {
           <label htmlFor="">状态：</label>
           <Select
             placeholder="委托状态"
-            defaultValue = '0'
+            defaultValue='0'
             className={styles.age}
             onSelect={this.onChangeTemplate}
             style={{ width: 190 }}
-          > 
+          >
             <Select.Option value='0'>全部</Select.Option>
             <Select.Option value='1'>潜在客户</Select.Option>
             <Select.Option value='2'>预约中</Select.Option>
@@ -487,10 +524,13 @@ class Component extends React.PureComponent<Props, State> {
             className={styles.btnAdd}
             ghost
             type="primary"
-            onClick={() => this.onOpenEdit(null)}
+            onClick={() => this.exportDefaultExcel(listData)}
           >
-          导出
+            导出
         </Button>
+        </div>
+        <div>
+          <p><span>总数：{totalCount}人</span><span>未预约：{unbooked}人</span><span>已到店：{arrival}人</span></p>
         </div>
         <Table
           columns={columns}
@@ -518,31 +558,46 @@ class Component extends React.PureComponent<Props, State> {
             onClose={this.onCloseEdit}
           />
         )}
-        <Modal title="修改签名" visible={this.state.editvisible}
-          style={{ top: 200}}
-          width='630px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
-              提交
-            </Button>,
-            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
-          ]}
-        >
-          <div className={styles.form}>
-           <Form>
-            <span>签名：</span>
-              <Select value={this.state.defaultSignName} style={{ width: 300 }} onChange={this.handleChange} >
-                {/* {typelist.map((item,index) =>(
-                  <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
-                ))} */}
-              </Select>
-          </Form>
-        </div>
-        </Modal>
+        {isShowAppoint && (
+          <Modal title={`预约-${currData.ChildName != undefined ? currData.ChildName : ''}`} visible={this.state.appointvisible}
+            style={{ top: 200 }}
+            width='630px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
+                提交
+                    </Button>,
+              <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+            ]}
+          >
+            <div className={styles.form}>
+              <Form>
+                <span>预约时间：</span>
+                <DatePicker
+                  showTime
+                  value={Time}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="预约时间"
+                  onChange={this.onDateChanged}
+                  onOk={this.onOk}
+                />
+                <p>我的备注</p>
+                <TextArea2
+                  placeholder=""
+                  value={currData.SellerRemark}
+                  onChange={this.appointRemarkChanged}
+                  maxLength={128}
+                  // showFontCount={true}
+                  className={styles.textarea}
+                  disabled={false}
+                />
+              </Form>
+            </div>
+          </Modal>
+        )}
         {/* 备注 */}
-        {isShowRemark && (<Modal title="备注" visible={this.state.remarkvisible}
-          style={{ top: 200}}
+        {isShowRemark && (<Modal title={`备注-${currData.ChildName}`} visible={this.state.remarkvisible}
+          style={{ top: 200 }}
           width='630px'
           onCancel={this.handleCancel}
           footer={[
@@ -553,8 +608,19 @@ class Component extends React.PureComponent<Props, State> {
           ]}
         >
           <div className={styles.form}>
+            <p>意向备注</p>
             <TextArea2
-              placeholder="请输入活动内容"
+              placeholder=""
+              value={currData.SellerRemark}
+              // onChange={this.oncontentChanged}
+              maxLength={128}
+              // showFontCount={true}
+              className={styles.textarea}
+              disabled={true}
+            />
+            <p>我的备注</p>
+            <TextArea2
+              placeholder="请输入备注"
               value={currData.Remark}
               onChange={this.oncontentChanged}
               maxLength={128}

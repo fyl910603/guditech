@@ -18,7 +18,7 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === `/commissionMarket/${namespace}`) {
+        // if (location.pathname === `${namespace}`) {
           dispatch({
             type: 'init',
           });
@@ -34,7 +34,7 @@ export default {
             payload: {
             },
           });
-        }
+        // }
       });
     }
   },
