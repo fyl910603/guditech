@@ -3,6 +3,7 @@ import styles from './styles.less';
 import { Table, DatePicker, Icon, Modal, Button} from 'antd';
 import { getUser } from 'utils/localStore';
 import { async } from 'q';
+import phoneDetail from 'src/pages/telemarketing/teleListForCall/phoneDetail';
 let div: HTMLDivElement = null;
 let timeout: any = null;
 export interface Props {
@@ -51,6 +52,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     }
   }
   handleCancel = ()=>{
+
     this.setState({
       visible:false
     })
@@ -117,10 +119,12 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   toCallPhone = ()=>{
     const ws = new WebSocket('wss://test.guditech.com/marketingCall');
+    const {phoneData} = this.props
     ws.onopen = function (evt) {
       console.log("Connection open ...");
-      console.log(this.props.data)
-      // ws.send(JSON.stringify({ActionCode:"000001",Type:"0101",Data:{UserToken:getUser().UserToken,FamilyId:3573791,AddressId:3573790,ChildId:3915431,FromExtenId:2,OrderId:1}}));
+      let action = {ActionCode:"000001",Type:"0101",Data:{UserToken:getUser().UserToken,FamilyId:phoneData.FamilyId,AddressId:phoneData.AddressId,ChildId:phoneData.ChildId,FromExtenId:localStorage.getItem('defaultSeatCall'),OrderId:phoneData.OrderId}}
+      console.log(action)
+      ws.send(JSON.stringify(action));
     };
     let _this = this 
     ws.onmessage = function (evt) {
@@ -159,11 +163,16 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   toSetDefault = (record) =>{
     localStorage.setItem('defaultSeatCall',record.SeatId);
     const { onchangeD } = this.props;
-    console.log(this.props)
     if(onchangeD){
       onchangeD()
     }
   }
+  onClose = () => {
+    const { onClose } = this.props;
+    if (onClose) {
+      onClose();
+    }
+  };
   render(){
     const {data,phoneData} = this.props
     const columns: any = [
@@ -207,12 +216,12 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     ];
     return(
       <div>
-        <Modal title={`确定拨打`} visible={this.state.visible}
+        <Modal title={`确定拨打`} visible={true}
         style={{ top: 100 }}
         width='530px'
-        onCancel={this.handleCancel}
+        onCancel={this.onClose}
         footer={[
-          <Button key="back"  size="default" onClick={() => this.handleCancel()}>关闭</Button>,
+          <Button key="back"  size="default" onClick={() => this.onClose()}>关闭</Button>,
           <Button key="submit" type="primary" size="default" onClick={() => this.toCallPhone()}>拨打</Button>
         ]}
       >

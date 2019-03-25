@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Table, DatePicker,Icon,Modal,Tooltip,Input} from 'antd';
+import { Table, DatePicker,Icon,Modal,Tooltip,Input,Dropdown,Menu} from 'antd';
 import { namespace } from './model';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
@@ -21,6 +21,7 @@ interface State {
   phoneInfo:string,
   smsvisible:boolean,
   remarkvisible:boolean,
+  selectData: object,
   smsInfo:string,
   orderData:Object,
   Remark:any
@@ -44,6 +45,7 @@ class Component extends React.PureComponent<Props, State> {
     this.state = {
       height: 0,
       phonevisible:false,
+      selectData: {},
       phoneInfo:'',
       smsvisible:false,
       remarkvisible:false,
@@ -102,7 +104,18 @@ class Component extends React.PureComponent<Props, State> {
       payload: e.target.value,
     });
   };
-
+  // 打开短信操作
+  getFamilyData = record => {
+    this.setState({
+      selectData: record
+    })
+    this.onChangeTempStatus()
+  }
+  onChangeTempStatus = () => {
+    this.props.dispatch({
+      type: `${namespace}/ChangeTempModal`
+    });
+  }
   onCancelSend = h => {
     confirm({
       title: '确定要取消短信发送吗？',
@@ -328,10 +341,14 @@ class Component extends React.PureComponent<Props, State> {
                     拨打电话
                   </div>
                 </a>
-                <a href="javascript:;" onClick={() => this.onSend(h)}>
+                <a href="javascript:;">
                   <div className={styles.send}>
-                    <Icon type="mail" />
-                    发送信息
+                    <Icon type="mail"/>
+                    <Dropdown overlay={menu} trigger={['click']}>
+                      <span>
+                        发送短信 <Icon type="down" onClick={() => this.getFamilyData(h)} />
+                      </span>
+                    </Dropdown>
                   </div>
                 </a>
                 <div className={styles.marketing}>
@@ -351,6 +368,11 @@ class Component extends React.PureComponent<Props, State> {
         ),
       },
     ];
+    const menu = (
+      <Menu>
+        {priceTempList}
+      </Menu>
+    );
     const phonecolumns: any = [
       {
         title: '订单号',

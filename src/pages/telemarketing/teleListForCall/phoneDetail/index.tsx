@@ -183,7 +183,7 @@ class Component extends React.PureComponent<Props, State> {
       isShowTempTab: false,
     })
   }
-  // 操作
+  // 打开短信操作
   getFamilyData = record => {
     this.setState({
       selectData: record
@@ -204,9 +204,15 @@ class Component extends React.PureComponent<Props, State> {
   }
   // 默认坐席改变
   onchangeD = () =>{
-    console.log('88888888')
       this.props.dispatch({
       type: `${namespace}/fetchPhoneSeat`,
+      payload: {
+      }
+    })
+  }
+  onClose = () =>{
+    this.props.dispatch({
+      type: `${namespace}/CloseCall`,
       payload: {
       }
     })
@@ -513,6 +519,7 @@ class Component extends React.PureComponent<Props, State> {
             data={seatList}
             phoneData={CallData}
             onchangeD = {this.onchangeD}
+            onClose = {this.onClose}
           />
         )}
         {/* 价格模板 */}

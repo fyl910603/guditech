@@ -15,6 +15,7 @@ export default {
     seatList:[],
     list: [],
     phoneList:[],
+    isShowTemplateD:true,
     CallData:{},
     smsList:[],
     pageindex: 1,
@@ -228,6 +229,7 @@ export default {
         ...state,
         isShowRemark:true,
         isShowCall:false,
+        isShowTemplateD:true,
         timeRange: [],
         parent: '',
         pageindex: 1,
@@ -252,6 +254,12 @@ export default {
           ...state,
         };
       }
+    },
+    ChangeTempModal(state, { payload }) {
+      return {
+        ...state,
+        isShowTemplateD: true,
+      };
     },
     fetchPhoneDetailSuccess(state, { payload }) {
       return {

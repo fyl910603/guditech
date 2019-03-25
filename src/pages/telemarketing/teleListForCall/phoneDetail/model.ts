@@ -490,6 +490,12 @@ export default {
         orderDetail: result,
       };
     },
+    CloseCall(state, { payload }) {
+      return {
+        ...state,
+        isShowCall: false,
+      };
+    },
     onCloseDetail(state, { payload }) {
       return {
         ...state,
