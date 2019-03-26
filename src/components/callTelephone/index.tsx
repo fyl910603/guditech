@@ -107,14 +107,12 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     this.setState({msg:'挂断中'});
   }
   toHangUp = () =>{
-    if(this.state.msg == '通话中'){
-      
-      ws.onopen = function (evt) {
-        ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
-      };
-      ws.onmessage = function (evt) {
-        console.log(evt.data)
-      }
+    console.log(ws)
+    ws.onopen = function (evt) {
+      ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
+    };
+    ws.onmessage = function (evt) {
+      console.log(evt.data)
     }
   }
   toCallPhone = ()=>{

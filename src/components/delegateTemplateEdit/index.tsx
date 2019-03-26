@@ -131,7 +131,7 @@ export class DelegateTemplateEdit extends React.PureComponent<Props, State> {
                 />
               </FormItem>
               <FormItem title="活动时间:" splitHeight={isEdit ? 40 : 12}>
-                <DatePicker.RangePicker onChange={this.onDateChanged} format={dateFormat} defaultValue={[moment(data.StartTime, dateFormat), moment(data.EndTime, dateFormat)]}/>
+              {data == null?<DatePicker.RangePicker onChange={this.onDateChanged} format={dateFormat}/>:<DatePicker.RangePicker onChange={this.onDateChanged} format={dateFormat} defaultValue={[moment(data.StartTime, dateFormat), moment(data.EndTime, dateFormat)]}/>}
               </FormItem>
               <FormItem title="委托数量:" splitHeight={isEdit ? 40 : 12}>
                 <Input2

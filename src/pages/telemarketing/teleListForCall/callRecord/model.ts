@@ -18,6 +18,7 @@ export default {
     isShowTemplateD:true,
     CallData:{},
     smsList:[],
+    templateList:[],
     pageindex: 1,
     isShowCall:false,
     pagecount: pageSize,
@@ -36,6 +37,10 @@ export default {
             type: 'fetch',
             payload:{}
           })
+          dispatch({
+            type: 'fetchPticeTemp',
+            payload:{}
+          });
           dispatch({
             type: 'fetchPhoneSeat',
             payload:{}
@@ -196,6 +201,36 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
+    *fetchSend({ payload }, { put, call, select }) {
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/callmarketing/order/call/record/sms/send',
+        body: {
+          orderid: payload.orderid,
+          familyid:payload.familyid,
+          addressid:payload.addressid,
+          childid:payload.childid,
+          templateid:payload.templateid
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchSendSuccess',
+          payload: {
+          },
+        });
+        modalSuccess({
+          title: '短信发送成功',
+          pic: successPic,
+          onOk: () => {
+          },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
     *onOpenDetail({ payload }, { put, call, select }) {
       const state = yield select(state => state[namespace]);
       const { container } = payload;
@@ -216,6 +251,28 @@ export default {
             ...res.data,
             search_address: user.Address,
           },
+        });
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
+    *fetchPticeTemp({ payload }, { put, call, select }) {
+      const state = yield select(state => state[namespace]);
+      const { container } = payload;
+      const pars: Props = {
+        url: '/api/template/content/list',
+        body: {
+          pageindex: payload.pageindex || state.pageindex,
+          pagecount: state.pagecount,
+          send: true,
+        },
+        method: 'GET',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetchPticeTempSuccess',
+          payload:res.data,
         });
       } else {
         MessageBox.show(res.message, container);
@@ -259,6 +316,18 @@ export default {
       return {
         ...state,
         isShowTemplateD: true,
+      };
+    },
+    fetchSendSuccess(state, { payload }) {
+      return {
+        ...state,
+        isShowTemplateD: false,
+      };
+    },
+    fetchPticeTempSuccess(state, { payload }) {
+      return {
+        ...state,
+        templateList: payload.List,
       };
     },
     fetchPhoneDetailSuccess(state, { payload }) {

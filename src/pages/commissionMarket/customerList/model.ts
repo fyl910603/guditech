@@ -20,7 +20,6 @@ export default {
     setup({ dispatch, history }, done) {
       history.listen(location => {
         if (location.pathname === `/commissionMarket/${namespace}`) {
-          console.log(11111)
           dispatch({
             type: 'init',
           });
@@ -358,7 +357,6 @@ export default {
     },
     showAppoint(state, { payload }) {
       const currData = payload.currData;
-      console.log(currData)
       return {
         ...state,
         currData: currData

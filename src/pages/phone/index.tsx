@@ -90,14 +90,14 @@ class Component extends React.PureComponent<Props,State> {
     });
   };
    onSubmit = (e,container)=>{
-    if(this.state.editData.PhoneCount == '' || this.state.editData.MobileCount == '' || this.state.editData.SeatCount == ''){
-      if(this.state.editData.MobileCount == ''){
+    if(this.props.data.PhoneCount == '' || this.props.data.MobileCount == '' || this.props.data.SeatCount == ''){
+      if(this.props.data.MobileCount == ''){
         MessageBox.show('请输入网络电话数量', divForm);
         return false;
-      }else if(this.state.editData.PhoneCount == ''){
+      }else if(this.props.data.PhoneCount == ''){
         MessageBox.show('请输入座机数量', divForm);
         return false;
-      }else if(this.state.editData.SeatCount == ''){
+      }else if(this.props.data.SeatCount == ''){
         MessageBox.show('请输入坐席数量', divForm);
         return false;
       }
@@ -106,9 +106,9 @@ class Component extends React.PureComponent<Props,State> {
         type: `${namespace}/editApply`,
         payload: {
           Id:this.state.Id,
-          TelephoneCount: this.state.editData.PhoneCount,
-          MobileCount: this.state.editData.MobileCount,
-          SeatCount: this.state.editData.SeatCount,
+          TelephoneCount: this.props.data.PhoneCount,
+          MobileCount: this.props.data.MobileCount,
+          SeatCount: this.props.data.SeatCount,
           Licencel:this.state.Path,
           container: divForm,
         },
@@ -120,14 +120,14 @@ class Component extends React.PureComponent<Props,State> {
     }
     }
     addSave = (e)=>{
-      if(this.state.addData.PhoneCount == '' || this.state.addData.MobileCount == '' || this.state.addData.SeatCount == '' || this.state.Path == ''){
-        if(this.state.addData.MobileCount == ''){
+      if(this.props.data.PhoneCount == '' || this.props.data.MobileCount == '' || this.props.data.SeatCount == '' || this.state.Path == ''){
+        if(this.props.data.MobileCount == ''){
           MessageBox.show('请输入网络电话数量', divForm);
           return false;
-        }else if(this.state.addData.PhoneCount == ''){
+        }else if(this.props.data.PhoneCount == ''){
           MessageBox.show('请输入座机数量', divForm);
           return false;
-        }else if(this.state.addData.SeatCount == ''){
+        }else if(this.props.data.SeatCount == ''){
           MessageBox.show('请输入坐席数量', divForm);
           return false;
         }else{
@@ -138,9 +138,9 @@ class Component extends React.PureComponent<Props,State> {
         this.props.dispatch({
           type: `${namespace}/addApply`,
           payload: {
-            TelephoneCount: this.state.addData.PhoneCount,
-            MobileCount: this.state.addData.MobileCount,
-            SeatCount: this.state.addData.SeatCount,
+            TelephoneCount: this.props.data.PhoneCount,
+            MobileCount: this.props.data.MobileCount,
+            SeatCount: this.props.data.SeatCount,
             Licencel:this.state.Path
           },
         });
@@ -166,6 +166,18 @@ class Component extends React.PureComponent<Props,State> {
     });
   };
   onOpenEdit = record => {
+    this.props.dispatch({
+      type: `${namespace}/MobileCountChanged`,
+      payload: record.MobileCount,
+    });
+    this.props.dispatch({
+      type: `${namespace}/PhoneCountChanged`,
+      payload: record.SeatCount,
+    });
+    this.props.dispatch({
+      type: `${namespace}/SeatCountChanged`,
+      payload: record.TelephoneCount,
+    });
     this.setState({
       currData:record
     })
@@ -174,32 +186,29 @@ class Component extends React.PureComponent<Props,State> {
         editvisible:true,
         Id:record.Id,
         editImgUrl:record.LicenceUrl,
-        editData:{
-          MobileCount:record.MobileCount,
-          SeatCount:record.SeatCount,
-          PhoneCount:record.TelephoneCount
-        }
       })
     },50)
   };
   onOpenAdd = ()=> {
       let _this = this
-      this.setState({
-        addData:Object.assign(this.state.addData,{MobileCount:''})
-      })
-      this.setState({
-        addData:Object.assign(this.state.addData,{PhoneCount:''})
-      })
-      this.setState({
-        addData:Object.assign(this.state.addData,{SeatCount:''})
-      })
+      this.props.dispatch({
+        type: `${namespace}/MobileCountChanged`,
+        payload: '',
+      });
+      this.props.dispatch({
+        type: `${namespace}/PhoneCountChanged`,
+        payload: '',
+      });
+      this.props.dispatch({
+        type: `${namespace}/SeatCountChanged`,
+        payload: '',
+      });
       setTimeout(()=>{
         _this.setState({
           addvisible:true,
           Path:''
         })
       },50)
-      console.log(this.state.addData)
   };
   onOpenImg = (img)=> {
     this.setState({
@@ -228,38 +237,22 @@ class Component extends React.PureComponent<Props,State> {
     });
   };
    onMobileCountChanged =(e)=>{
-     console.log(e)
-    //  let _this = this
-    //   setTimeout(()=>{
-    //     _this.setState({
-    //       addData:Object.assign(_this.state.addData,{MobileCount:e.target.value})
-    //     })
-    //   },50)
+    this.props.dispatch({
+      type: `${namespace}/MobileCountChanged`,
+      payload: e.target.value,
+    });
     }
     onPhoneCountChanged =(e)=>{
-      this.setState({
-        addData:Object.assign(this.state.addData,{PhoneCount:e.target.value})
-      })
+      this.props.dispatch({
+        type: `${namespace}/PhoneCountChanged`,
+        payload: e.target.value,
+      });
     }
     onSeatCountChanged =(e)=>{
-      this.setState({
-        addData:Object.assign(this.state.addData,{SeatCount:e.target.value})
-      })
-    }
-    MobileCountChanged =(e)=>{
-      this.setState({
-        editData:Object.assign(this.state.editData,{MobileCount:e.target.value})
-      })
-    }
-    PhoneCountChanged =(e)=>{
-      this.setState({
-        editData:Object.assign(this.state.editData,{PhoneCount:e.target.value})
-      })
-    }
-    SeatCountChanged =(e)=>{
-      this.setState({
-        editData:Object.assign(this.state.editData,{SeatCount:e.target.value})
-      })
+      this.props.dispatch({
+        type: `${namespace}/SeatCountChanged`,
+        payload: e.target.value,
+      });
     }
     onaddSignnameChanged =(e)=>{
       this.setState({
@@ -303,6 +296,7 @@ class Component extends React.PureComponent<Props,State> {
         // });
       }
   render() {
+    const {MobileCount,PhoneCount,SeatCount} = this.props.data
     const columns: any = [
       {
         title: '网络电话号码数量',
@@ -446,24 +440,24 @@ class Component extends React.PureComponent<Props,State> {
            <Form>
            <FormItem title="网络电话号码数量：" isRequire thWidth={120}>
               <Input
-                onChange={this.MobileCountChanged}
-                defaultValue={this.state.editData.MobileCount}
+                onChange={this.onMobileCountChanged}
+                defaultValue={MobileCount}
                 maxLength={12}
                 placeholder="请输入网络电话号码数量"
               />
             </FormItem>
             <FormItem title="座机电话数量：" isRequire thWidth={120}>
               <Input
-                onChange={this.PhoneCountChanged}
-                defaultValue={this.state.editData.PhoneCount}
+                onChange={this.onPhoneCountChanged}
+                defaultValue={PhoneCount}
                 maxLength={12}
                 placeholder="请输入座机电话数量"
               />
             </FormItem>
             <FormItem title="坐席数量：" isRequire thWidth={120}>
               <Input
-                onChange={this.SeatCountChanged}
-                defaultValue={this.state.editData.SeatCount}
+                onChange={this.onSeatCountChanged}
+                defaultValue={SeatCount}
                 maxLength={12}
                 placeholder="请输入坐席数量"
               />
@@ -501,7 +495,7 @@ class Component extends React.PureComponent<Props,State> {
              <FormItem title="网络电话号码数量：" isRequire thWidth={120}>
               <Input
                 onChange={this.onMobileCountChanged}
-                value={this.state.addData.MobileCount}
+                value={MobileCount}
                 maxLength={12}
                 placeholder="请输入网络电话号码数量"
               />
@@ -509,7 +503,7 @@ class Component extends React.PureComponent<Props,State> {
             <FormItem title="座机电话数量：" isRequire thWidth={120}>
               <Input
                 onChange={this.onPhoneCountChanged}
-                value={this.state.addData.PhoneCount}
+                value={PhoneCount}
                 maxLength={12}
                 placeholder="请输入座机电话数量"
               />
@@ -517,7 +511,7 @@ class Component extends React.PureComponent<Props,State> {
             <FormItem title="坐席数量：" isRequire thWidth={120}>
               <Input
                 onChange={this.onSeatCountChanged}
-                value={this.state.addData.SeatCount}
+                value={SeatCount}
                 maxLength={12}
                 placeholder="请输入坐席数量"
               />

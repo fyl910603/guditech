@@ -137,10 +137,11 @@ export default {
       const state = yield select(state => state[namespace]);
       const { container, data } = payload;
       let url = '/api/callcenter/delegate/add';
-
+      let msg = '委托活动添加成功'
       if (state.currData) {
         url = '/api/callcenter/delegate/modify';
         data.Id = state.currData.Id;
+        msg = '修改成功'
       }
 
       const pars: Props = {
@@ -161,7 +162,7 @@ export default {
           },
         });
         modalSuccess({
-          message: '委托活动添加成功',
+          message: msg,
         });
         
       } else {

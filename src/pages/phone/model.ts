@@ -211,7 +211,24 @@ export default {
         },
       };
     },
-
+    MobileCountChanged(state,{payload}){
+      return {
+        ...state,
+        MobileCount: payload,
+      };
+    },
+    PhoneCountChanged(state,{payload}){
+      return {
+        ...state,
+        PhoneCount: payload,
+      };
+    },
+    SeatCountChanged(state,{payload}){
+      return {
+        ...state,
+        SeatCount: payload,
+      };
+    },
     showLastInfo(state, { payload }) {
       return {
         ...state,

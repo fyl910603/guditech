@@ -530,7 +530,7 @@ class Component extends React.PureComponent<Props, State> {
         </Button>
         </div>
         <div>
-          <p><span>总数：{totalCount}人</span><span>未预约：{unbooked}人</span><span>已到店：{arrival}人</span></p>
+          <p><span>总数：{totalCount}人&nbsp;&nbsp;</span><span>未预约：{unbooked}人&nbsp;&nbsp;</span><span>已到店：{arrival}人</span></p>
         </div>
         <Table
           columns={columns}

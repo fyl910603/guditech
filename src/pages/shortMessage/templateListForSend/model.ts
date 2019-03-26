@@ -16,8 +16,9 @@ export default {
 
   subscriptions: {
     setup({ dispatch, history }, done) {
+      console.log(location.pathname)
       history.listen(location => {
-        // if (location.pathname === `/shortMessage/${namespace}`) {
+        if (location.pathname === `/shortMessage/${namespace}`) {
           dispatch({
             type: 'init',
           });
@@ -38,7 +39,7 @@ export default {
               type: 'restore',
             });
           }
-        // }
+        }
       });
     },
   },

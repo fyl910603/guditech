@@ -522,9 +522,9 @@ class Component extends React.PureComponent<Props, State> {
             onClose = {this.onClose}
           />
         )}
-        {/* 价格模板 */}
+        {/* 短信发送 */}
         {isShowTemplateD && (
-          <Modal title="价格模板" visible={this.state.isShowTempTab}
+          <Modal title="短信发送" visible={this.state.isShowTempTab}
             style={{ top: 100 }}
             width='720px'
             onCancel={this.handleCancel}
@@ -543,6 +543,7 @@ class Component extends React.PureComponent<Props, State> {
               scroll={{ y: height }}
               rowKey="TemplateSysId"
               bordered={true}
+              rowClassName = {(record,index)=> record.TemplateSysId == this.state.templateid?styles.checkedTab:''}
               locale={{
                 emptyText: '暂无记录',
               }}
