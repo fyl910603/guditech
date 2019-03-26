@@ -1,9 +1,9 @@
 import * as React from 'react';
 import styles from './styles.less';
+import { MessageBox } from 'components/messageBox';
 import { Table, DatePicker, Icon, Modal, Button} from 'antd';
 import { getUser } from 'utils/localStore';
 import { async } from 'q';
-import phoneDetail from 'src/pages/telemarketing/teleListForCall/phoneDetail';
 let div: HTMLDivElement = null;
 let timeout: any = null;
 export interface Props {
@@ -47,6 +47,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   componentDidMount(){
   }
   componentWillUnmount(){
+    console.log('销毁')
     ws.onclose = function(){
       console.log('webscoket连接关闭')
     }
@@ -80,6 +81,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       return "00:00:00";
     }
   }
+  // 通话中
   onCalling = () =>{
     this.setState({msg:'通话中'});
     this.clockSeconds()
@@ -87,9 +89,11 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       showSeconds:true
     })
   }
+  //呼叫中 
   toCalling = () =>{
     this.setState({msg:'呼叫中...'});
   }
+  // 已挂断
   onHangUp = () =>{
     let _this = this
       this.setState({
@@ -106,8 +110,8 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   onHangUping = () =>{
     this.setState({msg:'挂断中'});
   }
+  // 挂断电话
   toHangUp = () =>{
-    console.log(ws)
     ws.onopen = function (evt) {
       ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
     };
@@ -118,6 +122,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   toCallPhone = ()=>{
     const ws = new WebSocket('wss://test.guditech.com/marketingCall');
     const {phoneData} = this.props
+    console.log(ws)
     ws.onopen = function (evt) {
       console.log("Connection open ...");
       let action = {ActionCode:"000001",Type:"0101",Data:{UserToken:getUser().UserToken,FamilyId:phoneData.FamilyId,AddressId:phoneData.AddressId,ChildId:phoneData.ChildId,FromExtenId:localStorage.getItem('defaultSeatCall'),OrderId:phoneData.OrderId}}
@@ -127,6 +132,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     let _this = this 
     ws.onmessage = function (evt) {
       let data = JSON.parse(evt.data)
+      console.log(data.Status)
       if(data.Status!= undefined){
         switch(data.Status){
           case 1:
@@ -150,6 +156,10 @@ export class CallTelephone extends React.PureComponent<Props, State> {
           default:
           break;
         }
+      }else{
+        _this.setState({
+          showMsg:false
+        })
       }
     };
     this.setState({
