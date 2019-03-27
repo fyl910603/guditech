@@ -123,6 +123,40 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
+    // 确认到店
+    *onSaveConfirm({ payload }, { put, call, select }) {
+      const {container } = payload;
+      const state = yield select(state => state[namespace]);
+      const pars: Props = {
+        url: '/api/callcenter/delegate/customer/status/modify',
+        body: {
+          Id: payload.Id,
+          Status: 3,
+          Time:state.Time.format('YYYY-MM-DD HH:mm:ss'),
+          Remark:state.currData.SellerRemark
+        },
+        method: 'POST',
+      };
+      const res: Res = yield call(ask, pars);
+      if (res.success) {
+        yield put({
+          type: 'fetch',
+          payload: {},
+        });
+        yield put({
+          type: 'showConfirm',
+          payload: {
+            isShowConfirmToShop: false,
+          },
+        });
+        modalSuccess({
+          message: '状态修改成功!',
+        });
+        
+      } else {
+        MessageBox.show(res.message, container);
+      }
+    },
     // 预约
     *onSaveAppoint({ payload }, { put, call, select }) {
       const {container } = payload;
@@ -150,7 +184,7 @@ export default {
           },
         });
         modalSuccess({
-          message: '签名修改成功!',
+          message: '状态修改成功!',
         });
         
       } else {
@@ -366,6 +400,19 @@ export default {
             }
           : null,
         isShowAppoint: payload.isShowAppoint,
+      };
+    },
+    showConfirm(state, { payload }) {
+      const currData = payload.currData;
+      return {
+        ...state,
+        currData: currData
+          ? {
+              SellerRemark: currData.SellerRemark,
+              ChildName:currData.ChildName
+            }
+          : null,
+        isShowConfirmToShop: payload.isShowConfirmToShop,
       };
     },
     showRemark(state, { payload }) {

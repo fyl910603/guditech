@@ -7,7 +7,7 @@ import router from 'umi/router';
 // import { toRegionTree } from '../send/model';
 import { getUser } from 'utils/localStore';
 
-export const namespace = 'orderList';
+export const namespace = 'phoneDetail';
 
 export default {
   namespace,
@@ -28,8 +28,17 @@ export default {
 
   subscriptions: {
     setup({ dispatch, history }, done) {
+      
       history.listen(location => {
-        if (location.pathname === '/telemarketing/teleListForCall/phoneDetail') {
+        console.log(location)
+      //   if (location.pathname === '/smsweb/telemarketing/teleListForCall/phoneDetail') {
+          dispatch({
+            type: 'fetch',
+            payload:{
+              orderid:location.query.orderid,
+              pagecount:30
+            }
+          })
           dispatch({
             type: 'init',
           });
@@ -41,19 +50,13 @@ export default {
             type: 'fetchPticeTemp',
             payload:{}
           });
-          dispatch({
-            type: 'fetch',
-            payload:{
-              orderid:location.query.orderid,
-              pagecount:30
-            }
-          })
+
           if (location.query.clear !== '1') {
             dispatch({
               type: 'restore',
             });
           }
-        }
+      //   }
       });
     },
   },
@@ -203,12 +206,13 @@ export default {
     // 添加备注
     *fetchRemark({ payload }, { put, call, select }) {
       const { container } = payload;
+      const state = yield select(state => state[namespace]);
       const pars: Props = {
         url: '/api/callmarketing/order/call/remark/modify',
         body: {
-          OrderId: payload.OrderId,
-          FamilyId:payload.FamilyId,
-          Remark:payload.Remark
+          OrderId: state.currData.OrderId,
+          FamilyId:state.currData.FamilyId,
+          Remark:state.Remark
         },
         method: 'POST',
       };
@@ -218,6 +222,17 @@ export default {
           type: 'fetchRemarkSuccess',
           payload: {
           },
+        });
+        yield put({
+          type: 'fetch',
+          payload:{
+            pageindex: payload.pageindex || state.pageindex,
+            pagecount: state.pagecount,
+            starttime: state.timeRange[0] ? state.timeRange[0].format('YYYY-MM-DD 00:00:00') : '',
+            endtime: state.timeRange[1] ? state.timeRange[1].format('YYYY-MM-DD 23:59:59') : '',
+            parent: state.parent,
+            orderid: location.search.split('=')[1],
+          }
         });
         modalSuccess({
           title: '备注保存成功',
@@ -290,7 +305,8 @@ export default {
         pageindex: 1,
         orderid: '',
         mobile:'',
-        list: [],
+        currData:null,
+        Remark:''
         // phoneList:[]
       };
     },
@@ -355,7 +371,19 @@ export default {
     fetchRemarkFalse(state, { payload }) {
       return {
         ...state,
-        isShowRemark:true
+        isShowRemark:true,
+        Remark: payload.Remark,
+        currData:payload
+        ? {
+          OrderId:payload.OrderId,
+          FamilyId:payload.FamilyId,
+          Father: payload.Father,
+          Mother: payload.Mother,
+          Mobile: payload.Mobile,
+          Remark: payload.Remark,
+          RemarkLastUpdateTime: payload.RemarkLastUpdateTime,
+          }
+        : null,
       };
     },
     fetchSuccess(state, { payload }) {

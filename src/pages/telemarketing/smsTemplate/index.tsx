@@ -103,7 +103,7 @@ class Component extends React.PureComponent<Props, State> {
   }
   onOpenMEdit = record => {
       this.setState({
-        defaultSignName:record.SignId,
+        defaultSignName:record.SignName,
         edittemplateid:record.TemplateSysId,
         editSignId:record.SignId
       })
@@ -348,7 +348,7 @@ class Component extends React.PureComponent<Props, State> {
           <div className={styles.form}>
            <Form>
             <span>签名：</span>
-              <Select value={this.state.defaultSignName} style={{ width: 300 }} onChange={this.handleChange} >
+              <Select value={this.state.defaultSignName} style={{ width: 300 }} onSelcet={this.handleChange} >
                 {typelist.map((item,index) =>(
                   <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
                 ))}

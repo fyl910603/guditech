@@ -208,14 +208,18 @@ class Component extends React.PureComponent<Props, State> {
   }
   addSave = () => {
     const { search_region, form } = this.props.data;
-    this.props.dispatch({
-      type: `${namespace}/onSave`,
-      payload: {
-        addOrderName: this.state.addOrderName,
-        templateId: this.state.typeValue,
-        search_area_dis: search_region ? getAreaData(search_region.tree, form.search_area) : '',
-      },
-    });
+    if(this.state.addOrderName !=''){
+      this.props.dispatch({
+        type: `${namespace}/onSave`,
+        payload: {
+          addOrderName: this.state.addOrderName,
+          templateId: this.state.typeValue,
+          search_area_dis: search_region ? getAreaData(search_region.tree, form.search_area) : '',
+        },
+      });
+    }else{
+      MessageBox.show('请输入订单名称', this.divForm);
+    }
   }
   onSearchCheckedAddressChanged = e => {
     this.props.dispatch({

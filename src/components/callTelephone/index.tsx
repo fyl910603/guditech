@@ -47,7 +47,6 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   componentDidMount(){
   }
   componentWillUnmount(){
-    console.log('销毁')
     ws.onclose = function(){
       console.log('webscoket连接关闭')
     }
@@ -112,6 +111,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   // 挂断电话
   toHangUp = () =>{
+    const ws = new WebSocket('wss://test.guditech.com/marketingCall');
     ws.onopen = function (evt) {
       ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
     };
@@ -122,17 +122,14 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   toCallPhone = ()=>{
     const ws = new WebSocket('wss://test.guditech.com/marketingCall');
     const {phoneData} = this.props
-    console.log(ws)
     ws.onopen = function (evt) {
       console.log("Connection open ...");
-      let action = {ActionCode:"000001",Type:"0101",Data:{UserToken:getUser().UserToken,FamilyId:phoneData.FamilyId,AddressId:phoneData.AddressId,ChildId:phoneData.ChildId,FromExtenId:localStorage.getItem('defaultSeatCall'),OrderId:phoneData.OrderId}}
-      console.log(action)
+      let action = {ActionCode:"000001",Type:"0101",Data:{UserToken:UserToken,FamilyId:phoneData.FamilyId,AddressId:phoneData.AddressId,ChildId:phoneData.ChildId,FromExtenId:localStorage.getItem('defaultSeatCall'),OrderId:phoneData.OrderId}}
       ws.send(JSON.stringify(action));
     };
     let _this = this 
     ws.onmessage = function (evt) {
       let data = JSON.parse(evt.data)
-      console.log(data.Status)
       if(data.Status!= undefined){
         switch(data.Status){
           case 1:
@@ -156,10 +153,6 @@ export class CallTelephone extends React.PureComponent<Props, State> {
           default:
           break;
         }
-      }else{
-        _this.setState({
-          showMsg:false
-        })
       }
     };
     this.setState({

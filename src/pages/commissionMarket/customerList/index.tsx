@@ -24,6 +24,7 @@ interface State {
   editvisible: boolean;
   temvisible: boolean;
   remarkvisible: boolean;
+  confirmvisible: boolean;
   appointvisible: boolean;
   defaultSignName: string;
   editSignId: string;
@@ -43,6 +44,7 @@ class Component extends React.PureComponent<Props, State> {
       Id: '',
       editvisible: false,
       appointvisible: false,
+      confirmvisible:false,
       remarkvisible: false,
       temvisible: false,
       defaultSignName: '',
@@ -97,6 +99,7 @@ class Component extends React.PureComponent<Props, State> {
       temvisible: false,
       remarkvisible: false,
       appointvisible:false,
+      confirmvisible:false,
       defaultSignName: ''
     });
   }
@@ -231,6 +234,18 @@ class Component extends React.PureComponent<Props, State> {
       editvisible: false
     })
   }
+  saveConfirmToShop= (container) => {
+    this.props.dispatch({
+      type: `${namespace}/onSaveConfirm`,
+      payload: {
+        container,
+        Id:this.state.Id
+      },
+    });
+    this.setState({
+      confirmvisible: false
+    })
+  }
   onDelete = record => {
     confirm({
       title: `确定要删除${record.Name}活动吗？`,
@@ -311,18 +326,16 @@ class Component extends React.PureComponent<Props, State> {
     });
   }
   // 确认到店
-  toArrive = record => {
-    confirm({
-      title: `您确定将该用户的状态从
-      [${record.ExamineStateName}]变为[重新委托]吗？`,
-      onOk: () => {
-        this.props.dispatch({
-          type: `${namespace}/changeStatus`,
-          payload: {
-            Id: record.Id,
-            Status: 1
-          }
-        });
+  toArrive= record => {
+    this.setState({
+      confirmvisible: true,
+      Id: record.Id
+    })
+    this.props.dispatch({
+      type: `${namespace}/showConfirm`,
+      payload: {
+        currData: record,
+        isShowConfirmToShop: true,
       },
     });
   }
@@ -377,7 +390,7 @@ class Component extends React.PureComponent<Props, State> {
     exportExcel(_headers, data);
   }
   render() {
-    const { list, typelist, totalCount, arrival, unbooked, pageindex, pagecount, isShowEdit, isShowSign, currData, CustomerMobile, CustomerName, delegateStatus, isShowRemark, isShowAppoint, Remark, Time } = this.props.data;
+    const { list, typelist, totalCount, arrival, unbooked, pageindex, pagecount, isShowConfirmToShop,isShowEdit, isShowSign, currData, CustomerMobile, CustomerName, delegateStatus, isShowRemark, isShowAppoint, Remark, Time } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
@@ -558,8 +571,45 @@ class Component extends React.PureComponent<Props, State> {
             onClose={this.onCloseEdit}
           />
         )}
+        {isShowConfirmToShop && (
+          <Modal title={`确认到店-${currData.ChildName != undefined ? currData.ChildName : ''}`} visible={this.state.confirmvisible}
+            style={{ top: 200 }}
+            width='630px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="submit" type="primary" size="large" onClick={this.saveConfirmToShop}>
+                提交
+                    </Button>,
+              <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+            ]}
+          >
+            <div className={styles.form}>
+              <Form>
+                <span>到店时间：</span>
+                <DatePicker
+                  showTime
+                  value={Time}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="到店时间"
+                  onChange={this.onDateChanged}
+                  onOk={this.onOk}
+                />
+                <p>我的备注</p>
+                <TextArea2
+                  placeholder=""
+                  value={currData.SellerRemark}
+                  onChange={this.appointRemarkChanged}
+                  maxLength={128}
+                  // showFontCount={true}
+                  className={styles.textarea}
+                  disabled={false}
+                />
+              </Form>
+            </div>
+          </Modal>
+        )}
         {isShowAppoint && (
-          <Modal title={`预约-${currData.ChildName != undefined ? currData.ChildName : ''}`} visible={this.state.appointvisible}
+          <Modal title={`预约-${currData.ChildName != null ? currData.ChildName : ''}`} visible={this.state.appointvisible}
             style={{ top: 200 }}
             width='630px'
             onCancel={this.handleCancel}

@@ -224,6 +224,16 @@ export default {
         typelist: payload.typeList || [],
       };
     },
+    fetchItem(state, { payload }) {
+      return {
+        ...state,
+        currData: payload
+        ? {
+            SignId: payload.SignId,
+          }
+        : null,
+      };
+    },
     fetchSuccess(state, { payload }) {
       return {
         ...state,
@@ -231,6 +241,12 @@ export default {
         totalCount: payload.TotalCount || 0,
         pageindex: payload.pageindex,
         pagecount: payload.pagecount,
+      };
+    },
+    changeSignName(state, { payload }) {
+      return {
+        ...state,
+        defaultSignName:payload
       };
     },
     showSignEdit(state, { payload }){

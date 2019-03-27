@@ -191,9 +191,6 @@ class Component extends React.PureComponent<Props, State> {
         this.props.dispatch({
           type: `${namespace}/fetchRemark`,
           payload: {
-            OrderId:this.state.orderData.OrderId,
-            FamilyId:this.state.orderData.FamilyId,
-            Remark:this.state.Remark
           },
         });
       },
@@ -214,47 +211,57 @@ class Component extends React.PureComponent<Props, State> {
     });
   }
   OpenPhoneDetail = record =>{
+    this.getPhoneDetail(record.OrderId,record.FamilyId)
+    let _this = this
     setTimeout(()=>{
-      this.getPhoneDetail(record.OrderId,record.FamilyId)
-      this.setState({
+      _this.setState({
         phonevisible:true,
         phoneInfo:record.Mobile
       })
-    },50)
+    },100)
   }
   OpenSmsDetail = record =>{
+    this.getSmsDetail(record.OrderId,record.FamilyId)
+    let _this = this
     setTimeout(()=>{
-      this.getSmsDetail(record.OrderId,record.FamilyId)
-      this.setState({
+      _this.setState({
         smsvisible:true,
         smsInfo:record.Mobile
       })
-    },50)
+    },100)
   }
   // 打开备注
   OpenRemark = record =>{
     this.props.dispatch({
       type: `${namespace}/fetchRemarkFalse`,
-      payload: {
-      },
+      payload: record,
     });
     setTimeout(()=>{
       this.setState({
         remarkvisible:true,
         orderData:Object.assign(record),
-        Remark:record.Remark
       })
     },50)
   }
+  // 备注改变
   changeRemark = (e) =>{
-    this.setState({
-      Remark:e.target.value
+    this.props.dispatch({
+      type: `${namespace}/changeRemark`,
+      payload: e.target.value
     })
   }
   // 默认坐席改变
   onchangeD = () =>{
     this.props.dispatch({
     type: `${namespace}/fetchPhoneSeat`,
+    payload: {
+    }
+  })
+  }
+  // 关闭拨打电话窗口
+  onCloseMobile = () =>{
+    this.props.dispatch({
+    type: `${namespace}/fetchCloseMobile`,
     payload: {
     }
   })
@@ -279,13 +286,6 @@ class Component extends React.PureComponent<Props, State> {
         return "00:00:00";  
       }  
     }
-  onOpenSendDetail = h => {
-    router.push(`/shortMessage/templateListForSend/orderList/sendList?orderId=${h.OrderId}&clear=1`);
-  };
-  onOpenReadDetail = h => {
-    router.push(`/shortMessage/templateListForSend/orderList/visitList?orderId=${h.OrderId}&clear=1`);
-  };
-
   render() {
     const {
       list,
@@ -304,6 +304,8 @@ class Component extends React.PureComponent<Props, State> {
       orderDetail,
       isShowTemplateD,
       phoneList,
+      currData,
+      Remark,
       smsList
     } = this.props.data;
     const { height } = this.state;
@@ -578,7 +580,7 @@ class Component extends React.PureComponent<Props, State> {
             dataSource={phoneList}
             pagination={false}
             scroll={{ y: height }}
-            rowKey='FamilyId'
+            rowKey='LastCallTime            '
             locale={{
               emptyText: '暂无记录',
             }}
@@ -637,6 +639,7 @@ class Component extends React.PureComponent<Props, State> {
               onchangeD = {this.onchangeD}
               data={seatList}
               phoneData={CallData}
+              onClose = {this.onCloseMobile}
             />
           )}
           {/* 备注 */}
@@ -654,12 +657,12 @@ class Component extends React.PureComponent<Props, State> {
           ]}
           >
           <div className={styles.topBox}>
-            <span className={styles.topSpan}>{this.state.orderData.Father!=='' && this.state.orderData.Mother!==''?`父母:${this.state.orderData.Father}/${this.state.orderData.Mother}`:''}</span>
-            <span className={styles.topSpan}>{this.state.orderData.Mobile!==''?`手机号码:${this.state.orderData.Mobile}`:''}</span>
-            <span className={styles.topSpan}>{this.state.orderData.RemarkLastUpdateTime!==''?`最后修改时间:${this.state.orderData.RemarkLastUpdateTime}`:''}</span>
+            <span className={styles.topSpan}>{currData!==null?`父母:${currData.Father}/${currData.Mother}`:''}</span>
+            <span className={styles.topSpan}>{currData!==null?`手机号码:${currData.Mobile}`:''}</span>
+            <span className={styles.topSpan}>{currData!==null?`最后修改时间:${currData.RemarkLastUpdateTime}`:''}</span>
           </div>
           <div className={styles.textareaBox}>
-            <textarea onChange={this.changeRemark} defaultValue={this.state.Remark} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
+            <textarea onChange={this.changeRemark} value={(currData !=null && currData.Remark !=null) ?currData.Remark:''} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
           </div>
           </Modal>
         )

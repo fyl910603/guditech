@@ -7,7 +7,7 @@ import router from 'umi/router';
 // import { toRegionTree } from '../send/model';
 import { getUser } from 'utils/localStore';
 
-export const namespace = 'orderList';
+export const namespace = 'callRecord';
 
 export default {
   namespace,
@@ -153,12 +153,13 @@ export default {
     // 添加备注
     *fetchRemark({ payload }, { put, call, select }) {
       const { container } = payload;
+      const state = yield select(state => state[namespace]);
       const pars: Props = {
         url: '/api/callmarketing/order/call/remark/modify',
         body: {
-          OrderId: payload.OrderId,
-          FamilyId:payload.FamilyId,
-          Remark:payload.Remark
+          OrderId: state.currData.OrderId,
+          FamilyId:state.currData.FamilyId,
+          Remark:state.Remark
         },
         method: 'POST',
       };
@@ -168,6 +169,17 @@ export default {
           type: 'fetchRemarkSuccess',
           payload: {
           },
+        });
+        yield put({
+          type: 'fetch',
+          payload:{
+            pageindex: payload.pageindex || state.pageindex,
+            pagecount: state.pagecount,
+            starttime: state.timeRange[0] ? state.timeRange[0].format('YYYY-MM-DD 00:00:00') : '',
+            endtime: state.timeRange[1] ? state.timeRange[1].format('YYYY-MM-DD 23:59:59') : '',
+            parent: state.parent,
+            orderid: location.search.split('=')[1],
+          }
         });
         modalSuccess({
           title: '备注保存成功',
@@ -292,7 +304,8 @@ export default {
         pageindex: 1,
         orderid: '',
         mobile:'',
-        list: [],
+        currData:null,
+        Remark:'',
         // phoneList:[]
       };
     },
@@ -357,7 +370,19 @@ export default {
     fetchRemarkFalse(state, { payload }) {
       return {
         ...state,
-        isShowRemark:true
+        isShowRemark:true,
+        Remark: payload.Remark,
+        currData:payload
+        ? {
+          OrderId:payload.OrderId,
+          FamilyId:payload.FamilyId,
+          Father: payload.Father,
+          Mother: payload.Mother,
+          Mobile: payload.Mobile,
+          RemarkLastUpdateTime: payload.RemarkLastUpdateTime,
+          Remark: payload.Remark,
+          }
+        : null,
       };
     },
     onOpenCall(state, { payload }) {
@@ -365,6 +390,12 @@ export default {
         ...state,
         isShowCall: true,
         CallData:payload
+      };
+    },
+    changeRemark(state, { payload }) {
+      return {
+        ...state,
+        Remark:payload
       };
     },
     fetchSuccess(state, { payload }) {
@@ -507,6 +538,12 @@ export default {
       return {
         ...state,
         isShowDetail: false,
+      };
+    },
+    fetchCloseMobile(state, { payload }) {
+      return {
+        ...state,
+        isShowCall: false,
       };
     },
   },

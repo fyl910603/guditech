@@ -102,6 +102,10 @@ class Component extends React.PureComponent<Props, State> {
     });
   }
   onOpenMEdit = record => {
+    this.props.dispatch({
+      type: `${namespace}/fetchItem`,
+      payload: record
+    });
       this.setState({
         defaultSignName:record.SignId,
         edittemplateid:record.TemplateSysId,
@@ -162,10 +166,14 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   };
-  handleChange = value =>{
-    this.setState({
-      editSignId:value,
-    })
+  handleChange = e =>{
+    console.log(e)
+    // this.props.dispatch({
+    //   type: `${namespace}/changeSignName`,
+    //   payload: {
+    //     defaultSignName: value,
+    //   },
+    // });
   }
   // 修改模板名称
   saveTemplate = (container) =>{
@@ -207,7 +215,7 @@ class Component extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData } = this.props.data;
+    const { list, typelist, totalCount, pageindex, pagecount, isShowEdit,isShowSign, currData,defaultSignName } = this.props.data;
     const { height } = this.state;
     const columns: any = [
       {
@@ -353,7 +361,7 @@ class Component extends React.PureComponent<Props, State> {
           <div className={styles.form}>
            <Form>
             <span>签名：</span>
-              <Select value={this.state.defaultSignName} style={{ width: 300 }} onChange={this.handleChange} >
+              <Select defaultValue={currData!=null?currData.SignId:0} style={{ width: 300 }} onSelect={this.handleChange} >
                 {typelist.map((item,index) =>(
                   <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
                 ))}
