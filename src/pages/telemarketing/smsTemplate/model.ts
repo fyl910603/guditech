@@ -17,7 +17,7 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        // if (location.pathname === `/shortMessage/${namespace}`) {
+        if (location.pathname === `/telemarketing/${namespace}`) {
           dispatch({
             type: 'init',
           });
@@ -32,7 +32,7 @@ export default {
             payload: {
             },
           });
-        // }
+        }
       });
     }
   },

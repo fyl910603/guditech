@@ -63,8 +63,8 @@ export async function ask(props: Props): Promise<Res> {
       body = undefined;
     }
   }
-
-  let response = await fetch(url, {
+  let response = await fetch(url, 
+    {
     method,
     body,
     headers: {
@@ -72,7 +72,8 @@ export async function ask(props: Props): Promise<Res> {
       ...getCommonHeader(),
       ...headers,
     },
-  });
+  }
+  );
 
   if (!response.ok) {
     return {
@@ -81,7 +82,6 @@ export async function ask(props: Props): Promise<Res> {
       data: null,
     };
   }
-
   const { ErrorCode, ErrorMessage, Data } = await response.json();
 
   if (ErrorCode === 301) {

@@ -40,37 +40,11 @@ class Component extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    // this.props.dispatch({
-    //   type: `${namespace}/fetch`,
-    //   payload: {
-    //     container: this.divForm,
-    //   },
-    // });
-    //   this.props.dispatch({
-    //     type: `${namespace}/fetchType`,
-    //     payload: {
-    //       container: this.divForm,
-    //       status: 1,
-    //     },
-    //   });
     window.addEventListener('resize', this.onResize);
     this.onResize();
   }
 
   componentWillUnmount() {
-    // this.props.dispatch({
-    //   type: `${namespace}/fetch`,
-    //   payload: {
-    //     container: this.divForm,
-    //   },
-    // });
-    //   this.props.dispatch({
-    //     type: `${namespace}/fetchType`,
-    //     payload: {
-    //       container: this.divForm,
-    //       status: 1,
-    //     },
-    //   });
     window.removeEventListener('resize', this.onResize);
   }
 
@@ -348,7 +322,7 @@ class Component extends React.PureComponent<Props, State> {
           <div className={styles.form}>
            <Form>
             <span>签名：</span>
-              <Select value={this.state.defaultSignName} style={{ width: 300 }} onSelcet={this.handleChange} >
+              <Select defaultValue={this.state.defaultSignName} style={{ width: 300 }} onChange={this.handleChange} >
                 {typelist.map((item,index) =>(
                   <Select.Option key={item.SignId} value={item.SignId}>{item.SignName}</Select.Option>
                 ))}

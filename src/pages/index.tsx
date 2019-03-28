@@ -72,8 +72,8 @@ const Component = ({ dispatch, data }) => {
           </div>
           <div className={styles.item3} onClick={toShortMessage}>
           </div>
-          <div className={styles.item4} onClick={toDataAnalysis}>
-          </div>
+          {/* <div className={styles.item4} onClick={toDataAnalysis}>
+          </div> */}
           <div className={styles.item5} onClick={toCustomer}>
           </div>
         </div>

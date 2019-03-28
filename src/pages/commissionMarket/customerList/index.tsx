@@ -268,7 +268,7 @@ class Component extends React.PureComponent<Props, State> {
           payload: {
             Id: record.Id,
             Status: 5,
-            Time: '',
+            // Time: '',
             Remark: ''
           }
         });
@@ -286,7 +286,7 @@ class Component extends React.PureComponent<Props, State> {
           payload: {
             Id: record.Id,
             Status: 4,
-            Time: '',
+            // Time: '',
             Remark: ''
           }
         });
@@ -304,7 +304,7 @@ class Component extends React.PureComponent<Props, State> {
           payload: {
             Id: record.Id,
             Status: 1,
-            Time: '',
+            // Time: '',
             Remark: ''
           }
         });
@@ -572,7 +572,7 @@ class Component extends React.PureComponent<Props, State> {
           />
         )}
         {isShowConfirmToShop && (
-          <Modal title={`确认到店-${currData.ChildName != undefined ? currData.ChildName : ''}`} visible={this.state.confirmvisible}
+          <Modal title={`确认到店-${(currData.ChildName != undefined && currData.ChildName != null) ? currData.ChildName : ''}`} visible={this.state.confirmvisible}
             style={{ top: 200 }}
             width='630px'
             onCancel={this.handleCancel}

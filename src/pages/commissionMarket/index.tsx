@@ -180,7 +180,7 @@ class Component extends React.PureComponent<Props, State> {
       type: `${namespace}/changeRemark`,
       payload: {
         Id:this.state.Id,
-        Remark:this.props.data.currData.Remark
+        Remark:this.props.data.currData.Remark != null?this.props.data.currData.Remark:''
       },
     });
   }
@@ -541,7 +541,7 @@ class Component extends React.PureComponent<Props, State> {
           <div className={styles.form}>
             <TextArea2
               placeholder="请输入活动内容"
-              value={currData.Remark}
+              value={(currData != null && currData.Remark != null)?currData.Remark:''}
               onChange={this.oncontentChanged}
               maxLength={128}
               // showFontCount={true}

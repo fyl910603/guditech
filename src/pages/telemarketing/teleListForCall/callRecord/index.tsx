@@ -110,12 +110,17 @@ class Component extends React.PureComponent<Props, State> {
   };
   // 打开短信操作
   getFamilyData = record => {
-    this.setState({
-      selectData: record
-    })
+    this.props.dispatch({
+      type: `${namespace}/onGetFamilyData`,
+      payload: record,
+    });
     this.onChangeTempStatus()
   }
   onOpenTemD = record => {
+    this.props.dispatch({
+      type: `${namespace}/getTemplateId`,
+      payload: record,
+    });
     this.setState({
       templateid: record,
       isShowTempTab: true,
@@ -126,10 +131,6 @@ class Component extends React.PureComponent<Props, State> {
     this.props.dispatch({
       type: `${namespace}/fetchSend`,
       payload: {
-        orderid: this.state.selectData.OrderId,
-        familyid: this.state.selectData.FamilyId,
-        addressid: this.state.selectData.AddressId,
-        childid: this.state.selectData.ChildId,
         templateid: this.state.templateid,
         container: this.divForm
       },
@@ -644,25 +645,25 @@ class Component extends React.PureComponent<Props, State> {
           )}
           {/* 备注 */}
           {isShowRemark && (
-          <Modal title="备注" visible= {this.state.remarkvisible}
-          style={{ top: 100}}
-          width='720px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" size="large" onClick={()=>this.submitRemark()}>
-              保存
+          <Modal title="备注" visible={this.state.remarkvisible}
+            style={{ top: 100 }}
+            width='720px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="submit" size="large" onClick={() => this.submitRemark()}>
+                保存
             </Button>,
-            <Button key="back" type="primary" size="large" onClick={()=>this.handleCancel()}>关闭</Button>
-            
-          ]}
+              <Button key="back" type="primary" size="large" onClick={() => this.handleCancel()}>关闭</Button>
+
+            ]}
           >
           <div className={styles.topBox}>
-            <span className={styles.topSpan}>{currData!==null?`父母:${currData.Father}/${currData.Mother}`:''}</span>
-            <span className={styles.topSpan}>{currData!==null?`手机号码:${currData.Mobile}`:''}</span>
-            <span className={styles.topSpan}>{currData!==null?`最后修改时间:${currData.RemarkLastUpdateTime}`:''}</span>
+            <span className={styles.topSpan}>{(currData!==null && currData.Father !=undefined && currData.Mother!=undefined)?`父母:${currData.Father}/${currData.Mother}`:''}</span>
+            <span className={styles.topSpan}>{(currData!==null && currData.Mobile != undefined)?`手机号码:${currData.Mobile}`:''}</span>
+            <span className={styles.topSpan}>{(currData!==null && currData.RemarkLastUpdateTime != undefined)?`最后修改时间:${currData.RemarkLastUpdateTime}`:''}</span>
           </div>
           <div className={styles.textareaBox}>
-            <textarea onChange={this.changeRemark} value={(currData !=null && currData.Remark !=null) ?currData.Remark:''} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
+          <textarea onChange={this.changeRemark} defaultValue={(currData !=null && currData.Remark !=null) ?Remark:''} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
           </div>
           </Modal>
         )

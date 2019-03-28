@@ -14,7 +14,7 @@ export interface Props {
   onClose: () => void;
   onError: (msg: string) => void;
 }
-const ws = new WebSocket('wss://test.guditech.com/marketingCall');
+let ws = undefined;
 const setSeat = {
   1: '座机',
   2: '网络电话',
@@ -25,6 +25,7 @@ interface State {
   showMsg:boolean;
   showSeconds:boolean;
   Seconds:any;
+  seconds:any;
   msg:string;
   callStatus:string;
 }
@@ -36,6 +37,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       visible:true,
       showMsg:false,
       Seconds:0,
+      seconds:0,
       showSeconds:false,
       msg:'',
       callStatus:''
@@ -57,14 +59,14 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       visible:false
     })
   }
+  tick = () =>{
+    this.setState((prevState)=>({
+      Seconds:this.formatSeconds(prevState.seconds + 1)
+    }))
+  }
+
   clockSeconds = () =>{
-    let seconds = 0;
-    let _this = this
-    setInterval(()=>{
-      _this.setState({
-        Seconds:_this.formatSeconds(seconds++)
-      })
-    },1000)
+    setInterval(() => this.tick(), 1000);
   }
   formatSeconds = (a) => {
     var hh= parseInt(a / 3600);
@@ -99,7 +101,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
         callStatus:'2',
       })
     this.setState({msg:'已挂断'});
-    clearInterval()
+    clearInterval(this.clockSeconds)
     setTimeout(()=>{
       _this.setState({
         showMsg:false,
@@ -111,25 +113,17 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   // 挂断电话
   toHangUp = () =>{
-    const ws = new WebSocket('wss://test.guditech.com/marketingCall');
-    ws.onopen = function (evt) {
-      ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
-    };
-    ws.onmessage = function (evt) {
-      console.log(evt.data)
-    }
-  }
-  toCallPhone = ()=>{
-    const ws = new WebSocket('wss://test.guditech.com/marketingCall');
-    const {phoneData} = this.props
-    ws.onopen = function (evt) {
-      console.log("Connection open ...");
-      let action = {ActionCode:"000001",Type:"0101",Data:{UserToken:UserToken,FamilyId:phoneData.FamilyId,AddressId:phoneData.AddressId,ChildId:phoneData.ChildId,FromExtenId:localStorage.getItem('defaultSeatCall'),OrderId:phoneData.OrderId}}
-      ws.send(JSON.stringify(action));
-    };
-    let _this = this 
+    console.log('开始挂断')
+    this.setState({msg:'挂断中...'});
+    clearInterval()
+    ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
+    // ws.onopen = function (evt) {
+    //   ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
+    // };
+    let _this = this
     ws.onmessage = function (evt) {
       let data = JSON.parse(evt.data)
+      console.log(evt.data)
       if(data.Status!= undefined){
         switch(data.Status){
           case 1:
@@ -154,13 +148,68 @@ export class CallTelephone extends React.PureComponent<Props, State> {
           break;
         }
       }
-    };
+    } 
+  }
+  getWebsocket = () =>{
+    ws = new WebSocket('wss://test.guditech.com/marketingCall');
+    return ws
+  }
+  toCallPhone = ()=>{
+    this.getWebsocket()
+    const {phoneData} = this.props
     this.setState({
+      callStatus:'',
       visible:false,
       showMsg:true,
       msg:'拨号中...'
     })
+    let _this = this 
+      // const ws = new WebSocket('wss://test.guditech.com/marketingCall');
+      ws.onopen = function (evt) {
+        console.log("Connection open ...");
+        let action = {ActionCode:"000001",Type:"0101",Data:{UserToken:UserToken,FamilyId:phoneData.FamilyId,AddressId:phoneData.AddressId,ChildId:phoneData.ChildId,FromExtenId:localStorage.getItem('defaultSeatCall'),OrderId:phoneData.OrderId}}
+        ws.send(JSON.stringify(action));
+      };
+      ws.onmessage = function (evt) {
+        let data = JSON.parse(evt.data)
+        if(data.Status!= undefined){
+          switch(data.Status){
+            case 1:
+              _this.setState({msg:'拨号中...'});
+              break;
+            case 2:
+              _this.toCalling();
+              break;
+            case 3:
+              _this.setState({msg:'被叫振铃'});
+              break;
+            case 4:
+              _this.onCalling();
+              break;
+            case 5:
+              _this.onHangUping()
+              break;
+            case 6:
+              _this.onHangUp()
+              break;
+            default:
+            break;
+          }
+        }else if (data.Data.Code != 0){
+          _this.setState({
+            callStatus:'2',
+          })
+        _this.setState({msg:data.Data.Message});
+        clearInterval()
+        setTimeout(()=>{
+          _this.setState({
+            showMsg:false,
+          })
+        },3000)
+        }
+      };
   }
+  // 设置坐席
   toSetDefault = (record) =>{
     localStorage.setItem('defaultSeatCall',record.SeatId);
     const { onchangeD } = this.props;
@@ -174,6 +223,9 @@ export class CallTelephone extends React.PureComponent<Props, State> {
       onClose();
     }
   };
+  NotClose = () =>{
+    // 不执行方法
+  }
   render(){
     const {data,phoneData} = this.props
     const columns: any = [
@@ -242,14 +294,16 @@ export class CallTelephone extends React.PureComponent<Props, State> {
         </div>
       </Modal>
       {this.state.showMsg&& (
-        <div className={styles.msg}>
-          <p className={styles.mobileNumber}>{phoneData.Mobile}</p>
-          <p className={styles.msgStatus}>{this.state.msg}</p>
-          {this.state.showSeconds && (
-            <p>{this.state.Seconds!= 0?this.state.Seconds: '00:00:00'}</p>
-          )}
-          <div onClick={()=>this.toHangUp()} className={this.state.callStatus == '2'?styles.msgErrorIcon:styles.msgSuccessIcon} >
-            <Icon type="phone" className={styles.callIcon}></Icon>
+        <div className={styles.callContainer} onClick={()=>this.NotClose()}>
+          <div className={styles.msg}>
+            <p className={styles.mobileNumber}>{phoneData.Mobile}</p>
+            <p className={styles.msgStatus}>{this.state.msg}</p>
+            {this.state.showSeconds && (
+              <p>{this.state.Seconds!= 0?this.state.Seconds: '00:00:00'}</p>
+            )}
+            <div onClick={()=>this.toHangUp()} className={this.state.callStatus == '2'?styles.msgErrorIcon:styles.msgSuccessIcon} >
+              <Icon type="phone" className={styles.callIcon}></Icon>
+            </div>
           </div>
         </div>
       )}

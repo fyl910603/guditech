@@ -30,6 +30,7 @@ export default {
     setup({ dispatch, history }, done) {
       history.listen(location => {
         if (location.pathname === '/telemarketing/teleListForCall/callRecord') {
+          console.log('callRecord')
           dispatch({
             type: 'init',
           });
@@ -215,14 +216,16 @@ export default {
     },
     *fetchSend({ payload }, { put, call, select }) {
       const { container } = payload;
+      const state = yield select(state => state[namespace]);
+      console.log(state)
       const pars: Props = {
         url: '/api/callmarketing/order/call/record/sms/send',
         body: {
-          orderid: payload.orderid,
-          familyid:payload.familyid,
-          addressid:payload.addressid,
-          childid:payload.childid,
-          templateid:payload.templateid
+          orderid: state.sendData.OrderId,
+          familyid:state.sendData.FamilyId,
+          addressid:state.sendData.AddressId,
+          childid:state.sendData.ChildId,
+          templateid:state.TemplateId
         },
         method: 'GET',
       };
@@ -305,6 +308,7 @@ export default {
         orderid: '',
         mobile:'',
         currData:null,
+        sendData:null,
         Remark:'',
         // phoneList:[]
       };
@@ -385,6 +389,20 @@ export default {
         : null,
       };
     },
+    // 获取家庭信息
+    onGetFamilyData(state, { payload }) {
+      return {
+        ...state,
+        sendData:payload
+        ? {
+          OrderId:payload.OrderId,
+          FamilyId:payload.FamilyId,
+          AddressId:payload.AddressId,
+          ChildId:payload.ChildId
+          }
+        : null,
+      };
+    },
     onOpenCall(state, { payload }) {
       return {
         ...state,
@@ -396,6 +414,12 @@ export default {
       return {
         ...state,
         Remark:payload
+      };
+    },
+    getTemplateId(state, { payload }) {
+      return {
+        ...state,
+        TemplateId:payload
       };
     },
     fetchSuccess(state, { payload }) {

@@ -111,17 +111,6 @@ export default {
             list:res.data
           }
         });
-        // const region = (res.data || []).filter(
-        //   item => item.ContentType === 'MSG_PRICE_TYPE_SEARCH_REGION'
-        // )[0];
-        // if (region) {
-        //   yield put({
-        //     type: 'getExpect',
-        //     payload: {
-        //       search_area_dis: region.DefaultValue,
-        //     },
-        //   });
-        // }
       }
     },
     // 查询

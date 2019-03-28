@@ -32,7 +32,7 @@ const routes = [
   { path: '/sinks', breadcrumb: '短信业务' },
   { path: '/telemarketing', breadcrumb: 'NULL' },
   { path: '/telemarketing/teleListForCall', breadcrumb: '电话营销' },
-  { path: '/telemarketing/teleListForCall/phoneDetail', breadcrumb: '电话记录' },
+  { path: '/telemarketing/teleListForCall/phoneDetail', breadcrumb: '电话详情' },
   { path: '/telemarketing/teleListForCall/callRecord', breadcrumb: '拨打记录' },
   { path: '/telemarketing/smsTemplate', breadcrumb: '短信模板' },
   { path: '/commissionMarket', breadcrumb: '委托营销' },
