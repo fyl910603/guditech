@@ -213,7 +213,6 @@ export default {
     *fetchSend({ payload }, { put, call, select }) {
       const { container } = payload;
       const state = yield select(state => state[namespace]);
-      console.log(state)
       const pars: Props = {
         url: '/api/callmarketing/order/call/record/sms/send',
         body: {
@@ -387,7 +386,6 @@ export default {
     },
     // 获取家庭信息
     onGetFamilyData(state, { payload }) {
-      console.log(payload)
       return {
         ...state,
         sendData:payload

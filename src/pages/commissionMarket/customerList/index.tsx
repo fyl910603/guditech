@@ -248,7 +248,7 @@ class Component extends React.PureComponent<Props, State> {
   }
   onDelete = record => {
     confirm({
-      title: `确定要删除${record.Name}活动吗？`,
+      title: `确定要删除${record.Name}委托吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/onDelete`,
@@ -434,6 +434,12 @@ class Component extends React.PureComponent<Props, State> {
         align: 'center'
       },
       {
+        title: '推送日期',
+        dataIndex: 'CreateTime',
+        width: '9%',
+        align: 'center'
+      },
+      {
         title: '备注',
         dataIndex: 'SellerRemark',
         width: '8%',
@@ -441,7 +447,7 @@ class Component extends React.PureComponent<Props, State> {
         render: (text, h) => {
           return <span><React.Fragment>
             <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
-              (详情)
+              (查看)
             </a>
           </React.Fragment></span>;
         },
@@ -574,7 +580,7 @@ class Component extends React.PureComponent<Props, State> {
         {isShowConfirmToShop && (
           <Modal title={`确认到店-${(currData.ChildName != undefined && currData.ChildName != null) ? currData.ChildName : ''}`} visible={this.state.confirmvisible}
             style={{ top: 200 }}
-            width='630px'
+            width='800px'
             onCancel={this.handleCancel}
             footer={[
               <Button key="submit" type="primary" size="large" onClick={this.saveConfirmToShop}>
@@ -611,7 +617,7 @@ class Component extends React.PureComponent<Props, State> {
         {isShowAppoint && (
           <Modal title={`预约-${currData.ChildName != null ? currData.ChildName : ''}`} visible={this.state.appointvisible}
             style={{ top: 200 }}
-            width='630px'
+            width='800px'
             onCancel={this.handleCancel}
             footer={[
               <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
@@ -648,7 +654,7 @@ class Component extends React.PureComponent<Props, State> {
         {/* 备注 */}
         {isShowRemark && (<Modal title={`备注-${currData.ChildName}`} visible={this.state.remarkvisible}
           style={{ top: 200 }}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.saveRemark}>

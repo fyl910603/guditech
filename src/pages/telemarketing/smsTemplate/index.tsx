@@ -310,7 +310,7 @@ class Component extends React.PureComponent<Props, State> {
         )}
         <Modal title="修改签名" visible={this.state.editvisible}
           style={{ top: 200}}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
@@ -333,7 +333,7 @@ class Component extends React.PureComponent<Props, State> {
         {/* 修改模板名称 */}
         <Modal title="修改模板名称" visible={this.state.temvisible}
           style={{ top: 200}}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.saveTemplate}>

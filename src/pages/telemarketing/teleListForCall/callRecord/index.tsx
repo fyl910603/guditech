@@ -110,12 +110,14 @@ class Component extends React.PureComponent<Props, State> {
   };
   // 打开短信操作
   getFamilyData = record => {
+    console.log(record)
     this.props.dispatch({
       type: `${namespace}/onGetFamilyData`,
       payload: record,
     });
     this.onChangeTempStatus()
   }
+  // 打开模板表格
   onOpenTemD = record => {
     this.props.dispatch({
       type: `${namespace}/getTemplateId`,
@@ -126,14 +128,33 @@ class Component extends React.PureComponent<Props, State> {
       isShowTempTab: true,
     })
   }
-   // 发送短信
-   onSend = () => {
+   // 发送短信1
+   onSend = (templateId) => {
+    this.props.dispatch({
+      type: `${namespace}/getTemplateId`,
+      payload: templateId,
+    });
     this.props.dispatch({
       type: `${namespace}/fetchSend`,
       payload: {
-        templateid: this.state.templateid,
         container: this.divForm
       },
+    });
+  }
+    // 发送短信2
+    onSend2 = () => {
+    this.props.dispatch({
+      type: `${namespace}/fetchSend`,
+      payload: {
+        container: this.divForm
+      },
+    });
+  }
+  // 选择模板
+  selectTemplate = (record) => {
+    this.props.dispatch({
+      type: `${namespace}/getTemplateId`,
+      payload: record.TemplateSysId,
     });
   }
   onChangeTempStatus = () => {
@@ -314,7 +335,7 @@ class Component extends React.PureComponent<Props, State> {
     if (templateList && templateList.length > 0) {
       priceTempList = templateList.map((h, index) => (
         <Menu.Item key={h.TemplateSysId}>
-          <a href="javascript:;" onClick={() => this.onOpenTemD(h.TemplateSysId)}>{h.TemplateName}</a>
+          <a href="javascript:;" onClick={() => this.onSend(h.TemplateSysId)}>{h.TemplateName}</a>
         </Menu.Item>
       ))
     }
@@ -341,9 +362,9 @@ class Component extends React.PureComponent<Props, State> {
     ];
     const columns: any = [
       {
-        title: '订单号码',
+        title: '订单号',
         dataIndex: 'OrderId',
-        width: 100,
+        width: 80,
         align: 'center',
       },
       {
@@ -355,9 +376,9 @@ class Component extends React.PureComponent<Props, State> {
         },
       },
       {
-        title: '手机号码',
+        title: '联系方式',
         dataIndex: 'Mobile',
-        width: 120,
+        width: 110,
         align: 'center',
       },
       {
@@ -386,7 +407,7 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '被拨打次数',
         dataIndex: 'CallTimes',
-        width: 120,
+        width: 100,
         align: 'center',
       },
       {
@@ -405,21 +426,22 @@ class Component extends React.PureComponent<Props, State> {
                   </div>
                 </a>
                 <a href="javascript:;">
-                  <div className={styles.send}>
-                    <Icon type="mail"/>
+                  <div className={styles.send} onClick={() => this.getFamilyData(h)}>
+                    <div className={styles.sendBtn} onClick={()=>this.onOpenTemD(h)}>
+                      <Icon type="mail"/>
+                    <span>发送短信</span>
+                    </div>
                     <Dropdown overlay={menu} trigger={['click']}>
-                      <span>
-                        发送短信 <Icon type="down" onClick={() => this.getFamilyData(h)} />
-                      </span>
+                         <Icon type="down"/>
                     </Dropdown>
                   </div>
                 </a>
                 <div className={styles.marketing}>
                   <a href="javascript:;" onClick={() => this.OpenPhoneDetail(h)}>
-                      电话明细
+                      电话记录
                   </a>
                   <a href="javascript:;" onClick={() => this.OpenSmsDetail(h)}>
-                      短信明细
+                      短信记录
                   </a>
                   <a href="javascript:;" onClick={() => this.OpenRemark(h)}>
                       备注
@@ -452,7 +474,7 @@ class Component extends React.PureComponent<Props, State> {
         },
       },
       {
-        title: '手机号码',
+        title: '联系方式',
         dataIndex: 'Mobile',
         align: 'center',
       },
@@ -493,7 +515,7 @@ class Component extends React.PureComponent<Props, State> {
         },
       },
       {
-        title: '手机号码',
+        title: '联系方式',
         dataIndex: 'Mobile',
         align: 'center',
       },
@@ -503,7 +525,7 @@ class Component extends React.PureComponent<Props, State> {
         align: 'center',
         render: (text, h) => {
           return (
-            <Tooltip placement="topLeft" title={h.ContentTemplateName} arrowPointAtCenter>
+            <Tooltip placement="topLeft" title={h.ContentTemplateDes} arrowPointAtCenter>
               <span>
                 {h.ContentTemplateName}
                 <Icon type="question-circle" />
@@ -514,18 +536,31 @@ class Component extends React.PureComponent<Props, State> {
       },
       {
         title: '状态',
-        dataIndex: 'LastStatus',
+        dataIndex: 'Status',
+        width: 100,
         align: 'center',
         render: (text,h) => {
-          return stateSmsMap[h.LastStatus]
+          return stateSmsMap[h.Status]
         },
       },
       {
         title: '发送时间',
-        dataIndex: 'LastCallTime',
+        dataIndex: 'SendTime',
         align: 'center',
       }
     ];
+    // 可选择
+    const rowSelection = {
+      type:'radio',
+      onChange: (selectedRowKeys, selectedRows) => {
+      },
+      onSelect: (record) => {
+        this.selectTemplate(record)
+      },
+      getCheckboxProps: record => ({
+        // checked: record.SeatId == localStorage.getItem('defaultSeatCall')?true:false,    // 默认选中
+      }),
+    };
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
         <div className={styles.condition}>
@@ -614,7 +649,7 @@ class Component extends React.PureComponent<Props, State> {
             onCancel={this.handleCancel}
             footer={[
               <Button key="back" size="large" onClick={() => this.handleCancel()}>关闭</Button>,
-              <Button key="submit" type="primary" size="large" onClick={() => this.onSend()}>发送</Button>
+              <Button key="submit" type="primary" size="large" onClick={() => this.onSend2()}>发送</Button>
 
 
             ]}
@@ -622,10 +657,10 @@ class Component extends React.PureComponent<Props, State> {
             <Table
               className={styles.tableContent}
               columns={columnsTemp}
+              rowSelection={rowSelection}
               dataSource={templateList}
               pagination={false}
               scroll={{ y: height }}
-              rowClassName = {(record,index)=> record.TemplateSysId == this.state.templateid?styles.checkedTab:''}
               rowKey="TemplateSysId"
               bordered={true}
               locale={{
@@ -663,7 +698,7 @@ class Component extends React.PureComponent<Props, State> {
             <span className={styles.topSpan}>{(currData!==null && currData.RemarkLastUpdateTime != undefined)?`最后修改时间:${currData.RemarkLastUpdateTime}`:''}</span>
           </div>
           <div className={styles.textareaBox}>
-          <textarea onChange={this.changeRemark} defaultValue={(currData !=null && currData.Remark !=null) ?Remark:''} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
+          <textarea onChange={this.changeRemark} value={(currData !=null && currData.Remark !=null) ?Remark:''} className={styles.textarea} placeholder="点击此处开始编辑备注"></textarea>
           </div>
           </Modal>
         )

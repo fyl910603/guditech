@@ -191,11 +191,17 @@ export default {
           payload: {},
         });
         modalSuccess({
-          message: '短信模板提交审核成功，我们将在1~3个工作日完成审核!',
+          message: '订单创建成功，我们将在1~3个工作日完成审核!',
         });
         yield put({
           type: 'fetch',
           payload: {},
+        });
+        yield put({
+          type: 'showCreate',
+          payload: {
+            isShowCreate:false
+          },
         });
       } else {
         MessageBox.show(res.message, container);
@@ -237,7 +243,7 @@ export default {
       const res: Res = yield call(ask, pars);
       if (res.success) {
         modalSuccess({
-          message: '该申请删除成功!',
+          message: '该订单删除成功!',
         });
         yield put({
           type: 'fetch',
@@ -255,7 +261,7 @@ export default {
         ...state,
         pageindex: 1,
         list: [],
-        
+        // isShowCreate:false
       };
     },
     restore(state, { payload }) {
@@ -483,7 +489,12 @@ export default {
         },
       };
     },
-
+    showCreate(state, { payload }) {
+      return {
+        ...state,
+        isShowCreate: payload.isShowCreate,
+      };
+    },
     onFeedbackChanged(state, { payload }) {
       return {
         ...state,

@@ -15,7 +15,7 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
-        if (location.pathname === `/${namespace}`) {
+        if (location.pathname === `/help/${namespace}`) {
           const user = getUserIfNullLogout();
           if (user) {
             dispatch({

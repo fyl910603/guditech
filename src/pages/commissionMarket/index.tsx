@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import styles from './styles.less';
 import { Table, Divider, Icon, Tooltip,Modal,Select, Form, Input} from 'antd';
 import { namespace } from './model';
+import { MessageBox } from 'components/messageBox';
 import Button from 'antd/es/button';
 import { SplitPage } from 'components/splitPage';
 import { DelegateTemplateEdit } from 'components/delegateTemplateEdit';
@@ -166,13 +167,21 @@ class Component extends React.PureComponent<Props, State> {
   };
 
   onSave = (data, container) => {
-    this.props.dispatch({
-      type: `${namespace}/onSave`,
-      payload: {
-        container,
-        data,
-      },
-    });
+    if(data.Name == ''){
+      MessageBox.show('请输入委托名称', this.divForm);
+    }else if(data.DelegateCount == ''){
+      MessageBox.show('请输入委托人数', this.divForm);
+    }else if(data.Description == ''){
+      MessageBox.show('请输入委托内容', this.divForm);
+    }else{
+      this.props.dispatch({
+        type: `${namespace}/onSave`,
+        payload: {
+          container,
+          data,
+        },
+      });
+    }
   };
   // 保存备注
   saveRemark = ()=>{
@@ -218,7 +227,7 @@ class Component extends React.PureComponent<Props, State> {
   }
   onDelete = record => {
     confirm({
-      title: `确定要删除${record.Name}活动吗？`,
+      title: `确定要删除${record.Name}委托吗？`,
       onOk: () => {
         this.props.dispatch({
           type: `${namespace}/onDelete`,
@@ -257,7 +266,8 @@ class Component extends React.PureComponent<Props, State> {
       },
     });
   }
-  toCancel = record =>{
+  // 取消委托
+  toCancel = (record) =>{
     confirm({
       title: `您确定将该用户的状态从
       [${record.ExamineStateName}]变为[取消委托]吗？`,
@@ -265,8 +275,9 @@ class Component extends React.PureComponent<Props, State> {
         this.props.dispatch({
           type: `${namespace}/changeStatus`,
           payload:{
+            container:this.divForm,
             Id:record.Id,
-            Status:4
+            Status:8
           }
         });
       },
@@ -329,7 +340,7 @@ class Component extends React.PureComponent<Props, State> {
     const { height } = this.state;
     const columns: any = [
       {
-        title: '活动名称',
+        title: '委托名称',
         dataIndex: 'Name',
         width: '10%',
         align: 'center',
@@ -351,13 +362,13 @@ class Component extends React.PureComponent<Props, State> {
         align: 'center',
       },
       {
-        title: '委托数量',
+        title: '委托人数',
         dataIndex: 'DelegateCount',
         width: '6%',
         align: 'center',
       },
       {
-        title: '活动时间',
+        title: '委托时间',
         dataIndex: 'CreateTime',
         width: '10%',
         align: 'center',
@@ -372,22 +383,6 @@ class Component extends React.PureComponent<Props, State> {
         align: 'center',
         render: (text, h) => (
           <span>
-              <React.Fragment>
-                <a href="javascript:;" onClick={() => this.onOpenDetails(h)}>
-                  委托详情
-                </a>
-                <Divider type="vertical" />
-              </React.Fragment>
-              <React.Fragment>
-              <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
-                客户名单
-              </a>
-              <Divider type="vertical" />
-              <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
-                备注
-              </a>
-              </React.Fragment>
-              <Divider type="vertical" />
               {h.Status == 1 && (
                 <Button ghost type="primary" className={styles.tabBtn} onClick={() =>this.toCancel(h)}>
                   取消委托
@@ -413,11 +408,27 @@ class Component extends React.PureComponent<Props, State> {
                   重新委托
                 </Button>
               )}
+              <React.Fragment>
+                <a href="javascript:;" onClick={() => this.onOpenDetails(h)}>
+                  委托详情
+                </a>
+                <Divider type="vertical" />
+              </React.Fragment>
+              <React.Fragment>
+              <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
+                客户名单
+              </a>
+              <Divider type="vertical" />
+              <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
+                备注
+              </a>
+              </React.Fragment>
+              <Divider type="vertical" />
               <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
                 编辑
               </a>
               <Divider type="vertical" />
-              {(h.Status == 6 || h.Status == 1) && (
+              {(h.Status == 6 || h.Status == 1 || h.Status == 8) && (
                 <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>
                   删除
                 </a>
@@ -428,13 +439,14 @@ class Component extends React.PureComponent<Props, State> {
     ];
 
     const statusMap = {
-      1: '申请委托中',
+      1: '申请中',
       2: '委托中',
-      3: '暂停委托',
-      4: '停止委托',
+      3: '委托暂停',
+      4: '委托停止',
       5: '委托完成',
       6: '委托失败',
-      7: '管理员作废',
+      7: '被系统作废',
+      8: '委托取消'
     };
 
     const listData = list.map(h => ({
@@ -444,8 +456,9 @@ class Component extends React.PureComponent<Props, State> {
     return (
       <div className={styles.main} ref={obj => (this.divForm = obj)}>
           <div className={styles.condition}>
+          <label htmlFor="">委托：</label>
           <Input2
-            placeholder="活动名称"
+            placeholder="委托名称"
             value={delegateName}
             className={styles.searchInput}
             onChange={this.onDelegateNameChanged}
@@ -459,12 +472,14 @@ class Component extends React.PureComponent<Props, State> {
             style={{ width: 190 }}
           > 
             <Select.Option value='0'>全部</Select.Option>
-            <Select.Option value='1'>申请委托中</Select.Option>
+            <Select.Option value='1'>申请中</Select.Option>
             <Select.Option value='2'>委托中</Select.Option>
-            <Select.Option value='3'>暂停委托</Select.Option>
-            <Select.Option value='4'>停止委托</Select.Option>
+            <Select.Option value='3'>委托暂停</Select.Option>
+            <Select.Option value='4'>委托停止</Select.Option>
             <Select.Option value='5'>委托完成</Select.Option>
             <Select.Option value='6'>委托失败</Select.Option>
+            <Select.Option value='7'>被系统作废</Select.Option>
+            <Select.Option value='8'>委托取消</Select.Option>
           </Select>
           <Button ghost type="primary" className={styles.btn} onClick={this.onSelect}>
             搜索
@@ -506,7 +521,7 @@ class Component extends React.PureComponent<Props, State> {
         )}
         <Modal title="修改签名" visible={this.state.editvisible}
           style={{ top: 200}}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.saveSign}>
@@ -528,8 +543,8 @@ class Component extends React.PureComponent<Props, State> {
         </Modal>
         {/* 备注 */}
         {isShowRemark && (<Modal title="备注" visible={this.state.remarkvisible}
-          style={{ top: 200}}
-          width='630px'
+          style={{ top: 200,height:'400px'}}
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.saveRemark}>
@@ -540,9 +555,10 @@ class Component extends React.PureComponent<Props, State> {
         >
           <div className={styles.form}>
             <TextArea2
-              placeholder="请输入活动内容"
+              placeholder="请输入委托内容"
               value={(currData != null && currData.Remark != null)?currData.Remark:''}
               onChange={this.oncontentChanged}
+              rows={8}
               maxLength={128}
               // showFontCount={true}
               className={styles.textarea}

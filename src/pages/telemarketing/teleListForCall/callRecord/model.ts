@@ -30,7 +30,6 @@ export default {
     setup({ dispatch, history }, done) {
       history.listen(location => {
         if (location.pathname === '/telemarketing/teleListForCall/callRecord') {
-          console.log('callRecord')
           dispatch({
             type: 'init',
           });
@@ -214,10 +213,10 @@ export default {
         MessageBox.show(res.message, container);
       }
     },
+    // 发送短信
     *fetchSend({ payload }, { put, call, select }) {
       const { container } = payload;
       const state = yield select(state => state[namespace]);
-      console.log(state)
       const pars: Props = {
         url: '/api/callmarketing/order/call/record/sms/send',
         body: {

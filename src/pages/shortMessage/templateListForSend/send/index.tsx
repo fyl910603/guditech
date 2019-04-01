@@ -11,6 +11,7 @@ import { isNullOrUndefined, toFixed2 } from 'utils/util';
 import { getAreaData } from 'utils/getAreaData';
 import { debounce } from 'lodash';
 import templateList from '../../templateList';
+import { getUser } from 'utils/localStore';
 
 interface Props {
   data: any;
@@ -593,7 +594,7 @@ class Component extends React.PureComponent<Props, State> {
                       }
                       td2Style={{ ...td2Style, paddingTop: '13px' }}
                     >
-                      <div className={styles.address}>{search_address}</div>
+                      <div className={styles.address}>{getUser().Address}</div>
                     </FormItem>
                     {/* 半径 */}
                     <FormItem title={`${search_radius.ContentTypeDes || ''}:`} thWidth={thWidth}>

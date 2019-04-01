@@ -13,6 +13,7 @@ import { Form } from 'components/form';
 import { FormItem } from 'components/formItem';
 import { Input2 } from 'components/input';
 import { debounce } from 'lodash';
+import { getUser } from 'utils/localStore';
 interface Props {
   dispatch: (props: any) => void;
   data: any;
@@ -171,20 +172,20 @@ class Component extends React.PureComponent<Props, State> {
     });
   };
   // 打开电话详情
-  toJumpPhoneDetail = record =>{
+  toJumpPhoneDetail = record => {
     router.push({
       pathname: '/telemarketing/teleListForCall/phoneDetail',
-      query:{
-        orderid:record.OrderId,
-        ordersn:record.OrderSn
+      query: {
+        orderid: record.OrderId,
+        ordersn: record.OrderSn
       }
     })
   }
-  toJumpCallRecord = record =>{
+  toJumpCallRecord = record => {
     router.push({
       pathname: '/telemarketing/teleListForCall/callRecord',
-      query:{
-        orderid:record.OrderId,
+      query: {
+        orderid: record.OrderId,
       }
     })
   }
@@ -195,13 +196,24 @@ class Component extends React.PureComponent<Props, State> {
     });
   }
   openAdd = () => {
-    this.setState({
-      addvisible: true,
+    this.props.dispatch({
+      type: `${namespace}/showCreate`,
+      payload: {
+        isShowCreate: true,
+      },
+    });
+  }
+  handleCancelCreate= () => {
+    this.props.dispatch({
+      type: `${namespace}/showCreate`,
+      payload: {
+        isShowCreate: false,
+      },
     });
   }
   addSave = () => {
     const { search_region, form } = this.props.data;
-    if(this.state.addOrderName !=''){
+    if (this.state.addOrderName != '') {
       this.props.dispatch({
         type: `${namespace}/onSave`,
         payload: {
@@ -210,7 +222,7 @@ class Component extends React.PureComponent<Props, State> {
           search_area_dis: search_region ? getAreaData(search_region.tree, form.search_area) : '',
         },
       });
-    }else{
+    } else {
       MessageBox.show('请输入订单名称', this.divForm);
     }
   }
@@ -338,14 +350,14 @@ class Component extends React.PureComponent<Props, State> {
   onGotoAddTemplate = () => {
     router.push('/shortMessage/templateList');
   };
-  toRegionTree = (json) =>{
+  toRegionTree = (json) => {
     const tree = [];
     json.map(province => {
       let p: any = {
         title: province.ProvinceName,
         key: province.ProvinceCode,
       };
-  
+
       if (province.CityList) {
         p.children = [];
         province.CityList.map(city => {
@@ -354,7 +366,7 @@ class Component extends React.PureComponent<Props, State> {
             key: city.CityCode,
           };
           p.children.push(c);
-  
+
           if (city.CountyList) {
             c.children = [];
             city.CountyList.map(area => {
@@ -386,6 +398,7 @@ class Component extends React.PureComponent<Props, State> {
       search_sex,
       search_region,
       search_radius,
+      isShowCreate,
       search_userOrder,
 
       reply_specificAge,
@@ -468,11 +481,11 @@ class Component extends React.PureComponent<Props, State> {
                   </a>
                   <br />
                   <a href="javascript:;" onClick={() => this.toJumpPhoneDetail(h)}>
-                    电话详情
+                    电话名单
                   </a>
                   <br />
                   <a href="javascript:;" onClick={() => this.toJumpCallRecord(h)}>
-                    拨打记录
+                    拨打详情
                   </a>
                   <br />
                   <a href="javascript:;" onClick={() => this.onDelete(h)} className={styles.delete}>
@@ -535,200 +548,203 @@ class Component extends React.PureComponent<Props, State> {
           </Button>
         )}
         {/* 创建订单 */}
-        <Modal title="创建订单" visible={this.state.addvisible}
-          style={{ top: 200 }}
-          width='830px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" type="primary" size="large" onClick={this.addSave}>
-              提交
-            </Button>,
-            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
-          ]}
-        >
-          <div className={styles.form}>
-            <div className={styles.card}>
-              <div className={styles.cardTitle}>
-                <div>订单名称</div>
-                <Input2 placeholder="订单名称" value={this.state.addOrderName} onChange={this.onOrderNameChange} className={styles.orderInput} />
-              </div>
-              <div className={styles.selectBox}>
-
-              </div>
-              <div className={styles.cardTitle}>
-                <div>价格模板:</div>
+        {isShowCreate && (
+          <Modal title="创建订单" visible={true}
+            style={{ top: 200 }}
+            width='830px'
+            onCancel={this.handleCancelCreate}
+            footer={[
+              <Button key="submit" type="primary" size="large" onClick={this.addSave}>
+                提交
+                    </Button>,
+              <Button key="back" size="large" onClick={this.handleCancelCreate}>取消</Button>,
+            ]}
+          >
+            <div className={styles.form}>
+              <div className={styles.card}>
+                <div className={styles.cardTitle}>
+                  <div>订单名称</div>
+                  <Input2 placeholder="订单名称" value={this.state.addOrderName} onChange={this.onOrderNameChange} className={styles.orderInput} />
+                </div>
                 <div className={styles.selectBox}>
-                  <Select
-                    placeholder="请选择模板"
-                    value={this.state.typeValue}
-                    className={styles.age}
-                    onSelect={this.onChangeTemplate}
-                    style={{ width: 190 }}
-                  >
-                    {templateList.map(h => (
-                      <Select.Option key={h.TemlateId} value={h.TemlateId}>{h.TemlateName}</Select.Option>
-                    ))}
-                  </Select>
+
+                </div>
+                <div className={styles.cardTitle}>
+                  <div>价格模板:</div>
+                  <div className={styles.selectBox}>
+                    <Select
+                      placeholder="请选择模板"
+                      value={this.state.typeValue}
+                      className={styles.age}
+                      onSelect={this.onChangeTemplate}
+                      style={{ width: 190 }}
+                    >
+                      {templateList.map(h => (
+                        <Select.Option key={h.TemlateId} value={h.TemlateId}>{h.TemlateName}</Select.Option>
+                      ))}
+                    </Select>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className={styles.form}>
+            <div className={styles.form}>
 
-            <div className={styles.card}>
-              <div className={styles.cardTitle}>
-                <div>搜索条件</div>
-                <div className={styles.line} />
-              </div>
-              <div className={styles.content}>
-                <Form>
-                  {(
-                    // 年龄
-                    <FormItem
-                      title="年龄"
-                      thWidth={thWidth}
-                    >
-                      <div className={styles.ageline}>
-                        从
-                      <Select
-                          placeholder="请选择年龄"
-                          className={styles.age}
-                          onSelect={this.onSearchAge1Changed}
-                          value={form.search_age1}
-                          style={{ width: 120 }}
-                          disabled={search_isReadonly}
-                        >
-                          {search_age && search_age.list ? search_age.list.map(h => (
-                            <Select.Option key={String(h)}>{h}岁</Select.Option>
-                          )) : ''}
-                        </Select>
-                        到
-                      <Select
-                          placeholder="请选择年龄"
-                          className={styles.age}
-                          onSelect={this.onSearchAge2Changed}
-                          value={form.search_age2}
-                          style={{ width: 120 }}
-                          disabled={search_isReadonly}
-                        >
-                          {search_age && search_age.list ? search_age.list.map(h => (
-                            <Select.Option key={String(h)}>{h}岁</Select.Option>
-                          )) : ''}
-                        </Select>
-                      </div>
-                    </FormItem>
-                  )}
-                  {(
-                    // 性别
-                    <FormItem
-                      title="性别"
-                      thWidth={thWidth}
-                    >
-                      <Select
-                        placeholder="请选择性别"
-                        className={styles.sex}
-                        onSelect={this.onSearchSexChanged}
-                        value={form.search_sex}
-                        disabled={search_isReadonly}
-                      >
-                        {search_sex && search_sex.list ? search_sex.list.map(h => (
-                          <Select.Option key={String(h.value)} value={h.value}>
-                            {h.text}
-                          </Select.Option>
-                        )) : ''}
-                      </Select>
-                    </FormItem>
-                  )}
-                  {(
-                    // 区域
-                    <FormItem
-                      title="区域"
-                      thWidth={thWidth}
-                      td2Style={td2Style}
-                      splitHeight={0}
-                    >
-                      <div className={styles.scroll}>
-                        <Tree
-                          defaultExpandAll
-                          checkable
-                          onCheck={this.onSearchAreaChanged}
-                          checkedKeys={form.search_area}
-                          filterTreeNode={() => false}
-                          disabled={search_isReadonly}
-                        >
-                          {search_region && search_region.tree ? this.renderTreeNodes(search_region.tree) : ''}
-                        </Tree>
-                      </div>
-                    </FormItem>
-                  )}
-                  {(
-                    <React.Fragment>
+              <div className={styles.card}>
+                <div className={styles.cardTitle}>
+                  <div>搜索条件</div>
+                  <div className={styles.line} />
+                </div>
+                <div className={styles.content}>
+                  <Form>
+                    {(
+                      // 年龄
                       <FormItem
+                        title="年龄"
                         thWidth={thWidth}
-                        title={
-                          <div>
-                            <Checkbox
-                              onChange={this.onSearchCheckedAddressChanged}
-                              checked={form.search_checked_address}
-                              disabled={search_isReadonly}
-                            >
-                              商户地址:
-                          </Checkbox>
-                          </div>
-                        }
-                        td2Style={{ ...td2Style, paddingTop: '13px' }}
                       >
-                        <div className={styles.address}>{search_address}</div>
-                      </FormItem>
-                      {/* 半径 */}
-                      <FormItem title="半径范围" thWidth={thWidth}>
                         <div className={styles.ageline}>
-                          <Select
-                            placeholder="请选择半径"
+                          从
+                              <Select
+                            placeholder="请选择年龄"
                             className={styles.age}
-                            onSelect={this.onSearchRadiusChanged}
-                            value={form.search_radius}
+                            onSelect={this.onSearchAge1Changed}
+                            value={form.search_age1}
                             style={{ width: 120 }}
-                            disabled={!form.search_checked_address || search_isReadonly}
+                            disabled={search_isReadonly}
                           >
-                            {search_radius && search_radius.list ? search_radius.list.map(h => (
-                              <Select.Option key={String(h)}>{h}公里</Select.Option>
+                            {search_age && search_age.list ? search_age.list.map(h => (
+                              <Select.Option key={String(h)}>{h}岁</Select.Option>
+                            )) : ''}
+                          </Select>
+                          到
+                              <Select
+                            placeholder="请选择年龄"
+                            className={styles.age}
+                            onSelect={this.onSearchAge2Changed}
+                            value={form.search_age2}
+                            style={{ width: 120 }}
+                            disabled={search_isReadonly}
+                          >
+                            {search_age && search_age.list ? search_age.list.map(h => (
+                              <Select.Option key={String(h)}>{h}岁</Select.Option>
                             )) : ''}
                           </Select>
                         </div>
                       </FormItem>
-                    </React.Fragment>
-                  )}
-                  {(
-                    // 发送顺序
-                    <FormItem
-                      title="用户优先"
-                      thWidth={thWidth}
-                      td2Style={td2Style}
-                    >
-                      <div className={styles.tdOrder}>
-                        <Checkbox
-                          onChange={this.onSearchUserOrderNew}
-                          checked={form.search_userOrder === '1'}
+                    )}
+                    {(
+                      // 性别
+                      <FormItem
+                        title="性别"
+                        thWidth={thWidth}
+                      >
+                        <Select
+                          placeholder="请选择性别"
+                          className={styles.sex}
+                          onSelect={this.onSearchSexChanged}
+                          value={form.search_sex}
                           disabled={search_isReadonly}
                         >
-                          新用户优先
-                      </Checkbox>
-                        <Checkbox
-                          onChange={this.onSearchUserOrderOld}
-                          checked={form.search_userOrder === '2'}
-                          disabled={search_isReadonly}
+                          {search_sex && search_sex.list ? search_sex.list.map(h => (
+                            <Select.Option key={String(h.value)} value={h.value}>
+                              {h.text}
+                            </Select.Option>
+                          )) : ''}
+                        </Select>
+                      </FormItem>
+                    )}
+                    {(
+                      // 区域
+                      <FormItem
+                        title="区域"
+                        thWidth={thWidth}
+                        td2Style={td2Style}
+                        splitHeight={0}
+                      >
+                        <div className={styles.scroll}>
+                          <Tree
+                            defaultExpandAll
+                            checkable
+                            onCheck={this.onSearchAreaChanged}
+                            checkedKeys={form.search_area}
+                            filterTreeNode={() => false}
+                            disabled={search_isReadonly}
+                          >
+                            {search_region && search_region.tree ? this.renderTreeNodes(search_region.tree) : ''}
+                          </Tree>
+                        </div>
+                      </FormItem>
+                    )}
+                    {(
+                      <React.Fragment>
+                        <FormItem
+                          thWidth={thWidth}
+                          title={
+                            <div>
+                              <Checkbox
+                                onChange={this.onSearchCheckedAddressChanged}
+                                checked={form.search_checked_address}
+                                disabled={search_isReadonly}
+                              >
+                                商户地址:
+                                  </Checkbox>
+                                  
+                            </div>
+                          }
+                          td2Style={{ ...td2Style, paddingTop: '13px' }}
                         >
-                          老用户优先
-                      </Checkbox>
-                      </div>
-                    </FormItem>
-                  )}
-                </Form>
+                          <div className={styles.address}>{getUser().Address}</div>
+                        </FormItem>
+                        {/* 半径 */}
+                        <FormItem title="半径范围" thWidth={thWidth}>
+                          <div className={styles.ageline}>
+                            <Select
+                              placeholder="请选择半径"
+                              className={styles.age}
+                              onSelect={this.onSearchRadiusChanged}
+                              value={form.search_radius}
+                              style={{ width: 120 }}
+                              disabled={!form.search_checked_address || search_isReadonly}
+                            >
+                              {search_radius && search_radius.list ? search_radius.list.map(h => (
+                                <Select.Option key={String(h)}>{h}公里</Select.Option>
+                              )) : ''}
+                            </Select>
+                          </div>
+                        </FormItem>
+                      </React.Fragment>
+                    )}
+                    {(
+                      // 发送顺序
+                      <FormItem
+                        title="用户优先"
+                        thWidth={thWidth}
+                        td2Style={td2Style}
+                      >
+                        <div className={styles.tdOrder}>
+                          <Checkbox
+                            onChange={this.onSearchUserOrderNew}
+                            checked={form.search_userOrder === '1'}
+                            disabled={search_isReadonly}
+                          >
+                            新用户优先
+                              </Checkbox>
+                          <Checkbox
+                            onChange={this.onSearchUserOrderOld}
+                            checked={form.search_userOrder === '2'}
+                            disabled={search_isReadonly}
+                          >
+                            老用户优先
+                              </Checkbox>
+                        </div>
+                      </FormItem>
+                    )}
+                  </Form>
+                </div>
               </div>
             </div>
-          </div>
-        </Modal>
+          </Modal>
+        )}
         {/* 订单详情 */}
         <Modal title="订单详情" visible={this.state.orderDvisible}
           style={{ top: 50 }}
@@ -784,7 +800,7 @@ class Component extends React.PureComponent<Props, State> {
                           filterTreeNode={() => false}
                           disabled={true}
                         >
-                          {region.ContentValue != ''?this.renderTreeNodes(this.toRegionTree(JSON.parse(region.ContentValue))):''}
+                          {region.ContentValue != '' ? this.renderTreeNodes(this.toRegionTree(JSON.parse(region.ContentValue))) : ''}
                         </Tree>
                       </div>
                     </div>

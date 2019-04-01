@@ -62,19 +62,19 @@ class Component extends React.PureComponent<Props> {
           </div>
           <div className={styles.info_box}>
             <p className={styles.item_p}>
-              <span>活动有效期：</span>
+              <span>任务有效期：</span>
               <span>{delegateInfo.DelegateStartTime}至{delegateInfo.DelegateEndTime}</span>
             </p>
             <p className={styles.item_p}>
-              <span>活动时间：</span>
+              <span>委托时间：</span>
               <span>{delegateInfo.StartTime}至{delegateInfo.EndTime}</span>
             </p>
             <p className={styles.item_p}>
-              <span>活动名称：</span>
+              <span>委托名称：</span>
               <span>{delegateInfo.Name}</span>
             </p>
             <div className={styles.item_content_box}>
-                <p className={styles.item_content_p}>活动内容：</p>
+                <p className={styles.item_content_p}>委托内容：</p>
                 <p>{(delegateInfo.Description != undefined && delegateInfo.Description.length>30)?delegateInfo.Description.substring(0,30):delegateInfo.Description}<Icon type={this.state.IsOpen?'up':'down'} onClick={()=>this.openContent()}/></p>
                 { delegateInfo.Description != undefined && delegateInfo.Description.length>30 && (
                     <div className={styles.item_content_info}>
@@ -84,11 +84,11 @@ class Component extends React.PureComponent<Props> {
                 }
             </div>
             <p className={styles.item_p}>
-              <span>活动地点：</span>
-              <span>2018-12-13至2019-01-24</span>
+              <span>委托地点：</span>
+              <span>{delegateInfo.SellerAddress}</span>
             </p>
             <p className={styles.item_p}>
-              <span>委托数量：</span>
+              <span>委托人数：</span>
               <span>{delegateInfo.DelegateCount}人</span>
             </p>
             <p className={styles.item_p}>

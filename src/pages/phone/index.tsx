@@ -299,23 +299,24 @@ class Component extends React.PureComponent<Props,State> {
     const {MobileCount,PhoneCount,SeatCount} = this.props.data
     const columns: any = [
       {
-        title: '网络电话号码数量',
-        dataIndex: 'MobileCount',
-        width: 150,
-        align:'center'
-      },
-      {
-        title: '网络电话席位数量',
+        title: '席位数量',
         dataIndex: 'SeatCount',
         width: 150,
         align:'center'
       },
       {
-        title: '座机电话数量',
+        title: '话机数量',
         dataIndex: 'TelephoneCount',
         width: 150,
         align:'center'
       },
+      {
+        title: '号码数量',
+        dataIndex: 'MobileCount',
+        width: 150,
+        align:'center'
+      },
+      
       {
         title: '营业执照',
         dataIndex: 'LicenceUrl',
@@ -413,7 +414,7 @@ class Component extends React.PureComponent<Props,State> {
     return (
       <div className={styles.page} ref={obj => (divForm = obj)}>
         <div className={styles.hintBox}>
-          <span className={styles.hint}>您可以与客户建立更直接、精准的语音沟通，大大降低拓客成本.点击此处</span><span className={styles.textBtn} onClick={()=>{this.onOpenAdd()}}>申请电话业务</span>
+          <span className={styles.hint}>您可以与客户建立更直接、精准的语音沟通</span><span className={styles.textBtn} onClick={()=>{this.onOpenAdd()}}>申请电话业务</span>
         </div>
         <div className={styles.divTable}>
           {table}
@@ -427,7 +428,7 @@ class Component extends React.PureComponent<Props,State> {
         {/* 编辑短信业务 */}
         <Modal title="编辑短信业务" visible={this.state.editvisible}
           style={{ top: 200}}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.onSubmit}>
@@ -481,7 +482,7 @@ class Component extends React.PureComponent<Props,State> {
         {/* 新增短信业务 */}
         <Modal title="申请电话业务" visible={this.state.addvisible}
           style={{ top: 200}}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={[
             <Button key="submit" type="primary" size="large" onClick={this.addSave}>
@@ -532,7 +533,7 @@ class Component extends React.PureComponent<Props,State> {
         </Modal>
         <Modal title="查看营业执照" visible={this.state.imgvisible}
           style={{ top: 100}}
-          width='630px'
+          width='800px'
           onCancel={this.handleCancel}
           footer={null}
           >

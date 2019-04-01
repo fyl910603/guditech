@@ -9,12 +9,13 @@ export interface Props extends TextAreaProps {
 
 export class TextArea2 extends React.Component<Props, any> {
   render() {
-    let { autoComplete = 'off', showFontCount, ...other } = this.props;
+    let { autoComplete = 'off', showFontCount,rows,...other } = this.props;
     let props = {
       ...other,
+      rows,
       autoComplete,
     };
-
+    console.log(this.props)
     const { value = '', maxLength } = this.props;
 
     return (

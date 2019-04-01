@@ -15,6 +15,9 @@ export interface Props {
   onError: (msg: string) => void;
 }
 let ws = undefined;
+let seconds = 0
+let _this = undefined;
+let interval = undefined;
 const setSeat = {
   1: '座机',
   2: '网络电话',
@@ -23,6 +26,7 @@ const UserToken = getUser().UserToken
 interface State {
   visible:boolean;
   showMsg:boolean;
+  showToCall:boolean;
   showSeconds:boolean;
   Seconds:any;
   seconds:any;
@@ -36,6 +40,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     this.state = {
       visible:true,
       showMsg:false,
+      showToCall:true,
       Seconds:0,
       seconds:0,
       showSeconds:false,
@@ -47,26 +52,34 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   componentWillUpdate(){  
   }
   componentDidMount(){
+    
   }
   componentWillUnmount(){
+    this.myStop()
+    clearInterval(interval)
+    clearTimeout()
     ws.onclose = function(){
       console.log('webscoket连接关闭')
     }
   }
   handleCancel = ()=>{
-
     this.setState({
       visible:false
     })
   }
   tick = () =>{
-    this.setState((prevState)=>({
-      Seconds:this.formatSeconds(prevState.seconds + 1)
+    this.setState(()=>({
+      Seconds:this.formatSeconds(++seconds)
     }))
   }
-
-  clockSeconds = () =>{
-    setInterval(() => this.tick(), 1000);
+  interval =()=>{
+    interval = setInterval(()=>{
+      this.tick()
+    },1000);
+    return interval
+  } 
+  myStop = ()=>{
+    clearInterval(interval)
   }
   formatSeconds = (a) => {
     var hh= parseInt(a / 3600);
@@ -84,11 +97,11 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   // 通话中
   onCalling = () =>{
-    this.setState({msg:'通话中'});
-    this.clockSeconds()
+    this.setState({msg:'通话中...'});
     this.setState({
       showSeconds:true
     })
+    this.interval()
   }
   //呼叫中 
   toCalling = () =>{
@@ -96,30 +109,32 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   // 已挂断
   onHangUp = () =>{
+    this.myStop()
+    clearInterval()
     let _this = this
       this.setState({
         callStatus:'2',
       })
     this.setState({msg:'已挂断'});
-    clearInterval(this.clockSeconds)
     setTimeout(()=>{
       _this.setState({
         showMsg:false,
+        showToCall:true,
       })
-    },3000)
+      _this.onClose()
+    },1500)
+    
   }
   onHangUping = () =>{
-    this.setState({msg:'挂断中'});
+    this.myStop()
+    this.setState({msg:'挂断中...'});
   }
   // 挂断电话
   toHangUp = () =>{
-    console.log('开始挂断')
     this.setState({msg:'挂断中...'});
-    clearInterval()
+    this.myStop()
+    clearInterval(interval)
     ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
-    // ws.onopen = function (evt) {
-    //   ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
-    // };
     let _this = this
     ws.onmessage = function (evt) {
       let data = JSON.parse(evt.data)
@@ -133,7 +148,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
             _this.toCalling();
             break;
           case 3:
-            _this.setState({msg:'被叫振铃'});
+            _this.setState({msg:'呼叫中...'});
             break;
           case 4:
             _this.onCalling();
@@ -155,12 +170,14 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     return ws
   }
   toCallPhone = ()=>{
+    seconds = 0
     this.getWebsocket()
     const {phoneData} = this.props
     this.setState({
       callStatus:'',
       visible:false,
       showMsg:true,
+      showToCall:false,
       msg:'拨号中...'
     })
     let _this = this 
@@ -181,7 +198,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
               _this.toCalling();
               break;
             case 3:
-              _this.setState({msg:'被叫振铃'});
+              _this.setState({msg:'呼叫中...'});
               break;
             case 4:
               _this.onCalling();
@@ -200,11 +217,12 @@ export class CallTelephone extends React.PureComponent<Props, State> {
             callStatus:'2',
           })
         _this.setState({msg:data.Data.Message});
-        clearInterval()
+        _this.myStop()
         setTimeout(()=>{
           _this.setState({
-            showMsg:false,
+            showMsg:false
           })
+          _this.onClose()
         },3000)
         }
       };
@@ -218,6 +236,12 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     }
   }
   onClose = () => {
+    this.getWebsocket()
+    this.myStop()
+    clearInterval(interval)
+    ws.onclose = function(){
+      console.log('webscoket连接关闭')
+    }
     const { onClose } = this.props;
     if (onClose) {
       onClose();
@@ -230,13 +254,13 @@ export class CallTelephone extends React.PureComponent<Props, State> {
     const {data,phoneData} = this.props
     const columns: any = [
       {
-        title: '电话号码',
-        dataIndex: 'CallMobile',
+        title: '座席编号',
+        dataIndex: 'SeatNumber',
         align: 'center',
       },
       {
-        title: '座席编号',
-        dataIndex: 'SeatNumber',
+        title: '电话号码',
+        dataIndex: 'CallMobile',
         align: 'center',
       },
       {
@@ -246,30 +270,22 @@ export class CallTelephone extends React.PureComponent<Props, State> {
         render:(text,h) =>{
           return setSeat[h.CallType]
         }
-      },
-      {
-        title: '',
-        key: 'action',
-        align: 'center',
-        render: (text, h) => (
-          <span>
-            {
-              <React.Fragment>
-                {localStorage.getItem('defaultSeatCall') != h.SeatId
-                 && (<Button type="primary" size="small" onClick={()=>this.toSetDefault(h)}>设为默认</Button>)
-                }
-                {localStorage.getItem('defaultSeatCall') == h.SeatId
-                 && (<Button type="primary" size="small" disabled={localStorage.getItem('defaultSeatCall') == h.SeatId?true:false}>设为默认</Button>)
-                }
-              </React.Fragment>
-            }
-          </span>
-        ),
-      },
+      }
     ];
+    const rowSelection = {
+      type:'radio',
+      onChange: (selectedRowKeys, selectedRows) => {
+      },
+      onSelect: (record) => {
+        this.toSetDefault(record)
+      },
+      getCheckboxProps: record => ({
+        checked: record.SeatId == localStorage.getItem('defaultSeatCall')?true:false,    // 默认选中
+      }),
+    };
     return(
       <div>
-        <Modal title={`确定拨打`} visible={true}
+        {this.state.showToCall && (<Modal title={`确定拨打`} visible={true}
         style={{ top: 100 }}
         width='530px'
         onCancel={this.onClose}
@@ -281,6 +297,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
         <div className={styles.textareaBox}>
         <Table
             className={styles.tableContent}
+            rowSelection={rowSelection}
             columns={columns}
             dataSource={data}
             pagination={false}
@@ -292,7 +309,7 @@ export class CallTelephone extends React.PureComponent<Props, State> {
             }}
           />
         </div>
-      </Modal>
+        </Modal>)}
       {this.state.showMsg&& (
         <div className={styles.callContainer} onClick={()=>this.NotClose()}>
           <div className={styles.msg}>

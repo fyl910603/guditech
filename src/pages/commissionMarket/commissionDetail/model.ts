@@ -18,12 +18,14 @@ export default {
   subscriptions: {
     setup({ dispatch, history }, done) {
       history.listen(location => {
+        if (location.pathname === `/commissionMarket/${namespace}`) {
           dispatch({
             type: 'fetchdelegateDetail',
             payload: {
               Id:location.search.split('=')[1]
             },
           });
+        }
       });
     }
   },

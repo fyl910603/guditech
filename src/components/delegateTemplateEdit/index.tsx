@@ -101,6 +101,7 @@ export class DelegateTemplateEdit extends React.PureComponent<Props, State> {
         <Modal
           title={title}
           visible={true}
+          width={800}
           className={styles.modal}
           onCancel={this.onClose}
           centered={true}
@@ -139,7 +140,7 @@ export class DelegateTemplateEdit extends React.PureComponent<Props, State> {
                   value={DelegateCount}
                   onChange={isEdit ? this.onTemplatlinkChanged : undefined}
                   maxLength={10}
-                  showFontCount={isEdit}
+                  // showFontCount={isEdit}
                   disabled={!isEdit}
                 />
               </FormItem>
