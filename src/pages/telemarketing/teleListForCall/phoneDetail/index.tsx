@@ -382,23 +382,24 @@ class Component extends React.PureComponent<Props, State> {
     ];
     const columns: any = [
       {
-        title: '订单号码',
+        title: '订单号',
         dataIndex: 'OrderId',
-        width: 100,
+        width: 120,
         align: 'center',
       },
       {
         title: '父母',
         dataIndex: 'Father',
         align: 'center',
+        width: 80,
         render: (text,h) => {
           return `${h.Father}/${h.Mother}`
         },
       },
       {
-        title: '手机号码',
+        title: '联系方式',
         dataIndex: 'Mobile',
-        width: 120,
+        width: 100,
         align: 'center',
       },
       {
@@ -427,7 +428,7 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '被拨打次数',
         dataIndex: 'CallTimes',
-        width: 120,
+        width: 80,
         align: 'center',
       },
       {

@@ -59,8 +59,8 @@ export class DelegateTemplateEdit extends React.PureComponent<Props, State> {
   };
   onDateChanged = e => {
     this.setState({
-      StartTime: e[0].format('YYYY-MM-DD 00:00:00'),
-      EndTime:e[1].format('YYYY-MM-DD 23:59:59')
+      StartTime: e[0].format('YYYY-MM-DD HH:mm:ss'),
+      EndTime:e[1].format('YYYY-MM-DD HH:mm:ss')
     });
   };
   onTemplatcontentChanged = e => {
@@ -109,7 +109,7 @@ export class DelegateTemplateEdit extends React.PureComponent<Props, State> {
             <div className="divBtn">
               {isEdit ? (
                 <Button type="primary" className={styles.btn} onClick={this.onSubmit}>
-                  提交审核
+                  提交
                 </Button>
               ) : (
                 <Button type="primary" className={styles.btn} onClick={this.onClose}>
@@ -132,7 +132,7 @@ export class DelegateTemplateEdit extends React.PureComponent<Props, State> {
                 />
               </FormItem>
               <FormItem title="活动时间:" splitHeight={isEdit ? 40 : 12}>
-              {data == null?<DatePicker.RangePicker onChange={this.onDateChanged} format={dateFormat}/>:<DatePicker.RangePicker onChange={this.onDateChanged} format={dateFormat} defaultValue={[moment(data.StartTime, dateFormat), moment(data.EndTime, dateFormat)]}/>}
+              {data == null?<DatePicker.RangePicker showTime onChange={this.onDateChanged} format={dateFormat}/>:<DatePicker.RangePicker showTime onChange={this.onDateChanged} format={dateFormat} defaultValue={[moment(data.StartTime, dateFormat), moment(data.EndTime, dateFormat)]}/>}
               </FormItem>
               <FormItem title="委托数量:" splitHeight={isEdit ? 40 : 12}>
                 <Input2

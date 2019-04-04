@@ -403,11 +403,11 @@ class Component extends React.PureComponent<Props, State> {
                   恢复委托
                 </Button>
               )}
-              {(h.Status == 6) && (
+              {/* {(h.Status == 6) && (
                 <Button ghost type="primary" className={styles.tabBtn} onClick={() => this.toRenew(h)}>
                   重新委托
                 </Button>
-              )}
+              )} */}
               <React.Fragment>
                 <a href="javascript:;" onClick={() => this.onOpenDetails(h)}>
                   委托详情
@@ -415,18 +415,19 @@ class Component extends React.PureComponent<Props, State> {
                 <Divider type="vertical" />
               </React.Fragment>
               <React.Fragment>
-              <a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
+              {(h.Status != 1 &&h.Status != 6 && h.Status != 7) && (<a href="javascript:;" onClick={() => this.onOpenMEdit(h)}>
                 客户名单
               </a>
-              <Divider type="vertical" />
+              )}
               <a href="javascript:;" onClick={() => this.onOpenTEdit(h)}>
                 备注
               </a>
               </React.Fragment>
               <Divider type="vertical" />
-              <a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
+              {(h.Status == 1 && h.Status == 6 && h.Status == 8) && (<a href="javascript:;" onClick={() => this.onOpenEdit(h)}>
                 编辑
               </a>
+              )}
               <Divider type="vertical" />
               {(h.Status == 6 || h.Status == 1 || h.Status == 8) && (
                 <a href="javascript:;" onClick={() => this.onDelete(h)} style={{ color: 'red' }}>

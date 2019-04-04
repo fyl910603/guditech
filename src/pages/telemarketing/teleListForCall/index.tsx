@@ -481,7 +481,7 @@ class Component extends React.PureComponent<Props, State> {
                   </a>
                   <br />
                   <a href="javascript:;" onClick={() => this.toJumpPhoneDetail(h)}>
-                    电话名单
+                    拨打名单
                   </a>
                   <br />
                   <a href="javascript:;" onClick={() => this.toJumpCallRecord(h)}>

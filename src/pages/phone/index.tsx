@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import styles from './styles.less';
-import { Button, Modal,Divider, Table,Tooltip,Icon,Input,message} from 'antd';
+import { Button, Modal, Divider, Table, Tooltip, Icon, Input, message } from 'antd';
 import { Input2 } from 'components/input';
 import { Form } from 'components/form';
 import { FormItem } from 'components/formItem';
@@ -15,53 +15,53 @@ import { LinkButton } from 'components/linkButton';
 import { MessageBox } from 'components/messageBox';
 
 interface State {
-  status :number,
-  channelcode : string,
-  Id : string,
-  editvisible : boolean,
-  addvisible :boolean,
-  imgvisible :boolean,
-  currData : object,
+  status: number,
+  channelcode: string,
+  Id: string,
+  editvisible: boolean,
+  addvisible: boolean,
+  imgvisible: boolean,
+  currData: object,
   editImgUrl: string,
-  addData : object,
-  editData : object,
+  addData: object,
+  editData: object,
   addSignName: any,
-  addImgUrl:string,
-  lookImg:string,
-  Path:string
+  addImgUrl: string,
+  lookImg: string,
+  Path: string
 }
 interface Props {
   dispatch: (props: any) => void;
   data: any
 }
 let divForm: HTMLDivElement;
-class Component extends React.PureComponent<Props,State> {
+class Component extends React.PureComponent<Props, State> {
   private divForm: HTMLDivElement;
   constructor(props: Props) {
     super(props);
     this.state = {
-      status : 0,
-      channelcode:'',
-      editvisible:false,
-      addvisible:false,
-      imgvisible:false,
-      currData:{},
-      addData:{
-        MobileCount:'',
-        PhoneCount:'',
-        SeatCount:''
+      status: 0,
+      channelcode: '',
+      editvisible: false,
+      addvisible: false,
+      imgvisible: false,
+      currData: {},
+      addData: {
+        MobileCount: '',
+        PhoneCount: '',
+        SeatCount: ''
       },
-      editData:{
-        MobileCount:'',
-        PhoneCount:'',
-        SeatCount:''
+      editData: {
+        MobileCount: '',
+        PhoneCount: '',
+        SeatCount: ''
       },
-      Id:'',
-      editImgUrl : '',
-      addImgUrl : '',
-      lookImg:'',
-      Path:'',
-      addSignName : ''
+      Id: '',
+      editImgUrl: '',
+      addImgUrl: '',
+      lookImg: '',
+      Path: '',
+      addSignName: ''
     };
     this.getSignList()
   }
@@ -70,8 +70,8 @@ class Component extends React.PureComponent<Props,State> {
 
   componentWillUnmount() {
   }
-  
-  getSignList = () =>{
+
+  getSignList = () => {
     this.props.dispatch({
       type: `${namespace}/fetchSign`,
       payload: {
@@ -84,77 +84,81 @@ class Component extends React.PureComponent<Props,State> {
     this.props.dispatch({
       type: `${namespace}/onSave`,
       payload: {
-        container:divForm,
+        container: divForm,
         data,
       },
     });
   };
-   onSubmit = (e,container)=>{
-    if(this.props.data.PhoneCount == '' || this.props.data.MobileCount == '' || this.props.data.SeatCount == ''){
-      if(this.props.data.MobileCount == ''){
-        MessageBox.show('请输入网络电话数量', divForm);
+  onSubmit = (e, container) => {
+    if (this.props.data.PhoneCount == '' || this.props.data.MobileCount == '' || this.props.data.SeatCount == '') {
+      if (this.props.data.SeatCount == '') {
+        MessageBox.show('请输入席位数量', divForm);
         return false;
-      }else if(this.props.data.PhoneCount == ''){
+      } else if (this.props.data.PhoneCount == '') {
         MessageBox.show('请输入座机数量', divForm);
         return false;
-      }else if(this.props.data.SeatCount == ''){
-        MessageBox.show('请输入坐席数量', divForm);
+      } else if (this.props.data.MobileCount == '') {
+        MessageBox.show('请输入号码数量', divForm);
         return false;
       }
-    }else{
+    } else {
       this.props.dispatch({
         type: `${namespace}/editApply`,
         payload: {
-          Id:this.state.Id,
+          Id: this.state.Id,
           TelephoneCount: this.props.data.PhoneCount,
           MobileCount: this.props.data.MobileCount,
           SeatCount: this.props.data.SeatCount,
-          Licencel:this.state.Path,
+          Licencel: this.state.Path,
           container: divForm,
         },
       });
-        e.preventDefault();
-        this.setState({
-          editvisible: false,
-        });
+      e.preventDefault();
     }
-    }
-    addSave = (e)=>{
-      if(this.props.data.PhoneCount == '' || this.props.data.MobileCount == '' || this.props.data.SeatCount == '' || this.state.Path == ''){
-        if(this.props.data.MobileCount == ''){
-          MessageBox.show('请输入网络电话数量', divForm);
-          return false;
-        }else if(this.props.data.PhoneCount == ''){
-          MessageBox.show('请输入座机数量', divForm);
-          return false;
-        }else if(this.props.data.SeatCount == ''){
-          MessageBox.show('请输入坐席数量', divForm);
-          return false;
-        }else{
-          MessageBox.show('请上传营业执照', divForm);
-          return false;
-        }
-      }else{
-        this.props.dispatch({
-          type: `${namespace}/addApply`,
-          payload: {
-            TelephoneCount: this.props.data.PhoneCount,
-            MobileCount: this.props.data.MobileCount,
-            SeatCount: this.props.data.SeatCount,
-            Licencel:this.state.Path
-          },
-        });
-          e.preventDefault();
-          this.setState({
-            editvisible: false,
-          });
+  }
+  addSave = (e) => {
+    if (this.props.data.PhoneCount == '' || this.props.data.MobileCount == '' || this.props.data.SeatCount == '' || this.state.Path == '') {
+      if (this.props.data.SeatCount == '') {
+        MessageBox.show('请输入席位数量', divForm);
+        return false;
+      } else if (this.props.data.PhoneCount == '') {
+        MessageBox.show('请输入话机数量', divForm);
+        return false;
+      } else if (this.props.data.MobileCount == '') {
+        MessageBox.show('请输入号码数量', divForm);
+        return false;
+      } else {
+        MessageBox.show('请上传营业执照', divForm);
+        return false;
       }
+    } else {
+      this.props.dispatch({
+        type: `${namespace}/addApply`,
+        payload: {
+          TelephoneCount: this.props.data.PhoneCount,
+          MobileCount: this.props.data.MobileCount,
+          SeatCount: this.props.data.SeatCount,
+          Licencel: this.state.Path
+        },
+      });
+      e.preventDefault();
     }
+  }
   handleCancel = (e) => {
+    this.props.dispatch({
+      type: `${namespace}/showEdit`,
+      payload: {
+        isShowEdit: false,
+      },
+    });
+    this.props.dispatch({
+      type: `${namespace}/showAdd`,
+      payload: {
+        isShowAdd: false,
+      },
+    });
     this.setState({
-      editvisible: false,
-      addvisible: false,
-      imgvisible:false,
+      imgvisible: false,
     });
   }
   onCloseEdit = () => {
@@ -178,52 +182,70 @@ class Component extends React.PureComponent<Props,State> {
       type: `${namespace}/SeatCountChanged`,
       payload: record.TelephoneCount,
     });
+    this.props.dispatch({
+      type: `${namespace}/showEdit`,
+      payload: {
+        isShowEdit: true,
+      },
+    });
     this.setState({
-      currData:record
+      currData: record
     })
-    setTimeout(()=>{
+    setTimeout(() => {
       this.setState({
-        editvisible:true,
-        Id:record.Id,
-        editImgUrl:record.LicenceUrl,
+        Id: record.Id,
+        editImgUrl: record.LicenceUrl,
       })
-    },50)
+    }, 50)
   };
-  onOpenAdd = ()=> {
-      let _this = this
-      this.props.dispatch({
-        type: `${namespace}/MobileCountChanged`,
-        payload: '',
-      });
-      this.props.dispatch({
-        type: `${namespace}/PhoneCountChanged`,
-        payload: '',
-      });
-      this.props.dispatch({
-        type: `${namespace}/SeatCountChanged`,
-        payload: '',
-      });
-      setTimeout(()=>{
-        _this.setState({
-          addvisible:true,
-          Path:''
-        })
-      },50)
+  onOpenAdd = () => {
+    let _this = this
+    this.props.dispatch({
+      type: `${namespace}/showAdd`,
+      payload: {
+        isShowAdd: true,
+      },
+    });
+    this.props.dispatch({
+      type: `${namespace}/MobileCountChanged`,
+      payload: '',
+    });
+    this.props.dispatch({
+      type: `${namespace}/PhoneCountChanged`,
+      payload: '',
+    });
+    this.props.dispatch({
+      type: `${namespace}/SeatCountChanged`,
+      payload: '',
+    });
+    setTimeout(() => {
+      _this.setState({
+        Path: ''
+      })
+    }, 50)
   };
-  onOpenImg = (img)=> {
-    this.setState({
-      editvisible: false,
-      addvisible: false,
-    })
-    setTimeout(()=>{
+  onOpenImg = (img) => {
+    this.props.dispatch({
+      type: `${namespace}/showEdit`,
+      payload: {
+        isShowEdit: false,
+      },
+    });
+    this.props.dispatch({
+      type: `${namespace}/showAdd`,
+      payload: {
+        isShowAdd: false,
+      },
+    });
+    setTimeout(() => {
       this.setState(
         {
-          imgvisible:true,
-          lookImg:img
-         
+          imgvisible: true,
+          lookImg: img
+
         }
       )
-    },20)
+    }, 20)
   };
   onDelete = record => {
     confirm({
@@ -236,96 +258,96 @@ class Component extends React.PureComponent<Props,State> {
       },
     });
   };
-   onMobileCountChanged =(e)=>{
+  onMobileCountChanged = (e) => {
     this.props.dispatch({
       type: `${namespace}/MobileCountChanged`,
       payload: e.target.value,
     });
-    }
-    onPhoneCountChanged =(e)=>{
-      this.props.dispatch({
-        type: `${namespace}/PhoneCountChanged`,
-        payload: e.target.value,
-      });
-    }
-    onSeatCountChanged =(e)=>{
-      this.props.dispatch({
-        type: `${namespace}/SeatCountChanged`,
-        payload: e.target.value,
-      });
-    }
-    onaddSignnameChanged =(e)=>{
+  }
+  onPhoneCountChanged = (e) => {
+    this.props.dispatch({
+      type: `${namespace}/PhoneCountChanged`,
+      payload: e.target.value,
+    });
+  }
+  onSeatCountChanged = (e) => {
+    this.props.dispatch({
+      type: `${namespace}/SeatCountChanged`,
+      payload: e.target.value,
+    });
+  }
+  onaddSignnameChanged = (e) => {
+    this.setState({
+      addSignName: e.target.value
+    })
+  }
+  picUpload = (data) => {
+    this.setState({
+      currData: Object.assign(this.state.currData, { LicenceUrl: data.ImgUrl }),
+      Path: data.ImgPath
+    })
+    setTimeout(() => {
       this.setState({
-        addSignName:e.target.value
+        editImgUrl: data.ImgUrl,
+        addImgUrl: data.ImgUrl
       })
-    }
-    picUpload = (data)=>{
-        this.setState({
-          currData:Object.assign(this.state.currData,{LicenceUrl:data.ImgUrl}),
-          Path:data.ImgPath
-        })
-        setTimeout(()=>{
-          this.setState({
-            editImgUrl:data.ImgUrl,
-            addImgUrl:data.ImgUrl
-          })
-        },50)
-        // dispatch({
-        //   type: `${namespace}/picUpload`,
-        //   payload: data,
-        // });
-      }
-    
-    onPicUploadError = (error)=>{
-        MessageBox.show(error, divForm);
-      }
-      // const { lastData, currData, isShowLastInfo, isShowEdit } = this.props.data;
-    
-      // const canSave = currData.Status === undefined || currData.Status === 1 || currData.Status === 4;
-    
-    onOpenLastInfo =()=>{
-        // dispatch({
-        //   type: `${namespace}/showLastInfo`,
-        //   payload: true,
-        // });
-      }
-    onCloseLastInfo = ()=>{
-        // dispatch({
-        //   type: `${namespace}/showLastInfo`,
-        //   payload: false,
-        // });
-      }
+    }, 50)
+    // dispatch({
+    //   type: `${namespace}/picUpload`,
+    //   payload: data,
+    // });
+  }
+
+  onPicUploadError = (error) => {
+    MessageBox.show(error, divForm);
+  }
+  // const { lastData, currData, isShowLastInfo, isShowEdit } = this.props.data;
+
+  // const canSave = currData.Status === undefined || currData.Status === 1 || currData.Status === 4;
+
+  onOpenLastInfo = () => {
+    // dispatch({
+    //   type: `${namespace}/showLastInfo`,
+    //   payload: true,
+    // });
+  }
+  onCloseLastInfo = () => {
+    // dispatch({
+    //   type: `${namespace}/showLastInfo`,
+    //   payload: false,
+    // });
+  }
   render() {
-    const {MobileCount,PhoneCount,SeatCount} = this.props.data
+    const { MobileCount, PhoneCount, SeatCount, isShowAdd,isShowEdit, phoneData, signList, currData } = this.props.data
     const columns: any = [
       {
         title: '席位数量',
         dataIndex: 'SeatCount',
         width: 150,
-        align:'center'
+        align: 'center'
       },
       {
         title: '话机数量',
         dataIndex: 'TelephoneCount',
         width: 150,
-        align:'center'
+        align: 'center'
       },
       {
         title: '号码数量',
         dataIndex: 'MobileCount',
         width: 150,
-        align:'center'
+        align: 'center'
       },
-      
+
       {
         title: '营业执照',
         dataIndex: 'LicenceUrl',
         width: 150,
-        align:'center',
+        align: 'center',
         render: (text, record) => {
           return (
             <span>
-              <span className={styles.textBtn1} onClick={()=>this.onOpenImg(record.LicenceUrl)}>查 看</span>
+              <span className={styles.textBtn1} onClick={() => this.onOpenImg(record.LicenceUrl)}>查 看</span>
             </span>
           )
         }
@@ -334,7 +356,7 @@ class Component extends React.PureComponent<Props,State> {
         title: '审核状态',
         width: 150,
         dataIndex: 'ExamineStateName',
-        align:'center',
+        align: 'center',
         render: (text, h) => {
           const red = h.Status === 4 || h.Status === 3;
           if (h.Status === 4 || h.Status === 3) {
@@ -355,19 +377,19 @@ class Component extends React.PureComponent<Props,State> {
         title: '申请时间',
         dataIndex: 'CreateTime',
         width: 280,
-        align:'center'
+        align: 'center'
       },
       {
         title: '更新时间',
         dataIndex: 'UpdateTime',
         width: 280,
-        align:'center'
+        align: 'center'
       },
       {
         title: '操作',
         key: 'action',
         width: 200,
-        align:'center',
+        align: 'center',
         render: (text, record) => (
           <span>
             <a href="javascript:;" onClick={() => this.onOpenEdit(record)}>
@@ -388,10 +410,9 @@ class Component extends React.PureComponent<Props,State> {
       3: '审核失败',
       4: '管理员作废',
     };
-    const {phoneData,signList, isShowEdit, currData} = this.props.data
     const canSave = currData.Status === undefined || currData.Status === 1 || currData.Status === 4;
-    
-    if(phoneData.List && phoneData.List.length>0){
+
+    if (phoneData.List && phoneData.List.length > 0) {
       var table;
       const listData = phoneData.List.map(h => ({
         ...h,
@@ -409,12 +430,12 @@ class Component extends React.PureComponent<Props,State> {
         }}
       />
     }
-    
+
 
     return (
       <div className={styles.page} ref={obj => (divForm = obj)}>
         <div className={styles.hintBox}>
-          <span className={styles.hint}>您可以与客户建立更直接、精准的语音沟通</span><span className={styles.textBtn} onClick={()=>{this.onOpenAdd()}}>申请电话业务</span>
+          <span className={styles.hint}>您可以与客户建立更直接、精准的语音沟通</span><span className={styles.textBtn} onClick={() => { this.onOpenAdd() }}>申请电话业务</span>
         </div>
         <div className={styles.divTable}>
           {table}
@@ -426,117 +447,121 @@ class Component extends React.PureComponent<Props,State> {
           onPageChanged={this.onPageChanged}
         /> */}
         {/* 编辑短信业务 */}
-        <Modal title="编辑短信业务" visible={this.state.editvisible}
-          style={{ top: 200}}
-          width='800px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" type="primary" size="large" onClick={this.onSubmit}>
-              提交
-            </Button>,
-            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
-          ]}
-        >
-          <div className={styles.form}>
-           <Form>
-           <FormItem title="网络电话号码数量：" isRequire thWidth={120}>
-              <Input
-                onChange={this.onMobileCountChanged}
-                defaultValue={MobileCount}
-                maxLength={12}
-                placeholder="请输入网络电话号码数量"
-              />
-            </FormItem>
-            <FormItem title="座机电话数量：" isRequire thWidth={120}>
-              <Input
-                onChange={this.onPhoneCountChanged}
-                defaultValue={PhoneCount}
-                maxLength={12}
-                placeholder="请输入座机电话数量"
-              />
-            </FormItem>
-            <FormItem title="坐席数量：" isRequire thWidth={120}>
-              <Input
-                onChange={this.onSeatCountChanged}
-                defaultValue={SeatCount}
-                maxLength={12}
-                placeholder="请输入坐席数量"
-              />
-            </FormItem>
-            <FormItem title="营业执照：" isRequire>
-              <div className={styles.picItem}>
-                <PictureShow type={2} url={this.state.editImgUrl} />
-                <PictureUpload
-                  onSuccess={this.picUpload}
-                  onError={this.onPicUploadError}
-                  type={2}
-                  title="上传营业执照"
-                />
-              </div>
-            </FormItem>
-            <FormItem>
-            </FormItem>
-          </Form>
-        </div>
-        </Modal>
+        {isShowEdit && (
+          <Modal title="编辑短信业务" visible={true}
+            style={{ top: 200 }}
+            width='800px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="submit" type="primary" size="large" onClick={this.onSubmit}>
+                提交
+                    </Button>,
+              <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+            ]}
+          >
+            <div className={styles.form}>
+              <Form>
+                <FormItem title="席位数量：" isRequire thWidth={120}>
+                  <Input
+                    onChange={this.onSeatCountChanged}
+                    defaultValue={SeatCount}
+                    maxLength={12}
+                    placeholder="请输入席位数量"
+                  />
+                </FormItem>
+                <FormItem title="话机数量：" isRequire thWidth={120}>
+                  <Input
+                    onChange={this.onPhoneCountChanged}
+                    defaultValue={PhoneCount}
+                    maxLength={12}
+                    placeholder="请输入话机数量"
+                  />
+                </FormItem>
+                <FormItem title="号码数量：" isRequire thWidth={120}>
+                  <Input
+                    onChange={this.onMobileCountChanged}
+                    defaultValue={MobileCount}
+                    maxLength={12}
+                    placeholder="请输入号码数量"
+                  />
+                </FormItem>
+                <FormItem title="营业执照：" isRequire>
+                  <div className={styles.picItem}>
+                    <PictureShow type={2} url={this.state.editImgUrl} />
+                    <PictureUpload
+                      onSuccess={this.picUpload}
+                      onError={this.onPicUploadError}
+                      type={2}
+                      title="上传营业执照"
+                    />
+                  </div>
+                </FormItem>
+                <FormItem>
+                </FormItem>
+              </Form>
+            </div>
+          </Modal>
+        )}
         {/* 新增短信业务 */}
-        <Modal title="申请电话业务" visible={this.state.addvisible}
-          style={{ top: 200}}
-          width='800px'
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="submit" type="primary" size="large" onClick={this.addSave}>
-              提交
-            </Button>,
-            <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
-          ]}
-        >
-          <div className={styles.form}>
-           <Form>
-             <FormItem title="网络电话号码数量：" isRequire thWidth={120}>
-              <Input
-                onChange={this.onMobileCountChanged}
-                value={MobileCount}
-                maxLength={12}
-                placeholder="请输入网络电话号码数量"
-              />
-            </FormItem>
-            <FormItem title="座机电话数量：" isRequire thWidth={120}>
-              <Input
-                onChange={this.onPhoneCountChanged}
-                value={PhoneCount}
-                maxLength={12}
-                placeholder="请输入座机电话数量"
-              />
-            </FormItem>
-            <FormItem title="坐席数量：" isRequire thWidth={120}>
-              <Input
-                onChange={this.onSeatCountChanged}
-                value={SeatCount}
-                maxLength={12}
-                placeholder="请输入坐席数量"
-              />
-            </FormItem>
-            <FormItem title="营业执照：" isRequire>
-              <div className={styles.picItem}>
-                <PictureShow type={2} url={this.state.addImgUrl} />
-                <PictureUpload
-                  onSuccess={this.picUpload}
-                  onError={this.onPicUploadError}
-                  type={2}
-                  title="上传营业执照"
-                />
-              </div>
-            </FormItem>
-          </Form>
-        </div>
-        </Modal>
+        {isShowAdd && (
+          <Modal title="申请电话业务" visible={true}
+            style={{ top: 200 }}
+            width='800px'
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="submit" type="primary" size="large" onClick={this.addSave}>
+                提交
+                    </Button>,
+              <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+            ]}
+          >
+            <div className={styles.form}>
+              <Form>
+                <FormItem title="席位数量：" isRequire thWidth={120}>
+                  <Input
+                    onChange={this.onSeatCountChanged}
+                    value={SeatCount}
+                    maxLength={12}
+                    placeholder="请输入席位数量"
+                  />
+                </FormItem>
+                <FormItem title="话机数量：" isRequire thWidth={120}>
+                  <Input
+                    onChange={this.onPhoneCountChanged}
+                    value={PhoneCount}
+                    maxLength={12}
+                    placeholder="请输入话机数量"
+                  />
+                </FormItem>
+                <FormItem title="号码数量：" isRequire thWidth={120}>
+                  <Input
+                    onChange={this.onMobileCountChanged}
+                    value={MobileCount}
+                    maxLength={12}
+                    placeholder="请输入号码数量"
+                  />
+                </FormItem>
+                <FormItem title="营业执照：" isRequire>
+                  <div className={styles.picItem}>
+                    <PictureShow type={2} url={this.state.addImgUrl} />
+                    <PictureUpload
+                      onSuccess={this.picUpload}
+                      onError={this.onPicUploadError}
+                      type={2}
+                      title="上传营业执照"
+                    />
+                  </div>
+                </FormItem>
+              </Form>
+            </div>
+          </Modal>
+        )}
         <Modal title="查看营业执照" visible={this.state.imgvisible}
-          style={{ top: 100}}
+          style={{ top: 100 }}
           width='800px'
           onCancel={this.handleCancel}
           footer={null}
-          >
+        >
           <LicenseShow type={1} url={this.state.lookImg} />
         </Modal>
       </div>

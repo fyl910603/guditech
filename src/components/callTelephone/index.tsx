@@ -131,11 +131,17 @@ export class CallTelephone extends React.PureComponent<Props, State> {
   }
   // 挂断电话
   toHangUp = () =>{
+    let _this = this
     this.setState({msg:'挂断中...'});
     this.myStop()
     clearInterval(interval)
     ws.send(JSON.stringify({ActionCode:"000001",Type:"0103",Data:null}));
-    let _this = this
+    setTimeout(()=>{
+      if(_this.state.msg != '已挂断'){
+        _this.onHangUp()
+      }
+    },1500)
+    
     ws.onmessage = function (evt) {
       let data = JSON.parse(evt.data)
       console.log(evt.data)

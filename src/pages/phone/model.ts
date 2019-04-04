@@ -16,7 +16,6 @@ export default {
     lastData: [],
     currData: {},
     phoneData: {},
-    isShowEdit:true,
   },
 
   subscriptions: {
@@ -86,7 +85,7 @@ export default {
         yield put({
           type: 'showEdit',
           payload: {
-            isShow: false,
+            isShowEdit: false,
           },
         });
         modalSuccess({
@@ -121,14 +120,19 @@ export default {
         yield put({
           type: 'showAdd',
           payload: {
-            isShow: false,
+            isShowAdd: false,
+          },
+        });
+        yield put({
+          type: 'fetchList',
+          payload: {
           },
         });
         modalSuccess({
           title: '信息创建成功',
           pic: successPic,
           onOk: () => {
-            router.push('/');
+            
           },
         });
       } else {
@@ -164,17 +168,27 @@ export default {
   },
 
   reducers: {
+    init(state, { payload }) {
+      return {
+        ...state,
+        pageindex: 1,
+        list: [],
+        isShowAdd:false,
+        isShowEdit:false,
+        // isShowCreate:false
+      };
+    },
     showEdit(state, { payload }) {
       const currData = payload.currData;
       return {
         ...state,
-        isShowEdit: payload.isShow,
+        isShowEdit: payload.isShowEdit,
       };
     },
     showAdd(state, { payload }) {
       return {
         ...state,
-        isShowEdit: payload.isShow,
+        isShowAdd: payload.isShowAdd,
       };
     },
     // fetchListSuccess(state, { payload }) {

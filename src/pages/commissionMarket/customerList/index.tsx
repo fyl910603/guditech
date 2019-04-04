@@ -396,13 +396,13 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '孩子姓名',
         dataIndex: 'ChildName',
-        width: '10%',
+        width: '8%',
         align: 'center',
       },
       {
         title: '联系方式',
         dataIndex: 'Mobile',
-        width: '10%',
+        width: '8%',
         align: 'center',
       },
       {
@@ -418,7 +418,7 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '预约次数',
         dataIndex: 'AppointmentCount',
-        width: '10%',
+        width: '8%',
         align: 'center',
       },
       {
@@ -436,13 +436,13 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '推送日期',
         dataIndex: 'CreateTime',
-        width: '9%',
+        width: '7%',
         align: 'center'
       },
       {
         title: '备注',
         dataIndex: 'SellerRemark',
-        width: '8%',
+        width: '6%',
         align: 'center',
         render: (text, h) => {
           return <span><React.Fragment>
@@ -455,7 +455,7 @@ class Component extends React.PureComponent<Props, State> {
       {
         title: '操作',
         key: 'action',
-        width: '36%',
+        width: '42%',
         align: 'center',
         render: (text, h) => (
           <span>
